@@ -34,7 +34,7 @@
     <li>
         <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇️ </a>
         <ul class="submenu">
-            <li><a href="{{ route('sondagem.inicial') }}" class="menu-link">.1 Inicial</a></li>
+            <li><a href="{{ route('eixos.alunos') }}" class="menu-link">.1 Inicial</a></li>
             <li><a href="{{ route('sondagem.continuada1') }}" class="menu-link">.2 Continuada</a></li>
             <li><a href="{{ route('sondagem.continuada2') }}" class="menu-link">.3 Continuada</a></li>
             <li><a href="{{ route('sondagem.final') }}" class="menu-link">.4 Final</a></li>
