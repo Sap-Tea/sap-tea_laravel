@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário Semanal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .calendar {
+            width: 100%;
+            max-width: 1200px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Cabeçalho */
+        .header {
+            background: #e0e0e0; /* Cinza neutro */
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+        }
+
+        /* Estilização dos dias da semana */
+        .day {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+
+        /* Cores para os dias */
+        .monday { background: #FFF3CD; }  /* Amarelo neutro */
+        .tuesday { background: #D6EAF8; } /* Azul bebê */
+        .wednesday { background: #D4EDDA; } /* Verde neutro */
+        .thursday { background: #FAD7A0; } /* Laranja neutro */
+        .friday { background: #EAD1DC; } /* Roxo neutro */
+
+        /* Estilização das células */
+        .cell {
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        /* Inputs maiores e com mais espaço para texto */
+        .cell input {
+            width: 95%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="calendar">
+        <!-- Cabeçalho -->
+        <tr>
+            <th class="header">Dia</th>
+            <th class="header">Horários</th>
+            <th class="header">Nome do Profissional</th>
+            <th class="header">Especialidade/Área</th>
+        </tr>
+
+        <!-- Segunda -->
+        <tr class="monday">
+            <td class="day">Segunda-feira</td>
+            <td class="cell"><input type="text" name="horario_seg"></td>
+            <td class="cell"><input type="text" name="profissional_seg"></td>
+            <td class="cell"><input type="text" name="especialidade_seg"></td>
+        </tr>
+
+        <!-- Terça -->
+        <tr class="tuesday">
+            <td class="day">Terça-feira</td>
+            <td class="cell"><input type="text" name="horario_ter"></td>
+            <td class="cell"><input type="text" name="profissional_ter"></td>
+            <td class="cell"><input type="text" name="especialidade_ter"></td>
+        </tr>
+
+        <!-- Quarta -->
+        <tr class="wednesday">
+            <td class="day">Quarta-feira</td>
+            <td class="cell"><input type="text" name="horario_qua"></td>
+            <td class="cell"><input type="text" name="profissional_qua"></td>
+            <td class="cell"><input type="text" name="especialidade_qua"></td>
+        </tr>
+
+        <!-- Quinta -->
+        <tr class="thursday">
+            <td class="day">Quinta-feira</td>
+            <td class="cell"><input type="text" name="horario_qui"></td>
+            <td class="cell"><input type="text" name="profissional_qui"></td>
+            <td class="cell"><input type="text" name="especialidade_qui"></td>
+        </tr>
+
+        <!-- Sexta -->
+        <tr class="friday">
+            <td class="day">Sexta-feira</td>
+            <td class="cell"><input type="text" name="horario_sex"></td>
+            <td class="cell"><input type="text" name="profissional_sex"></td>
+            <td class="cell"><input type="text" name="especialidade_sex"></td>
+        </tr>
+    </table>
+
+</body>
+</html>
