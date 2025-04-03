@@ -14,6 +14,7 @@ use App\Http\Controllers\ImprimeAlunoController;
 use App\Http\Controllers\InserirPerfilEstudante;
 use App\Http\Controllers\AtualizacaoController;
 use App\Http\Controllers\AtualizacaoPerfilController;
+use App\Http\Controllers\InserirEixoEstudanteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,11 +67,15 @@ Route::group(['prefix' => 'professor'], function () {
 */
 //rotas de perfil estudante 
 Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.index');
+
 Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])
 ->name('perfil.estudante.mostrar');
+
 Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualizaPerfil'])->name('visualizar.perfil');
 Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
+
 Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
+
 Route::get('/imprime-aluno', [ImprimeAlunoController::class, 'imprimeAluno'])->name('imprime_aluno');
 
 Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar'])->name('atualizar.perfil');
@@ -80,6 +85,8 @@ Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar
 
 // Grupo de rotas para sondagens
 Route::prefix('sondagem')->group(function () {
+    Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
+    Route::post('/inserir_inventario', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');   
     // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
     Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
     Route::get('/continuada1', [SondagemInicialController::class, 'continuada1'])->name('sondagem.continuada1');
@@ -88,7 +95,7 @@ Route::prefix('sondagem')->group(function () {
 });
 
 
-
+ 
  
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
 

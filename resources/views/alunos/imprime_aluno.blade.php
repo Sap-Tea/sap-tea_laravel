@@ -55,7 +55,7 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <td>{{ $aluno->alu_tel_resp }}</td>
                     <td>{{ $aluno->alu_email_resp }}</td>
                   
-                    <!-- Botão cadastra -->
+                    <!-- Botão cadastra perfil -->
                     <td>
                         @if($aluno->flag_perfil === "*")
                             <button class="btn btn-primary btn-sm" disabled>Cadastra Perfil</button>
