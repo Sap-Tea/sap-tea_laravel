@@ -164,6 +164,7 @@ class InserirPerfilEstudante extends Controller
                  'at_especializado'=>$request->input('at_especializado'),
                  'fk_id_aluno'=>$alunoId
             ]);
+            
             $personalidade = PersonalidadeAluno::create([
                 'carac_principal'=>$request->input('caracteristicas'),
                 'inter_princ_carac'=>$request->input('areas_interesse'),

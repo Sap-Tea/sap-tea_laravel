@@ -5,7 +5,8 @@
     <h2>Relação dos Alunos</h2>
 
     <!-- Formulário de Pesquisa -->
-    <form id = "pesquisaForm" method="POST" action="{{ route('inserir_perfil') }}">
+     
+    <form id = "pesquisaForm" method="POST" action="{{ route('inserir_inventario') }}">
         <div class="input-group mb-3">
             <input type="text" name="nome" class="form-control" placeholder="Pesquisar por aluno"
                    value="{{ request('nome') }}">
@@ -55,25 +56,26 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <td>{{ $aluno->alu_tel_resp }}</td>
                     <td>{{ $aluno->alu_email_resp }}</td>
                   
-                    <!-- Botão cadastra perfil -->
+                    <!-- Botão cadastra -->
                     <td>
-                        @if($aluno->flag_perfil === "*")
-                            <button class="btn btn-primary btn-sm" disabled>Cadastra Perfil</button>
+                        @if($aluno->flag_inventario === "*").
+                            <button class="btn btn-primary btn-sm" disabled>Cadastra Inventário</button>
                         @else
-                            <a href="{{ route('alunos.index', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary btn-sm">Cadastra Perfil</a>
+                        
+                        <a href="{{ route('alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm">Cadastra Inventário</a>
+
                         @endif
                     </td>
 
                     <!-- Botão visualiza/atualiza -->
                     <td>
-                        @if($aluno->flag_perfil === null)
+                        @if($aluno->flag_inventario === null)
                             <button class="btn btn-warning btn-sm text-white" 
                                     style="background-color: #e67e22; border-color: #d35400;"
-                                    disabled>Visualiza Perfil</button>
+                                    disabled>Visualiza inventário</button>
                         @else
                             <a href="{{ route('visualizar.perfil', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary btn-sm">Visualiza Perfil</a>
+                               class="btn btn-primary btn-sm">Visualizar Inventário</a>
                         @endif
                     </td>
                 </tr>
