@@ -30,18 +30,7 @@
     <div class="menu-logo">
     <img src="{{ asset('img/logo_sap.png') }}" alt="Logo">
 </div>
-
 <ul>
-    <li><a href="#"><i class="fa-solid fa-school"></i> Cadastros ⬇️</a>
-        <ul class="submenu_escola">
-            <li><a href="{{ route('instituicao') }}">Instituição</a></li>
-            <li><a href="{{ route('orgao') }}">Orgão</a></li>
-            <li><a href="{{ route('escola') }}">Escola</a></li>
-            <li><a href="{{ route('aluno') }}">Aluno</a></li>
-            <li><a href="{{ route('servidores') }}">Servidores</a></li>
-        </ul>
-    </li>
-</ul>
     <li>
         <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇️ </a>
         <ul class="submenu">

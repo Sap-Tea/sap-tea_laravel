@@ -14,7 +14,6 @@ use App\Http\Controllers\ImprimeAlunoController;
 use App\Http\Controllers\InserirPerfilEstudante;
 use App\Http\Controllers\AtualizacaoController;
 use App\Http\Controllers\AtualizacaoPerfilController;
-use App\Http\Controllers\CadastroController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,14 +114,6 @@ Route::prefix('sondagem')->group(function () {
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
 
 Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
-
-
-// cadastros 
-Route::get('/instituicao', [CadastroController::class, 'instituicao'])->name('instituicao');
-Route::get('/orgao', [CadastroController::class, 'orgao'])->name('orgao');
-Route::get('/escola', [CadastroController::class, 'escola'])->name('escola');
-Route::get('/aluno', [CadastroController::class, 'aluno'])->name('aluno');
-Route::get('/servidores', [CadastroController::class, 'servidores'])->name('servidores');
 
 
 
