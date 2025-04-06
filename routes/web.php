@@ -93,8 +93,8 @@ Route::prefix('sondagem')->group(function () {
     Route::get('/continuada2', [SondagemInicialController::class, 'continuada2'])->name('sondagem.continuada2');
     Route::get('/final', [SondagemInicialController::class, 'final'])->name('sondagem.final');
 });
-
-
+//minha alteracao
+Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
  
  
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
