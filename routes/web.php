@@ -14,6 +14,7 @@ use App\Http\Controllers\ImprimeAlunoController;
 use App\Http\Controllers\InserirPerfilEstudante;
 use App\Http\Controllers\AtualizacaoController;
 use App\Http\Controllers\AtualizacaoPerfilController;
+use App\Http\Controllers\InserirEixoEstudanteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,16 +45,7 @@ Route::get('/index', function () {
     return view('index');
 })->name('index');
 
-//criar um grupo de rota chamada cadastro
-//criar uma rota get
-//criar uma rota post
-
-
-
-
-
-
-
+ 
 
 // Sondagem inicial
 Route::get('/sondagem-inicial', [SondagemController::class, 'index'])->name('sondagem.inicial');
@@ -73,26 +65,18 @@ Route::group(['prefix' => 'professor'], function () {
     Route::get('/imprime-aluno', [ControllerPerfil::class, 'imprimeAluno'])->name('aluno.perfil');
 });
 */
-// cadastra do Estudante (com ID)
+//rotas de perfil estudante 
 Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.index');
 
-
-
- Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])
+Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])
 ->name('perfil.estudante.mostrar');
 
 Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualizaPerfil'])->name('visualizar.perfil');
-
-
-
 Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
+
 Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
+
 Route::get('/imprime-aluno', [ImprimeAlunoController::class, 'imprimeAluno'])->name('imprime_aluno');
-
-//rota para salvar as alteracoes do perfil de estudante
-// routes/web.php
-
-
 
 Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar'])->name('atualizar.perfil');
 
@@ -101,6 +85,8 @@ Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar
 
 // Grupo de rotas para sondagens
 Route::prefix('sondagem')->group(function () {
+    Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
+    Route::post('/inserir_inventario', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');   
     // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
     Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
     Route::get('/continuada1', [SondagemInicialController::class, 'continuada1'])->name('sondagem.continuada1');
@@ -109,19 +95,13 @@ Route::prefix('sondagem')->group(function () {
 });
 
 
-
-// Modalidade de Ensino
+ 
+ 
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
 
 Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
+Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'mostra_aluno_eixo'])->name('eixos.alunos');
 
 
 
-
-//Route::post('/proj_foccus/index.php', 'SeuController@metodoSalvar'); 
-
-/*
-Route::get('/acessar-proj-foccus', function () {
-    return redirect()->away('http://proj_foccus');
-});
-*/
+ 
