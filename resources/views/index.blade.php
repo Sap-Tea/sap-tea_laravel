@@ -51,15 +51,6 @@
             </li>
         </ul>
         <ul>
-            <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Indicativo de Atividades e Habilidades⬇️ </a>
-                <ul class="submenu_escola">
-                    <li><a href="#" data-target="modalidade-ensino">.1 Inicial</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.2 Continuada</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.3 Continuada</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.4 Final</a></li>
-            
-                </ul>
-                <li>
                 <a href="{{ route('perfil.estudante') }}" target="_blank">
                             <i class="fa-solid fa-graduation-cap"></i> Perfil do Estudante
                 </a>
@@ -71,58 +62,9 @@
    
         <ul>
             <li><a href="#" data-target="formulario-cad-instituicao"><i class="fa-solid fa-building-columns"></i> Gerênciamento</a></li>
-           <!-- 
-            <li><a href="#" data-target="formulario-cad-orgao"><i class="fa-solid fa-building"></i> Órgão</a></li>
-            <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Escola ▼ </a>
-                <ul class="submenu_escola">
-                    <li><a href="#" data-target="modalidade-ensino">Modalidade de ensino</a></li>
-      
-                </ul>
-            </li>
-            <li><a href="#" data-target="formulario-cad-aluno"><i class="fa-solid fa-user-graduate"></i> Aluno</a></li>
-            <li><a href="#" data-target="funcao"><i class="fa-regular fa-keyboard"></i> Função</a></li>
-            <li><a href="#" data-target="formulario-cad-funcionario"><i class="fa-solid fa-users"></i> Servidores</a></li>
-            <li><a href="#" data-target="Enturmacao"><i class="fa-regular fa-folder"></i> Matriculas ▼ </a>
-                <ul class="submenu_matriculas">
-                    <li><a href="#" data-target="formulario-enturmar-escola">Enturmação</a></li>
-                </ul>
-            </li>
-        </ul>
-
-        <h2>Inventarios</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-eixo-escola"><i class="fa-solid fa-shapes"></i> Eixos</a></li>
-           
-        </ul>
-
-        <h2>Espaço Professor</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-mig-download"><i class="fa-solid fa-shapes"></i> Download de material</a></li>
-           
-        </ul>
-
-        <h2>Migrações</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-mig-escola"><i class="fa-solid fa-code-branch"></i> Migrar Escola</a></li>
-            <li><a href="#" data-target="formulario-mig-aluno"><i class="fa-solid fa-sitemap"></i> Migrar Aluno</a></li>
-            <li><a href="#" data-target="formulario-mig-funcionario"><i class="fa-solid fa-sitemap"></i> Migrar Funcionario</a></li>
-            
-            
-        </ul>
-
-        <h2>Controles</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-cad-usuarios"><i class="fa-solid fa-address-card"></i> Cadastro de usuários</a></li>
-        </ul>
--->
     </div>
-    
+   
     <div id="formulario-container"></div> 
-
-    
-
     <script src="public/js/script.js"></script>
-
-  
   </body>
 </html>
