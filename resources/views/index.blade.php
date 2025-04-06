@@ -115,6 +115,15 @@
             <li><a href="#" data-target="formulario-cad-usuarios"><i class="fa-solid fa-address-card"></i> Cadastro de usuários</a></li>
         </ul>
 -->
+
+</ul>
+        <h3>Download de Materiais</h3>
+   
+        <ul>
+
+
+        <ul>
+            <li><a href="#" data-target="formulario-cad-instituicao"><i class="fa-solid fa-building-columns"></i> Atividades para impressão</a></li>
     </div>
     
     <div id="formulario-container"></div> 
