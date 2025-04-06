@@ -23,7 +23,7 @@ class AlunoController extends Controller
     return view('alunos.perfil_estudante', compact('aluno'));
 }
 
-public function mostra_aluno_sondagem($id)
+public function mostra_aluno_inventario($id)
 {
     $alunosDetalhados = Aluno::getAlunosDetalhados($id);
     if (!empty($alunosDetalhados)) {
@@ -32,7 +32,7 @@ public function mostra_aluno_sondagem($id)
     } else {
         abort(404);
     }
-    return view('alunos.', compact('aluno'));
+    return view('sondagem.inicial', compact('aluno'));
 }
 
 

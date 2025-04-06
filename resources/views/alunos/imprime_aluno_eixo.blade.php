@@ -5,6 +5,7 @@
     <h2>Relação dos Alunos</h2>
 
     <!-- Formulário de Pesquisa -->
+     
     <form id = "pesquisaForm" method="POST" action="{{ route('inserir_inventario') }}">
         <div class="input-group mb-3">
             <input type="text" name="nome" class="form-control" placeholder="Pesquisar por aluno"
@@ -57,17 +58,18 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                   
                     <!-- Botão cadastra -->
                     <td>
-                        @if($aluno->flag_perfil === "*")
+                        @if($aluno->flag_inventario === "*").
                             <button class="btn btn-primary btn-sm" disabled>Cadastra Inventário</button>
                         @else
-                            <a href="{{ route('alunos.inventario', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary btn-sm">Cadastra Inventário</a>
+                        
+                        <a href="{{ route('alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm">Cadastra Inventário</a>
+
                         @endif
                     </td>
 
                     <!-- Botão visualiza/atualiza -->
                     <td>
-                        @if($aluno->flag_perfil === null)
+                        @if($aluno->flag_inventario === null)
                             <button class="btn btn-warning btn-sm text-white" 
                                     style="background-color: #e67e22; border-color: #d35400;"
                                     disabled>Visualiza inventário</button>
