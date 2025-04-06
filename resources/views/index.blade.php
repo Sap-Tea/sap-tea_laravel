@@ -71,50 +71,7 @@
    
         <ul>
             <li><a href="#" data-target="formulario-cad-instituicao"><i class="fa-solid fa-building-columns"></i> Gerênciamento</a></li>
-           <!-- 
-            <li><a href="#" data-target="formulario-cad-orgao"><i class="fa-solid fa-building"></i> Órgão</a></li>
-            <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Escola ▼ </a>
-                <ul class="submenu_escola">
-                    <li><a href="#" data-target="modalidade-ensino">Modalidade de ensino</a></li>
-      
-                </ul>
-            </li>
-            <li><a href="#" data-target="formulario-cad-aluno"><i class="fa-solid fa-user-graduate"></i> Aluno</a></li>
-            <li><a href="#" data-target="funcao"><i class="fa-regular fa-keyboard"></i> Função</a></li>
-            <li><a href="#" data-target="formulario-cad-funcionario"><i class="fa-solid fa-users"></i> Servidores</a></li>
-            <li><a href="#" data-target="Enturmacao"><i class="fa-regular fa-folder"></i> Matriculas ▼ </a>
-                <ul class="submenu_matriculas">
-                    <li><a href="#" data-target="formulario-enturmar-escola">Enturmação</a></li>
-                </ul>
-            </li>
-        </ul>
-
-        <h2>Inventarios</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-eixo-escola"><i class="fa-solid fa-shapes"></i> Eixos</a></li>
            
-        </ul>
-
-        <h2>Espaço Professor</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-mig-download"><i class="fa-solid fa-shapes"></i> Download de material</a></li>
-           
-        </ul>
-
-        <h2>Migrações</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-mig-escola"><i class="fa-solid fa-code-branch"></i> Migrar Escola</a></li>
-            <li><a href="#" data-target="formulario-mig-aluno"><i class="fa-solid fa-sitemap"></i> Migrar Aluno</a></li>
-            <li><a href="#" data-target="formulario-mig-funcionario"><i class="fa-solid fa-sitemap"></i> Migrar Funcionario</a></li>
-            
-            
-        </ul>
-
-        <h2>Controles</h2>
-        <ul>
-            <li><a href="#" data-target="formulario-cad-usuarios"><i class="fa-solid fa-address-card"></i> Cadastro de usuários</a></li>
-        </ul>
--->
 
 </ul>
         <h3>Download de Materiais</h3>
