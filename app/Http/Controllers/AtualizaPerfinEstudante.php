@@ -10,7 +10,7 @@ class AtualizaPerfinEstudante extends Controller
     public function atualizaPerfil($id)
 {
     // Consulta para obter dados do aluno
-echo "xxxxxxxxxxxxxxxxxx";
+
 $query = "SELECT alu.alu_id, alu.alu_nome, alu.alu_dtnasc,
                      moda.desc_modalidade, moda.desc_serie_modalidade,
                      fun.func_nome, tp.desc_tipo_funcao,tur.fk_cod_func

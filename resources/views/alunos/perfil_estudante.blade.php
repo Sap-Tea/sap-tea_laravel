@@ -330,7 +330,7 @@
         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém proporção
 
         pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-        pdf.save("Perfil_Estudante.pdf"); // Baixa o PDF
+        pdf.save("Perfilx_Estudante.pdf"); // Baixa o PDF
     });
 });
 

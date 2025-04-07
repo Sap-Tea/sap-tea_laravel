@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\PerfilEstudante;
 use App\Models\PersonalidadeAluno;
@@ -10,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class AtualizacaoPerfilController extends Controller
 {
+    /**
+     * Atualiza o perfil do estudante e redireciona para a página do perfil.
+     */
     public function AtualizaPerfil(Request $request, $id)
     {
         // Validação básica dos campos essenciais
@@ -21,26 +26,35 @@ class AtualizacaoPerfilController extends Controller
 
         DB::beginTransaction();
         try {
-            // Atualização usando relacionamento por fk_id_aluno
+            // Atualização das tabelas relacionadas ao estudante
             $this->atualizarPerfilEstudante($request, $id);
             $this->atualizarPersonalidade($request, $id);
             $this->atualizarComunicacao($request, $id);
             $this->atualizarPreferencia($request, $id);
             $this->atualizarPerfilFamilia($request, $id);
 
+            // Confirma a transação
             DB::commit();
-            return redirect()->back()->with('success', 'Perfil atualizado com sucesso!');
 
+            // Redireciona para a rota perfil.estudante com mensagem de sucesso
+            return redirect()->route('perfil.estudante', ['id' => $id])
+                             ->with('success', 'Perfil atualizado com sucesso!');
         } catch (\Exception $e) {
+            // Reverte a transação em caso de erro
             DB::rollBack();
-            return redirect()->back()->with('error', 'Erro: ' . $e->getMessage());
+
+            // Retorna para a página anterior com mensagem de erro
+            return redirect()->back()->with('error', 'Erro ao atualizar o perfil: ' . $e->getMessage());
         }
     }
 
+    /**
+     * Atualiza os dados na tabela PerfilEstudante.
+     */
     private function atualizarPerfilEstudante($request, $id)
     {
         $perfil = PerfilEstudante::where('fk_id_aluno', $id)->firstOrFail();
-        
+
         $perfil->update([
             'diag_laudo' => $request->diag_laudo,
             'cid' => $request->cid,
@@ -62,11 +76,13 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza os dados na tabela PersonalidadeAluno.
+     */
     private function atualizarPersonalidade($request, $id)
     {
-        
         $model = PersonalidadeAluno::where('fk_id_aluno', $id)->firstOrFail();
-        
+
         $model->update([
             'carac_principal' => $request->caracteristicas,
             'inter_princ_carac' => $request->areas_interesse,
@@ -77,10 +93,13 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza os dados na tabela Comunicacao.
+     */
     private function atualizarComunicacao($request, $id)
     {
         $model = Comunicacao::where('fk_id_aluno', $id)->firstOrFail();
-        
+
         $model->update([
             'precisa_comunicacao' => $request->precisa_comunicacao,
             'entende_instrucao' => $request->entende_instrucao,
@@ -88,10 +107,13 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza os dados na tabela Preferencia.
+     */
     private function atualizarPreferencia($request, $id)
     {
         $model = Preferencia::where('fk_id_aluno', $id)->firstOrFail();
-        
+
         $model->update([
             'auditivo_04' => $request->has('s_auditiva') ? 1 : 0,
             'visual_04' => $request->has('s_visual') ? 1 : 0,
@@ -116,6 +138,9 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
+    /**
+     * Atualiza ou cria os dados na tabela PerfilFamilia.
+     */
     private function atualizarPerfilFamilia($request, $id)
     {
         PerfilFamilia::updateOrCreate(
@@ -128,3 +153,4 @@ class AtualizacaoPerfilController extends Controller
         );
     }
 }
+

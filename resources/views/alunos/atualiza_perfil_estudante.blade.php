@@ -17,64 +17,73 @@
 <div class="container">
     <h2>I - Perfil do Estudante</h2>
 
-    <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $dados[0]->alu_id]) }}">
-        @csrf
+    <!-- Verifica se há dados do aluno selecionado -->
+    @if(isset($dados) && count($dados) > 0)
+        <!-- Seleciona o primeiro aluno da lista ($dados[0]) -->
+        @php $aluno = $dados[0]; @endphp
 
-        @if($dados)
-            @foreach($dados as $aluno)
-                <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
-                <div class="form-group">
-                    <label>Nome do Aluno:</label>
-                    <input type="text" name="nome_aluno" value="{{$aluno->alu_nome }}" readonly>
-                </div>
+        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}">
+            @csrf
 
-                <div class="row">
-                    <div class="form-group">
-                        <label>Ano/Série:</label>
-                        <input type="text" value="{{$aluno->desc_modalidade.'-'.  $aluno->desc_serie_modalidade}}" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Data de Nascimento:</label>
-                        <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Idade do aluno:</label>
-                        <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Nome do Professor:</label>
-                    <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
-                </div>
-            @endforeach
+            <!-- Dados do aluno selecionado -->
+            <input type="hidden" name="aluno_id" value="{{ $aluno->alu_id }}">
             
-            @foreach($results as $perfil)
-                <!-- Aqui você pode usar os dados de $results -->
+            <div class="form-group">
+                <label>Nome do Aluno:</label>
+                <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
+            </div>
+
+            <div class="row">
                 <div class="form-group">
-               <label>Possui diagnóstico/laudo?</label>
+                    <label>Ano/Série:</label>
+                    <input type="text" value="{{ $aluno->desc_modalidade . '-' . $aluno->desc_serie_modalidade }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Data de Nascimento:</label>
+                    <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Idade do Aluno:</label>
+                    <input type="text" name="alu_idade" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} anos" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nome do Professor:</label>
+                <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
+            </div>
+
+            <!-- Dados adicionais do perfil -->
+            @if(isset($results) && count($results) > 0)
+                @php $perfil = $results[0]; @endphp
+
+                <div class="form-group">
+                    <label>Possui diagnóstico/laudo?</label>
                     <select name="diag_laudo">
                         <option value="1" @if($perfil->diag_laudo == 1) selected @endif>Sim</option>
                         <option value="0" @if($perfil->diag_laudo == 0) selected @endif>Não</option>
                     </select>
-            </div>
+                </div>
 
+                <!-- Outros campos adicionais -->
+                <!-- Exemplo: CID, Médico, Data do Laudo -->
                 <div class="row">
                     <div class="form-group">
                         <label>CID:</label>
-                        <input type="text" name="cid" value="{{$perfil->cid }}">
+                        <input type="text" name="cid" value="{{ $perfil->cid }}">
                     </div>
                     <div class="form-group">
                         <label>Médico:</label>
-                        <input type="text" name="nome_medico" value="{{$perfil->nome_medico }}">
+                        <input type="text" name="nome_medico" value="{{ $perfil->nome_medico }}">
                     </div>
                     <div class="form-group">
                         <label>Data do Laudo:</label>
-                        <input type="date" name="data_laudo" value="{{$perfil->data_laudo }}">
+                        <input type="date" name="data_laudo" value="{{ $perfil->data_laudo }}">
                     </div>
                 </div>
+
 
                 <div class="form-group">
                     <label>Nível suporte</label>
@@ -311,18 +320,23 @@
                     <textarea rows="3" name="crise_estresse">{{$perfil->crise_esta_05 }}</textarea>
                 </div>
 
-            @endforeach
+              
+            @endif
 
+            <!-- Botões -->
             <div class="button-group">
-                <button type="submit" class="btn btn-primary">Confirma alteração</button>
+                <button type="submit" class="btn btn-primary">Confirma Alteração</button>
                 <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
                 <button type="button" class="pdf-button">Gerar PDF</button>
             </div>
         </form>
+    @else
+        <!-- Caso nenhum aluno esteja selecionado -->
+        <p>Nenhum aluno foi selecionado. Por favor, selecione um aluno para visualizar os dados.</p>
     @endif
-
 </div>
 
+<!-- Scripts para geração de PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -334,17 +348,15 @@
         const element = document.body;
 
         // Usa html2canvas para converter a página em imagem
-        html2canvas(element, { scale: 1.0 }).then(canvas => { // Reduzindo a escala para diminuir o tamanho
-            const imgData = canvas.toDataURL("image/jpeg", 0.8); // Compressão JPEG (0.6 de qualidade)
+        html2canvas(element, { scale: 1.0 }).then(canvas => {
+            const imgData = canvas.toDataURL("image/jpeg", 0.8);
 
-            const pdf = new jsPDF("p", "mm", "a4"); // Cria um documento PDF
-
-            // Ajusta a imagem no PDF
-            const imgWidth = 210; // Largura A4 em mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém proporção
+            const pdf = new jsPDF("p", "mm", "a4");
+            const imgWidth = 210;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
             pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-            pdf.save("Perfil_Estudante.pdf"); // Baixa o PDF
+            pdf.save("Perfil_Estudante.pdf");
         });
     });
 </script>
