@@ -63,10 +63,7 @@
                 <a href="{{ route('perfil.estudante') }}" target="_blank">
                             <i class="fa-solid fa-graduation-cap"></i> Perfil do Estudante
                 </a>
-<--
-                <a href="{{ route('perfil.estudante') }}" target="_blank">
-                            <i class="fa-solid fa-graduation-cap"></i> Perfil do Estudante
-                </a>
+
 
   </a>
 </li>

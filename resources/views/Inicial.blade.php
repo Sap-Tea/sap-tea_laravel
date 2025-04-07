@@ -5,7 +5,7 @@
 
     <?php
    
-
+dd($aluno);
 if (isset($_GET['cod_aluno'])) {
     $cod_aluno = intval($_GET['cod_aluno']);
     
@@ -44,8 +44,8 @@ if (isset($_GET['cod_aluno'])) {
                         <td style="padding: 5px;"><?php echo htmlspecialchars($result["esc_razao_social"]); ?></td>
                     </tr>
                     <tr>
-                        <td style="padding: 5px; font-weight: bold;">Aluno:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["alu_nome"]); ?></td>
+                        <td style="padding: 5px; font-weight: bold;" name = "nome_aluno" value = "{{ $aluno(alu_nome) }}">Aluno:</td>
+                        <td style="padding: 5px;"><?php echo htmlspecialchars($aluno["alu_nome"]); ?></td>
                         <td style="padding: 5px; font-weight: bold;">Código da Turma:</td>
                         <td style="padding: 5px;"><?php echo htmlspecialchars($result["cod_valor"]); ?></td>
                     </tr>

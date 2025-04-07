@@ -1,80 +1,38 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-header /> <!-- Incluindo o cabeçalho require_once __DIR__ . '/../../models/conexao.php';-->
-
-    <?php
-   
-
-if (isset($_GET['cod_aluno'])) {
-    $cod_aluno = intval($_GET['cod_aluno']);
-    
-    try {
-        $sql = "SELECT mat.numero_matricula, esc.esc_razao_social, alu.alu_nome, tur.cod_valor, fun.func_nome, moda.desc_modalidade, moda.desc_serie_modalidade
-                FROM matricula AS mat
-                INNER JOIN aluno AS alu ON mat.fk_id_aluno = alu.alu_id
-                INNER JOIN turma AS tur ON mat.fk_cod_valor_turma = tur.cod_valor
-                INNER JOIN funcionario AS fun ON fun.func_id = tur.fk_cod_func
-                INNER JOIN escola AS esc ON esc.esc_inep = tur.fk_inep
-                INNER JOIN modalidade AS moda ON moda.id_modalidade = mat.fk_cod_mod
-                WHERE alu.alu_id = :cod_aluno";
-
-        $stmt = $conn->prepare($sql);
-        if ($stmt === false) {
-            throw new Exception("Erro na preparação da consulta: " . $conn->errorInfo()[2]);
-        }
-
-        $stmt->bindParam(':cod_aluno', $cod_aluno, PDO::PARAM_INT);
-
-        if (!$stmt->execute()) {
-            throw new Exception("Erro na execução da consulta: " . $stmt->errorInfo()[2]);
-        }
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($result) {
-            ?>
+        
             <div style="background-color: #f0f0f0; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px;">
                 <h2 style="margin-top: 0;">Informações do Aluno</h2>
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="padding: 5px; font-weight: bold;">Matrícula:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["numero_matricula"]); ?></td>
+                        <td style="padding: 5px;">{{$aluno->numero_matricula}}</td>
+
                         <td style="padding: 5px; font-weight: bold;">Escola:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["esc_razao_social"]); ?></td>
+                        <td style="padding: 5px;">{{$aluno->esc_razao_social}}</td>
                     </tr>
                     <tr>
                         <td style="padding: 5px; font-weight: bold;">Aluno:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["alu_nome"]); ?></td>
+                        <td style="padding: 5px;">{{ $aluno->alu_nome }}</td>
+                        
                         <td style="padding: 5px; font-weight: bold;">Código da Turma:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["cod_valor"]); ?></td>
+                        <td style="padding: 5px;"></td>
                     </tr>
                     <tr>
                         <td style="padding: 5px; font-weight: bold;">Professor:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["func_nome"]); ?></td>
+                        <td style="padding: 5px;">{{ $aluno->func_nome }}</td>
                         <td style="padding: 5px; font-weight: bold;">Modalidade:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["desc_modalidade"]); ?></td>
+                        <td style="padding: 5px;"></td>
                     </tr>
                     <tr>
                         <td style="padding: 5px; font-weight: bold;">Série/Modalidade:</td>
-                        <td style="padding: 5px;"><?php echo htmlspecialchars($result["desc_serie_modalidade"]); ?></td>
+                        <td style="padding: 5px;"></td>
                     </tr>
                 </table>
             </div>
-            <?php
-        } else {
-            echo "Nenhum resultado encontrado para o aluno com código " . htmlspecialchars($cod_aluno);
-        }
-
-        $stmt = null;
-    } catch (Exception $e) {
-        error_log("Erro na consulta de aluno: " . $e->getMessage());
-        echo "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente mais tarde.";
-    }
-} else {
-    echo "Código do aluno não fornecido.";
-}
-?>
+            
+        
 
 <!DOCTYPE html>
 <html lang="pt">

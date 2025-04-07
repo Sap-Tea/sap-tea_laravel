@@ -9,12 +9,15 @@ use Carbon\Carbon; // Para manipulação de datas
 class PerfilEstudanteController extends Controller
 {
     public function index()
-    {
-        // Exemplo: Retornar uma lista de estudantes
-        $alunos = Aluno::all(); // Busca todos os alunos no banco de dados
-    
-        return view('alunos.imprime_aluno', compact('alunos'));
-    }
+{
+    // Busca apenas alunos matriculados, ordenados por nome
+    $alunos = Aluno::whereHas('matriculas')
+                   ->orderBy('alu_nome', 'asc')
+                   ->get();
+
+    return view('alunos.imprime_aluno', compact('alunos'));
+}
+
     
  
         public function mostrar($id)
