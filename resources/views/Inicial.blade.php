@@ -85,9 +85,6 @@ if (isset($_GET['cod_aluno'])) {
     <link rel="stylesheet" href="{{ asset('css/inicial.css') }}">
 </head>
 <body>
-
-
-
     <form id="form1">
         <table>
             <thead>

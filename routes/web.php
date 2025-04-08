@@ -92,7 +92,9 @@ Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar
 // Grupo de rotas para sondagens
 Route::prefix('sondagem')->group(function () {
     Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
+    
     Route::post('/inserir_inventario', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');   
+    
     // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
     Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
     Route::get('/continuada1', [SondagemInicialController::class, 'continuada1'])->name('sondagem.continuada1');
