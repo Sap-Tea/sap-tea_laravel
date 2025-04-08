@@ -33,10 +33,11 @@
 
 <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Cadastro ⬇️ </a>
                 <ul class="submenu_escola">
-                <li><a href="{{ route('instituicao') }}">Instituição</a></li> 
-                <li><a href="{{ route('escola') }}">Escola</a></li>
-                <li><a href="{{ route('alunos') }}">Aluno</a></li>
-                <li><a href="{{ route('orgao') }}">Órgão</a></li>
+                <li><a href="{{ route('instituicao') }}" style="pointer-events: none; color: gray; cursor: default;">Instituição</a></li>
+
+                <li><a href="{{ route('escola') }}" style="pointer-events: none; color: gray; cursor: default;">Escola</a></li>
+                <li><a href="{{ route('alunos') }}"style="pointer-events: none; color: gray; cursor: default;">Aluno</a></li>
+                <li><a href="{{ route('orgao') }}"style="pointer-events: none; color: gray; cursor: default;">Órgão</a></li>
                 </ul>
             </li>
         </ul>
@@ -46,28 +47,28 @@
         <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇️ </a>
         <ul class="submenu">
             <li><a href="{{ route('eixos.alunos') }}" class="menu-link">.1 Inicial</a></li>
-            <li><a href="{{ route('sondagem.continuada1') }}" class="menu-link">.2 Continuada</a></li>
-            <li><a href="{{ route('sondagem.continuada2') }}" class="menu-link">.3 Continuada</a></li>
-            <li><a href="{{ route('sondagem.final') }}" class="menu-link">.4 Final</a></li>
+            <li><a href="{{ route('sondagem.continuada1') }}"style="pointer-events: none; color: gray; cursor: default;" class="menu-link">.2 Continuada</a></li>
+            <li><a href="{{ route('sondagem.continuada2') }}"style="pointer-events: none; color: gray; cursor: default;" class="menu-link">.3 Continuada</a></li>
+            <li><a href="{{ route('sondagem.final') }}" style="pointer-events: none; color: gray; cursor: default;"class="menu-link">.4 Final</a></li>
         </ul>
     </li>
 </ul>
             <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Rotina e Monitoramento ⬇️ </a>
                 <ul class="submenu_escola">
                 <li><a href="{{ route('modalidade.inicial') }}">.1 Inicial</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.2 Continuada</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.3 Continuada</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.4 Final</a></li>
+                    <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.2 Continuada</a></li>
+                    <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.3 Continuada</a></li>
+                    <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.4 Final</a></li>
                 </ul>
             </li>
         </ul>
         <ul>
             <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Indicativo de Atividades e Habilidades⬇️ </a>
                 <ul class="submenu_escola">
-                    <li><a href="#" data-target="modalidade-ensino">.1 Inicial</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.2 Continuada</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.3 Continuada</a></li>
-                    <li><a href="#" data-target="modalidade-ensino">.4 Final</a></li>
+                    <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.1 Inicial</a></li>
+                    <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.2 Continuada</a></li>
+                    <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.3 Continuada</a></li>
+                    <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.4 Final</a></li>
             
                 </ul>
                 <li>
