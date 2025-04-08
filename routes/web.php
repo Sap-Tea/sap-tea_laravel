@@ -76,6 +76,7 @@ Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'Atuali
 
 Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
 
+
 Route::get('/imprime-aluno', [ImprimeAlunoController::class, 'imprimeAluno'])->name('imprime_aluno');
 
 Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar'])->name('atualizar.perfil');

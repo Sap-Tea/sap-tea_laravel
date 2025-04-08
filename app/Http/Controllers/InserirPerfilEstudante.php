@@ -223,7 +223,7 @@ class InserirPerfilEstudante extends Controller
 
 
             // Retorne uma mensagem de sucesso
-            return redirect()->route('imprime_aluno')->with('message', 'Perfil criado com sucesso');
+            return redirect()->route('perfil.estudante')->with('message', 'Perfil criado com sucesso');
 
         } catch (\Exception $e) {
             // Retorne uma mensagem de erro
