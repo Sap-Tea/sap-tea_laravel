@@ -15,6 +15,11 @@ use App\Http\Controllers\InserirPerfilEstudante;
 use App\Http\Controllers\AtualizacaoController;
 use App\Http\Controllers\AtualizacaoPerfilController;
 use App\Http\Controllers\InserirEixoEstudanteController;
+use App\Http\Controllers\InstituicaoController;
+use App\Http\Controllers\EscolaController;
+use App\Http\Controllers\AlunosController;
+use App\Http\Controllers\OrgaoController;
+use App\Http\Controllers\downloadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,5 +109,24 @@ Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->na
 Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'mostra_aluno_eixo'])->name('eixos.alunos');
 
 
+// criando uma rota para acessar foccus-xampp
+Route::get('/foccus-xampp', function () {
+    return redirect()->away('http://localhost/proj_foccus/index.php');
+})->name('foccus.xampp');
 
+ 
+
+// Rota para o órgão
+Route::get('/orgao', [OrgaoController::class, 'index'])->name('orgao');
+// Rota para a Instituição
+Route::get('/instituicao', [InstituicaoController::class, 'index'])->name('instituicao');
+
+// Rota para a Escola
+Route::get('/escola', [EscolaController::class, 'index'])->name('escola');
+
+// Rota para o Aluno
+Route::get('/alunos', [AlunosController::class, 'index'])->name('alunos');
+
+// Rota para o download
+Route::get('/download', [downloadController::class, 'index'])->name('download');
  

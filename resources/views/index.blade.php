@@ -30,6 +30,17 @@
     <div class="menu-logo">
     <img src="{{ asset('img/logo_sap.png') }}" alt="Logo">
 </div>
+
+<li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Cadastro ⬇️ </a>
+                <ul class="submenu_escola">
+                <li><a href="{{ route('instituicao') }}">Instituição</a></li> 
+                <li><a href="{{ route('escola') }}">Escola</a></li>
+                <li><a href="{{ route('alunos') }}">Aluno</a></li>
+                <li><a href="{{ route('orgao') }}">Órgão</a></li>
+                </ul>
+            </li>
+        </ul>
+    <li>
 <ul>
     <li>
         <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇️ </a>
@@ -72,7 +83,7 @@
         <h3>Foccus - Cadastros</h3>
    
         <ul>
-            <li><a href="#" data-target="formulario-cad-instituicao"><i class="fa-solid fa-building-columns"></i> Gerênciamento</a></li>
+            <li><a href="{{route('foccus.xampp')}}" ><i class="fa-solid fa-building-columns"></i> Gerênciamento</a></li>
            
 
 </ul>
@@ -82,19 +93,15 @@
 
 
         <ul>
-            <li><a href="#" data-target="formulario-cad-instituicao"><i class="fa-solid fa-building-columns"></i> Atividades para impressão</a></li>
+        <li><a href="{{ route('download') }}">Baixar Material</a></li>
+        
     </div>
     
     <div id="formulario-container"></div> 
 
 
     </ul>
-        <h3>Download de Materiais</h3>
-   
-        <ul>
-
-
-        <ul>
+         
     
 
     <script src="public/js/script.js"></script>
