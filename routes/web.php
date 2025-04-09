@@ -50,7 +50,7 @@ Route::get('/index', function () {
     return view('index');
 })->name('index');
 
- 
+
 
 // Sondagem inicial
 Route::get('/sondagem-inicial', [SondagemController::class, 'index'])->name('sondagem.inicial');
@@ -74,7 +74,7 @@ Route::group(['prefix' => 'professor'], function () {
 Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.index');
 
 Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])
-->name('perfil.estudante.mostrar');
+    ->name('perfil.estudante.mostrar');
 
 Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualizaPerfil'])->name('visualizar.perfil');
 Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
@@ -92,9 +92,9 @@ Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar
 // Grupo de rotas para sondagens
 Route::prefix('sondagem')->group(function () {
     Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
-    
-    Route::post('/inserir_inventario', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');   
-    
+
+    Route::post('/inserir_inventario', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
+
     // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
     Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
     Route::get('/continuada1', [SondagemInicialController::class, 'continuada1'])->name('sondagem.continuada1');
@@ -103,8 +103,8 @@ Route::prefix('sondagem')->group(function () {
 });
 //minha alteracao
 Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
- 
- 
+
+
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
 
 Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
@@ -116,7 +116,7 @@ Route::get('/foccus-xampp', function () {
     return redirect()->away('http://localhost/proj_foccus/index.php');
 })->name('foccus.xampp');
 
- 
+
 
 // Rota para o órgão
 Route::get('/orgao', [OrgaoController::class, 'index'])->name('orgao');
@@ -131,4 +131,3 @@ Route::get('/alunos', [AlunosController::class, 'index'])->name('alunos');
 
 // Rota para o download
 Route::get('/download', [downloadController::class, 'index'])->name('download');
- 

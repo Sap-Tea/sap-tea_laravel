@@ -215,7 +215,7 @@ class InserirPerfilEstudante extends Controller
                      'estrategia_05' => $request->input('estrategias_familia'),
                      'crise_esta_05'=>$request->input('crise_estresse') ,
                      
-                      'fk_id_aluno'=>$alunoId 
+                    'fk_alu_id_ecomling'=>$alunoId 
 
                 ]);
                 DB::statement('UPDATE aluno SET flag_perfil = ? WHERE alu_id = ?', ['*', $alunoId]);
