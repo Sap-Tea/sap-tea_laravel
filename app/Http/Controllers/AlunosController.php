@@ -8,6 +8,6 @@ class AlunosController extends Controller
 {
     public function index()
     {
-        return view('alunoss.index'); // Retorna a view do Alunos
+        return view('alunos.index'); // Retorna a view do Alunos
     }
 }

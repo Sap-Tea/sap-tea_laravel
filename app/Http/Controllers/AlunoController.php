@@ -32,7 +32,7 @@ public function mostra_aluno_inventario($id)
     } else {
         abort(404);
     }
-    return view('sondagem.inicial', compact('aluno'));
+    return view('sondagem.inventarios', compact('aluno'));
 }
 
 
