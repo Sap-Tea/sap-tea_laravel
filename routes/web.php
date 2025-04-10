@@ -80,10 +80,13 @@ Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualiza
 Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
 
 Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
+Route::post('/sondagem/inserir_inventario', [InserirEixoEstudanteController::class, 
+'inserir_eixo_estudante'])->name('inserir_inventario');
+
+
 
 
 Route::get('/imprime-aluno', [ImprimeAlunoController::class, 'imprimeAluno'])->name('imprime_aluno');
-
 Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar'])->name('atualizar.perfil');
 
 
@@ -92,8 +95,7 @@ Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar
 // Grupo de rotas para sondagens
 Route::prefix('sondagem')->group(function () {
     Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
-
-    Route::post('/inserir_inventario', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
+ 
 
     // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
     Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
@@ -108,7 +110,7 @@ Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('son
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
 
 Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
-Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'mostra_aluno_eixo'])->name('eixos.alunos');
+Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'index_inventario'])->name('eixos.alunos');
 
 
 // criando uma rota para acessar foccus-xampp

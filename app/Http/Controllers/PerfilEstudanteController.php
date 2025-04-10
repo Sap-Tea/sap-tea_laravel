@@ -18,7 +18,16 @@ class PerfilEstudanteController extends Controller
     return view('alunos.imprime_aluno', compact('alunos'));
 }
 
-    
+    public function index_inventario()
+    {
+        // Busca apenas alunos matriculados, ordenados por nome
+        $alunos = Aluno::whereHas('matriculas')
+                    ->orderBy('alu_nome', 'asc')
+                    ->get();
+
+        return view('alunos.imprime_aluno_eixo', compact('alunos'));
+    } 
+
  
         public function mostrar($id)
         {
@@ -32,9 +41,10 @@ class PerfilEstudanteController extends Controller
             return view('alunos.perfil_estudante', compact('aluno', 'idade'));
         }
 
-        public function mostra_aluno_eixo()
+        public function mostra_aluno_eixo($id)
         {
-            $alunos = Aluno::all(); // Busca todos os alunos no banco de dados
+            $aluno = Aluno::findOrFail($id);
+            //$alunos = Aluno::all(); // Busca todos os alunos no banco de dados
     
             return view('alunos.imprime_aluno_eixo', compact('alunos'));
         }

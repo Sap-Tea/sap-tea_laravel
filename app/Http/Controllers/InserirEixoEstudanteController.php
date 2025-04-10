@@ -2,6 +2,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\EixoComunicacaoLinguagem;
+use App\Models\EixoInteracaoSocEmocional;
+use App\Models\EixoComportamento;
+use Illuminate\Support\Facades\DB;
 
 class InserirEixoEstudanteController extends Controller
 {
@@ -76,7 +79,7 @@ class InserirEixoEstudanteController extends Controller
             'ecm30' => $request->input('ecm30'),
             'ecm31' => $request->input('ecm31'),
             'ecm32' => $request->input('ecm32'),
-            'fk_id_aluno'=>$alunoId 
+            'fk_alu_id_ecomling'=>$alunoId 
         ]);
 
         // Retorna uma resposta (redireciona ou exibe uma mensagem)

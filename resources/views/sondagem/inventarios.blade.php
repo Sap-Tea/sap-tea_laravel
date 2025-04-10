@@ -15,7 +15,10 @@
 </head>
 
 <body>
-<form method="POST" action="{{ route('inserir_inventario') }}">
+
+        <form method="POST" action="{{ route('inserir_inventario', ['id' => $aluno->alu_id]) }}">
+
+@csrf
     <div class="menu">
         <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo" class="logo">
         <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" class="logo-right">
