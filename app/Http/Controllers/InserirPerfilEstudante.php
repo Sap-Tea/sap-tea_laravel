@@ -220,8 +220,6 @@ class InserirPerfilEstudante extends Controller
                 ]);
                 DB::statement('UPDATE aluno SET flag_perfil = ? WHERE alu_id = ?', ['*', $alunoId]);
 
-
-
             // Retorne uma mensagem de sucesso
             return redirect()->route('perfil.estudante')->with('message', 'Perfil criado com sucesso');
 
