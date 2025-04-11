@@ -6,6 +6,7 @@ use App\Models\EixoComportamento;
 use App\Models\EixoComunicacaoLinguagem;
 use App\Models\EixoInteracaoSocEmocional;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InserirEixoEstudanteController extends Controller
 {
@@ -175,7 +176,7 @@ class InserirEixoEstudanteController extends Controller
                 'fk_alu_id_eintsoc' => $alunoId // Use a variável correta aqui
 
             ]);
-
+            DB::statement('UPDATE aluno SET flag_inventario = ? WHERE alu_id = ?', ['*', $alunoId]);
 
 
 
