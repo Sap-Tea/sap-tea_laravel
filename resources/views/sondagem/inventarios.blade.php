@@ -50,16 +50,16 @@
         </div>
         <div class="support">
             <p><strong>Responsável pelo preenchimento:</strong></p>
-            <p><input type="radio" name="responsavel" class="radio-toggle"> Professor de sala Regular</p>
-            <p><input type="radio" name="responsavel" class="radio-toggle"> Professor do Atendimento Educacional Especializado (AEE)</p>
+            <p><input type="radio" name="responsavel" class="radio-toggle" value = "1"> Professor de sala Regular</p>
+            <p><input type="radio" name="responsavel" class="radio-toggle" value = "0"> Professor do Atendimento Educacional Especializado (AEE)</p>
             <p><strong>Assinale o nível de suporte necessário para o estudante:</strong></p>
-            <p><input type="radio" name="suporte" class="radio-toggle"> Nível 1 de Suporte - Exige pouco apoio</p>
-            <p><input type="radio" name="suporte" class="radio-toggle"> Nível 2 de Suporte - Exige apoio substancial</p>
-            <p><input type="radio" name="suporte" class="radio-toggle"> Nível 3 de Suporte - Exige apoio muito substancial</p>
+            <p><input type="radio" name="suporte" class="radio-toggle" value = "1"> Nível 1 de Suporte - Exige pouco apoio</p>
+            <p><input type="radio" name="suporte" class="radio-toggle" value = "2"> Nível 2 de Suporte - Exige apoio substancial</p>
+            <p><input type="radio" name="suporte" class="radio-toggle" value = "3"> Nível 3 de Suporte - Exige apoio muito substancial</p>
             <p><strong>Assinale a forma de comunicação utilizada pelo estudante:</strong></p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle"> Comunicação verbal</p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle"> Comunicação não verbal com uso de métodos alternativos de comunicação</p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle"> Comunicação não Verbal</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "1"> Comunicação verbal</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "2"> Comunicação não verbal com uso de métodos alternativos de comunicação</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "3"> Comunicação não Verbal</p>
         </div>
     </div>
 

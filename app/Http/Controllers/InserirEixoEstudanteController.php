@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EixoComportamento;
 use App\Models\EixoComunicacaoLinguagem;
 use App\Models\EixoInteracaoSocEmocional;
+use App\Models\PreenchimentoInventario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -13,9 +14,11 @@ class InserirEixoEstudanteController extends Controller
 {
     public function inserir_eixo_estudante(Request $request)
     {
+//        dd($request->all());
         // Obtenção do ID do aluno
         $alunoId = $request->input('aluno_id');
         $data_inventario = $request->input('data_inicio_inventario');
+        $fase_inventario = "In";
 
         // Verificar se a data é válida e formatá-la
         $dataInventario_formatada = null; // Inicializa a variável
@@ -110,6 +113,11 @@ class InserirEixoEstudanteController extends Controller
                 'eis16' => 'required|in:1,0',
                 'eis17' => 'required|in:1,0',
                 'eis18' => 'required|in:1,0',
+
+                'responsavel'=> 'required|in:1,0',
+                'suporte'=> 'required|in:1,2,3',
+                'comunicacao'=> 'required|in:1,2,3'
+                
                 
 
         ]);
@@ -198,6 +206,18 @@ class InserirEixoEstudanteController extends Controller
                 'data_insert_int_socio'=> $dataInventario_formatada
 
             ]);
+                   $preenchimento_inventario = PreenchimentoInventario::create([
+                    'professor_responsavel'=>$request->input('responsavel'),
+                    'nivel_suporte'=>$request->input('suporte'),
+                    'nivel_comunicacao'=>$request->input('comunicacao'),
+                    'fase_inv_preenchimento'=>$fase_inventario,
+                    'fk_id_aluno' => $alunoId,
+                    'data_cad_inventario'=> $dataInventario_formatada
+                    
+                ]);
+
+
+
             DB::statement('UPDATE aluno SET flag_inventario = ? WHERE alu_id = ?', ['*', $alunoId]);
             // Retorno de sucesso
             return redirect()->back()->with('success', 'Dados salvos com sucesso!');
