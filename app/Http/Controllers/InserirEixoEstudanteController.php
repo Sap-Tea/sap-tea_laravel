@@ -109,7 +109,7 @@ class InserirEixoEstudanteController extends Controller
                 'eis15' => 'required|in:1,0',
                 'eis16' => 'required|in:1,0',
                 'eis17' => 'required|in:1,0',
-                'eis18' => 'required|in:1,0'
+                'eis18' => 'required|in:1,0',
                 
 
         ]);
@@ -192,8 +192,8 @@ class InserirEixoEstudanteController extends Controller
                 'eis14' => $request->input('eis14'),
                 'eis15' => $request->input('eis15'),
                 'eis16' => $request->input('eis16'),    
-                'eis15' => $request->input('eis17'),
-                'eis16' => $request->input('eis18'),    
+                'eis17' => $request->input('eis17'),
+                'eis018' => $request->input('eis18'),    
                 'fk_alu_id_eintsoc' => $alunoId ,
                 'data_insert_int_socio'=> $dataInventario_formatada
 
