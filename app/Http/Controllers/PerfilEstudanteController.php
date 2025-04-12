@@ -44,9 +44,10 @@ class PerfilEstudanteController extends Controller
         public function mostra_aluno_eixo($id)
         {
             $aluno = Aluno::findOrFail($id);
+            $_eixo = Carbon::parse($aluno->alu_dtnasc)->age;
             //$alunos = Aluno::all(); // Busca todos os alunos no banco de dados
     
-            return view('alunos.imprime_aluno_eixo', compact('alunos'));
+            return view('alunos.imprime_aluno_eixo', compact('alunos','idade_eixo'));
         }
         
 }

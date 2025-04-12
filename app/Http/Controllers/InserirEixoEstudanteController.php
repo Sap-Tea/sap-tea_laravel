@@ -7,6 +7,7 @@ use App\Models\EixoComunicacaoLinguagem;
 use App\Models\EixoInteracaoSocEmocional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class InserirEixoEstudanteController extends Controller
 {
@@ -14,7 +15,25 @@ class InserirEixoEstudanteController extends Controller
     {
         // Obtenção do ID do aluno
         $alunoId = $request->input('aluno_id');
+        $data_inventario = $request->input('data_inicio_inventario');
 
+        // Verificar se a data é válida e formatá-la
+        $dataInventario_formatada = null; // Inicializa a variável
+
+        if ($data_inventario) {
+            try {
+                $dataInventario_formatada = Carbon::createFromFormat('Y-m-d', $data_inventario)->format('Y-m-d');
+            } catch (\Exception $e) {
+                // Se a data for inválida, defina um valor padrão ou retorne um erro
+                $dataInventario_formatada = date('Y-m-d'); // Define a data atual como padrão
+                // Ou então:
+                // return redirect()->back()->with('error', 'Data de inventário inválida.');
+            }
+        } else {
+            $dataInventario_formatada = date('Y-m-d'); // Define a data atual como padrão se $data_inventario for nulo
+        }
+
+        
         // Validação dos dados enviados pelo formulário
         $request->validate([
             // Validação para Eixo Comunicação e Linguagem
@@ -130,7 +149,8 @@ class InserirEixoEstudanteController extends Controller
                 'ecm30' => $request->input('ecm30'),
                 'ecm31' => $request->input('ecm31'),
                 'ecm32' => $request->input('ecm32'),
-                'fk_alu_id_ecomling' => $alunoId
+                'fk_alu_id_ecomling' => $alunoId,
+                'data_insert_com_lin'=> $dataInventario_formatada
             ]);
 
             // Inserção no EixoComportamento
@@ -152,7 +172,8 @@ class InserirEixoEstudanteController extends Controller
                 'ecp15' => $request->input('ecp15'),
                 'ecp16' => $request->input('ecp16'),
                 'ecp17' => $request->input('ecp17'),
-                'fk_alu_id_ecomp' => $alunoId
+                'fk_alu_id_ecomp' => $alunoId,
+                'data_insert_comportamento'=> $dataInventario_formatada
             ]);
             $eixo_socio_emocional = EixoInteracaoSocEmocional::create([
                 'eis01' => $request->input('eis1'),
@@ -173,17 +194,11 @@ class InserirEixoEstudanteController extends Controller
                 'eis16' => $request->input('eis16'),    
                 'eis15' => $request->input('eis17'),
                 'eis16' => $request->input('eis18'),    
-                'fk_alu_id_eintsoc' => $alunoId // Use a variável correta aqui
+                'fk_alu_id_eintsoc' => $alunoId ,
+                'data_insert_int_socio'=> $dataInventario_formatada
 
             ]);
             DB::statement('UPDATE aluno SET flag_inventario = ? WHERE alu_id = ?', ['*', $alunoId]);
-
-
-
-
-
-
-
             // Retorno de sucesso
             return redirect()->back()->with('success', 'Dados salvos com sucesso!');
         } catch (\Exception $e) {
