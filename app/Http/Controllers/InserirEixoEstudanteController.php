@@ -158,7 +158,8 @@ class InserirEixoEstudanteController extends Controller
                 'ecm31' => $request->input('ecm31'),
                 'ecm32' => $request->input('ecm32'),
                 'fk_alu_id_ecomling' => $alunoId,
-                'data_insert_com_lin'=> $dataInventario_formatada
+                'data_insert_com_lin'=> $dataInventario_formatada,
+                'fase_inv_com_lin'=> $fase_inventario
             ]);
 
             // Inserção no EixoComportamento
@@ -181,7 +182,9 @@ class InserirEixoEstudanteController extends Controller
                 'ecp16' => $request->input('ecp16'),
                 'ecp17' => $request->input('ecp17'),
                 'fk_alu_id_ecomp' => $alunoId,
-                'data_insert_comportamento'=> $dataInventario_formatada
+                'data_insert_comportamento'=> $dataInventario_formatada,
+                'fase_inv_comportamento'=> $fase_inventario
+
             ]);
             $eixo_socio_emocional = EixoInteracaoSocEmocional::create([
                 'eis01' => $request->input('eis1'),
@@ -203,7 +206,9 @@ class InserirEixoEstudanteController extends Controller
                 'eis17' => $request->input('eis17'),
                 'eis018' => $request->input('eis18'),    
                 'fk_alu_id_eintsoc' => $alunoId ,
-                'data_insert_int_socio'=> $dataInventario_formatada
+                'data_insert_int_socio'=> $dataInventario_formatada,
+                'fase_inv_int_socio'=> $fase_inventario
+
 
             ]);
                    $preenchimento_inventario = PreenchimentoInventario::create([
@@ -225,10 +230,5 @@ class InserirEixoEstudanteController extends Controller
             // Tratamento de erro
             return redirect()->back()->with('error', 'Erro ao salvar dados: '.$e->getMessage());
         }
-
-
-
-
-        
     }
 }
