@@ -92,5 +92,10 @@ class InserirEixoEstudanteController extends Controller
             // Trate o erro caso ocorra algum problema durante a inserção
             return redirect()->back()->with('error', 'Erro ao salvar dados: ' . $e->getMessage());
         }
+
+
+
+
+        
     }
 }
