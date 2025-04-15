@@ -1,17 +1,45 @@
 <?php
+
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
+
+use App\Models\EixoComportamento;
 use App\Models\EixoComunicacaoLinguagem;
 use App\Models\EixoInteracaoSocEmocional;
-use App\Models\EixoComportamento;
+use App\Models\PreenchimentoInventario;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class InserirEixoEstudanteController extends Controller
 {
     public function inserir_eixo_estudante(Request $request)
     {
+//        dd($request->all());
+        // Obtenção do ID do aluno
+        $alunoId = $request->input('aluno_id');
+        $data_inventario = $request->input('data_inicio_inventario');
+        $fase_inventario = "In";
+
+        // Verificar se a data é válida e formatá-la
+        $dataInventario_formatada = null; // Inicializa a variável
+
+        if ($data_inventario) {
+            try {
+                $dataInventario_formatada = Carbon::createFromFormat('Y-m-d', $data_inventario)->format('Y-m-d');
+            } catch (\Exception $e) {
+                // Se a data for inválida, defina um valor padrão ou retorne um erro
+                $dataInventario_formatada = date('Y-m-d'); // Define a data atual como padrão
+                // Ou então:
+                // return redirect()->back()->with('error', 'Data de inventário inválida.');
+            }
+        } else {
+            $dataInventario_formatada = date('Y-m-d'); // Define a data atual como padrão se $data_inventario for nulo
+        }
+
+        
         // Validação dos dados enviados pelo formulário
         $request->validate([
+            // Validação para Eixo Comunicação e Linguagem
             'ecm01' => 'required|in:1,0',
             'ecm02' => 'required|in:1,0',
             'ecm03' => 'required|in:1,0',
@@ -43,14 +71,60 @@ class InserirEixoEstudanteController extends Controller
             'ecm29' => 'required|in:1,0',
             'ecm30' => 'required|in:1,0',
             'ecm31' => 'required|in:1,0',
-            'ecm32' => 'required|in:1,0'
-           
+            'ecm32' => 'required|in:1,0',
+
+            // Validação para Eixo Comportamento
+            'ecp1' => 'required|in:1,0',
+            'ecp2' => 'required|in:1,0',
+            'ecp3' => 'required|in:1,0',
+            'ecp4' => 'required|in:1,0',
+            'ecp5' => 'required|in:1,0',
+            'ecp6' => 'required|in:1,0',
+            'ecp7' => 'required|in:1,0',
+            'ecp8' => 'required|in:1,0',
+            'ecp9' => 'required|in:1,0',
+            'ecp10' => 'required|in:1,0',
+            'ecp11' => 'required|in:1,0',
+            'ecp12' => 'required|in:1,0',
+            'ecp13' => 'required|in:1,0',
+            'ecp14' => 'required|in:1,0',
+            'ecp15' => 'required|in:1,0',
+            'ecp16' => 'required|in:1,0',
+            'ecp17' => 'required|in:1,0',
+
+
+                
+                //validando os campos de eixo interacao socio emocional
+                'eis1' => 'required|in:1,0',
+                'eis2' => 'required|in:1,0',
+                'eis3' => 'required|in:1,0',
+                'eis4' => 'required|in:1,0',
+                'eis5' => 'required|in:1,0',
+                'eis6' => 'required|in:1,0',
+                'eis7' => 'required|in:1,0',
+                'eis8' => 'required|in:1,0',
+                'eis9' => 'required|in:1,0',
+                'eis10' => 'required|in:1,0',
+                'eis11' => 'required|in:1,0',
+                'eis12' => 'required|in:1,0',
+                'eis13' => 'required|in:1,0',
+                'eis14' => 'required|in:1,0',
+                'eis15' => 'required|in:1,0',
+                'eis16' => 'required|in:1,0',
+                'eis17' => 'required|in:1,0',
+                'eis18' => 'required|in:1,0',
+
+                'responsavel'=> 'required|in:1,0',
+                'suporte'=> 'required|in:1,2,3',
+                'comunicacao'=> 'required|in:1,2,3'
+                
+                
+
         ]);
 
-        $alunoId = $request->input('aluno_id');
-      //  dd($alunoId);
         try {
-            $eixo_com_lin = EixoComunicacaoLinguagem::create([
+            // Inserção no EixoComunicaçãoLinguagem
+            $eixoComunicacao = EixoComunicacaoLinguagem::create([
                 'ecm01' => $request->input('ecm01'),
                 'ecm02' => $request->input('ecm02'),
                 'ecm03' => $request->input('ecm03'),
@@ -83,14 +157,73 @@ class InserirEixoEstudanteController extends Controller
                 'ecm30' => $request->input('ecm30'),
                 'ecm31' => $request->input('ecm31'),
                 'ecm32' => $request->input('ecm32'),
-                'fk_alu_id_ecomling' => $alunoId // Use a variável correta aqui
+                'fk_alu_id_ecomling' => $alunoId,
+                'data_insert_com_lin'=> $dataInventario_formatada
             ]);
 
-            // Retorna uma resposta (redireciona ou exibe uma mensagem)
+            // Inserção no EixoComportamento
+            $eixoComportamento = EixoComportamento::create([
+                'ecp01' => $request->input('ecp1'),
+                'ecp02' => $request->input('ecp2'),
+                'ecp03' => $request->input('ecp3'),
+                'ecp04' => $request->input('ecp4'),
+                'ecp05' => $request->input('ecp5'),
+                'ecp06' => $request->input('ecp6'),
+                'ecp07' => $request->input('ecp7'),
+                'ecp08' => $request->input('ecp8'),
+                'ecp09' => $request->input('ecp9'),
+                'ecp10' => $request->input('ecp10'),
+                'ecp11' => $request->input('ecp11'),
+                'ecp12' => $request->input('ecp12'),
+                'ecp13' => $request->input('ecp13'),
+                'ecp14' => $request->input('ecp14'),
+                'ecp15' => $request->input('ecp15'),
+                'ecp16' => $request->input('ecp16'),
+                'ecp17' => $request->input('ecp17'),
+                'fk_alu_id_ecomp' => $alunoId,
+                'data_insert_comportamento'=> $dataInventario_formatada
+            ]);
+            $eixo_socio_emocional = EixoInteracaoSocEmocional::create([
+                'eis01' => $request->input('eis1'),
+                'eis02' => $request->input('eis2'),
+                'eis03' => $request->input('eis3'),
+                'eis04' => $request->input('eis4'),
+                'eis05' => $request->input('eis5'),
+                'eis06' => $request->input('eis6'),
+                'eis07' => $request->input('eis7'),
+                'eis08' => $request->input('eis8'),
+                'eis09' => $request->input('eis9'),
+                'eis10' => $request->input('eis10'),
+                'eis11' => $request->input('eis11'),
+                'eis12' => $request->input('eis12'),
+                'eis13' => $request->input('eis13'),
+                'eis14' => $request->input('eis14'),
+                'eis15' => $request->input('eis15'),
+                'eis16' => $request->input('eis16'),    
+                'eis17' => $request->input('eis17'),
+                'eis018' => $request->input('eis18'),    
+                'fk_alu_id_eintsoc' => $alunoId ,
+                'data_insert_int_socio'=> $dataInventario_formatada
+
+            ]);
+                   $preenchimento_inventario = PreenchimentoInventario::create([
+                    'professor_responsavel'=>$request->input('responsavel'),
+                    'nivel_suporte'=>$request->input('suporte'),
+                    'nivel_comunicacao'=>$request->input('comunicacao'),
+                    'fase_inv_preenchimento'=>$fase_inventario,
+                    'fk_id_aluno' => $alunoId,
+                    'data_cad_inventario'=> $dataInventario_formatada
+                    
+                ]);
+
+
+
+            DB::statement('UPDATE aluno SET flag_inventario = ? WHERE alu_id = ?', ['*', $alunoId]);
+            // Retorno de sucesso
             return redirect()->back()->with('success', 'Dados salvos com sucesso!');
         } catch (\Exception $e) {
-            // Trate o erro caso ocorra algum problema durante a inserção
-            return redirect()->back()->with('error', 'Erro ao salvar dados: ' . $e->getMessage());
+            // Tratamento de erro
+            return redirect()->back()->with('error', 'Erro ao salvar dados: '.$e->getMessage());
         }
 
 

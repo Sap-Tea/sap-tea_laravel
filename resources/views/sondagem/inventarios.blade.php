@@ -26,26 +26,40 @@
         <h1>SONDAGEM PEDAGÓGICA 1 - INICIAL</h1>
         <p>Secretaria de Educação do Município</p>
         <div class="fields">
-            <p>Data de inicio inventario: <input type="date"></p>
-            <p>Orgão: <input type="text" style="width: 300px;"></p>
+            <div class="fields">
+                <p>Data de inicio inventario:
+                    <?php
+                    $data_atual = date("d-m-Y");
+                    echo '<input name = "data_inicio_inventario" type="text" value="' . $data_atual . '" readonly
+                    style = "width: 80px"> ';
+                    ?>
+                </p>
 
-            <p>Escola: <input type="text" style="width: 300px;"></p>
-            <p>Nome do Aluno: <input type="text" style="width: 250px;"value = "{{$aluno->alu_nome}}"></p>
-            <p>Data de Nascimento: <input type="date"> Idade: <input type="number" min="0" style="width: 50px;"></p>
-            <p>Ano/Série: <input type="text" style="width: 50px;"> Turma: <input type="text" style="width: 50px;"> Período: <input type="text"style="width: 200px;" style="width: 250px;"></p>
+            
+            <p>Orgão: <input type="text" style="width: 300px;" value = "{{$aluno->org_razaosocial}}" readonly></p>
+
+            <p>Escola: <input type="text" style="width: 300px;" value = "{{$aluno->esc_razao_social}}" readonly ></p>
+            <p>Nome do Aluno: <input type="text" style="width: 250px;"value = "{{$aluno->alu_nome}}" readonly></p>
+            
+            <p>Data de Nascimento: <input type="date" value ="{{$aluno->alu_dtnasc}}" readonly>
+                 Idade: <input value = "{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly type="text" min="0" style="width: 50px;"></p>
+            <p>Ano/Série: <input type="text" style="width: 150px;" value = "{{$aluno->serie_desc}}" readonly> 
+                Turma:
+                <input value = "{{$aluno->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly> 
+                Período: <input type="text"style="width: 200px;" style="width: 250px;" value = "{{$aluno->desc_modalidade}}" readonly></p>
         </div>
         <div class="support">
             <p><strong>Responsável pelo preenchimento:</strong></p>
-            <p><input type="radio" name="responsavel" class="radio-toggle"> Professor de sala Regular</p>
-            <p><input type="radio" name="responsavel" class="radio-toggle"> Professor do Atendimento Educacional Especializado (AEE)</p>
+            <p><input type="radio" name="responsavel" class="radio-toggle" value = "1"> Professor de sala Regular</p>
+            <p><input type="radio" name="responsavel" class="radio-toggle" value = "0"> Professor do Atendimento Educacional Especializado (AEE)</p>
             <p><strong>Assinale o nível de suporte necessário para o estudante:</strong></p>
-            <p><input type="radio" name="suporte" class="radio-toggle"> Nível 1 de Suporte - Exige pouco apoio</p>
-            <p><input type="radio" name="suporte" class="radio-toggle"> Nível 2 de Suporte - Exige apoio substancial</p>
-            <p><input type="radio" name="suporte" class="radio-toggle"> Nível 3 de Suporte - Exige apoio muito substancial</p>
+            <p><input type="radio" name="suporte" class="radio-toggle" value = "1"> Nível 1 de Suporte - Exige pouco apoio</p>
+            <p><input type="radio" name="suporte" class="radio-toggle" value = "2"> Nível 2 de Suporte - Exige apoio substancial</p>
+            <p><input type="radio" name="suporte" class="radio-toggle" value = "3"> Nível 3 de Suporte - Exige apoio muito substancial</p>
             <p><strong>Assinale a forma de comunicação utilizada pelo estudante:</strong></p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle"> Comunicação verbal</p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle"> Comunicação não verbal com uso de métodos alternativos de comunicação</p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle"> Comunicação não Verbal</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "1"> Comunicação verbal</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "2"> Comunicação não verbal com uso de métodos alternativos de comunicação</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "3"> Comunicação não Verbal</p>
         </div>
     </div>
 
