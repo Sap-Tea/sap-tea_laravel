@@ -74,7 +74,7 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                                     style="background-color: #e67e22; border-color: #d35400;"
                                     disabled>Visualiza inventário</button>
                         @else
-                            <a href="{{ route('visualizar.perfil', ['id' => $aluno->alu_id]) }}" 
+                            <a href="{{ route('visualizar.inventario', ['id' => $aluno->alu_id]) }}" 
                                class="btn btn-primary btn-sm">Visualizar Inventário</a>
                         @endif
                     </td>

@@ -45,4 +45,25 @@ class Aluno extends Model
 
         return DB::select($query, [$id]);
     }
+    // Model Aluno.php
+public function eixoComunicacao()
+{
+    return $this->hasOne(EixoComunicacaoLinguagem::class, 'fk_alu_id_ecomling');
+}
+
+public function eixoComportamento()
+{
+    return $this->hasOne(EixoComportamento::class, 'fk_alu_id_ecomp');
+}
+
+public function eixoSocioEmocional()
+{
+    return $this->hasOne(EixoInteracaoSocEmocional::class, 'fk_alu_id_eintsoc');
+}
+
+public function preenchimento()
+{
+    return $this->hasOne(PreenchimentoInventario::class, 'fk_id_aluno');
+}
+
 }
