@@ -26,13 +26,100 @@ class AlunoController extends Controller
 public function mostra_aluno_inventario($id)
 {
     $alunosDetalhados = Aluno::getAlunosDetalhados($id);
+    $Perguntas_eixo_comunicacao = [
+        'Amplia gradativamente seu vocabulário?xxxxx',     
+        'Amplia gradativamente sua comunicação social?',
+        'Apresenta entonação vocal, com boa articulação e ritmo adequado?',
+        'Ativa conhecimentos prévios em situações de novas aprendizagens?',
+        'Categoriza diferentes elementos de acordo com critérios preestabelecidos?',
+        'Compreende e utiliza comunicação alternativa para se comunicar?',
+        'Compreende que pode receber ajuda de pessoas conhecidas que estão ao seu redor?',
+        'Comunica fatos, acontecimentos e ações de seu cotidiano de modo compreensível, ainda que não
+        seja por meio da linguagem verbal?',
+        'Comunica suas necessidades básicas (banheiro, água, comida, entre outros)?',
+        'Entende expressões faciais em uma conversa?',
+'',     'Executa mais de um comando sequencialmente?',
+        'Expressa-se com clareza e objetividade?',
+        'Faz uso de expressões faciais para se comunicar?',
+        'Faz uso de gestos para se comunicar?',
+        'Identifica diferentes elementos, ampliando seu repertório?',
+        'Identifica semelhanças e diferenças entre elementos?',
+        'Inicia uma situação comunicativa?',
+        'Mantem uma situação comunicativa?',
+        'Nomeia as pessoas que fazem parte de sua rede de apoio?',
+  
+        'Nomeia diferentes elementos, ampliando seu vocabulário?',
+        'Possui autonomia para se comunicar, mesmo em situações que geram conflito?',
+        'Realiza pareamento de elementos idênticos?',
+        'Reconhece e pareia elementos diferentes?',
+        'Reconhece visualmente estímulos apresentados?',
+        'Refere-se a si mesmo em primeira pessoa',
+        'Respeita turnos de fala?',
+        'Respeita turnos de fala?',
+        'Solicita ajuda de pessoas que estão ao seu redor, quando necessário?',
+        'tiliza linguagem não verbal para se comunicar?',
+        'Utiliza linguagem verbal para se comunicar?',
+        'Utiliza respostas simples para se comunicar?',
+        'Utiliza vocabulário adequado, de acordo com seu nível de desenvolvimento?'
+
+        ];
+
+
+
+
+        $perguntas_eixo_comportamento = [
+            'Adapta-se com flexibilidade a mudanças, em sua rotina (familiar, escolar e social)?',
+            'Apresenta autonomia na realização das atividades propostas?',
+            'Autorregula-se evitando comportamentos disruptivos em situações de desconforto?',
+            'Compreende acontecimentos de sua rotina por meio de ilustrações?',
+            'Compreende regras de convivência?',
+            'Entende ações de autocuidado?',
+            'Faz uso de movimentos corporais, como: apontar, movimentar a cabeça em sinal
+                            afirmativo/negativo, entre outros?',
+            'Imita gestos, movimentos e segue comandos?',
+            'Inicia e finaliza as atividades propostas diariamente?',
+            'Interage nos momentos de jogos, lazer e demais atividades, respeitando as regras de
+                            convivência?',
+            'Interage nos momentos de jogos, lazer e demais atividades, respeitando as regras de
+                            convivência?',
+            'Permanace sentado por mais de dez minutos para a realização das atividades?',
+            'Realiza ações motoras que envolvam movimento e equilíbrio?',
+            'Realiza atividades com atenção e tolerância?',
+            'Realiza, em sua rotina, ações de autocuidado com autonomia?',
+            'Reconhece e identifica alimentos que lhe são oferecidos?',
+            'Responde a comandos de ordem direta?'
+            
+
+        ];
+        $eixo_int_socio_emocional = [
+            'Compartilha brinquedos e brincadeiras?',
+            'Compartilha interesses?',
+            'Controla suas emoções? (Autorregula-se)',
+            'Coopera em situações que envolvem interação?',
+            'Demonstra e compartilha afeto?',
+            'Demonstra interesse nas atividades propostas?',
+            'Expressa suas emoções?',
+            'Identifica/reconhece a emoção do outro?',
+            'Identifica/reconhece suas emoções?',
+            'Inicia e mantém interação em situações sociais?',
+            'Interage com o(a) professor(a), seus colegas e outras pessoas de seu convívio escolar?',
+            'Interage, fazendo contato visual?',
+            'Reconhece e entende seus sentimentos, pensamentos e comportamentos?',
+            'Relaciona-se, estabelecendo vínculos?',
+            'Respeita regras em jogos e brincadeiras?',
+            'Respeita regras sociais?',
+            'Responde a interações?',
+            'Solicita ajuda, quando necessário?'
+        ];
+
     if (!empty($alunosDetalhados)) {
         $aluno = $alunosDetalhados[0];
    //   dd($aluno); // Isso exibirá todos os dados do aluno
     } else {
         abort(404);
     }
-    return view('sondagem.inventarios', compact('aluno'));
+    return view('sondagem.inventarios', compact('aluno','Perguntas_eixo_comunicacao','perguntas_eixo_comportamento',
+                        'eixo_int_socio_emocional'));
 }
 
 
