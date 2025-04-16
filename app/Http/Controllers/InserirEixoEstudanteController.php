@@ -20,6 +20,7 @@ class InserirEixoEstudanteController extends Controller
         $data_inventario = $request->input('data_inicio_inventario');
         $fase_inventario = "In";
 
+        
         // Verificar se a data é válida e formatá-la
         $dataInventario_formatada = null; // Inicializa a variável
 
@@ -74,15 +75,15 @@ class InserirEixoEstudanteController extends Controller
             'ecm32' => 'required|in:1,0',
 
             // Validação para Eixo Comportamento
-            'ecp1' => 'required|in:1,0',
-            'ecp2' => 'required|in:1,0',
-            'ecp3' => 'required|in:1,0',
-            'ecp4' => 'required|in:1,0',
-            'ecp5' => 'required|in:1,0',
-            'ecp6' => 'required|in:1,0',
-            'ecp7' => 'required|in:1,0',
-            'ecp8' => 'required|in:1,0',
-            'ecp9' => 'required|in:1,0',
+            'ecp01' => 'required|in:1,0',
+            'ecp02' => 'required|in:1,0',
+            'ecp03' => 'required|in:1,0',
+            'ecp04' => 'required|in:1,0',
+            'ecp05' => 'required|in:1,0',
+            'ecp06' => 'required|in:1,0',
+            'ecp07' => 'required|in:1,0',
+            'ecp08' => 'required|in:1,0',
+            'ecp09' => 'required|in:1,0',
             'ecp10' => 'required|in:1,0',
             'ecp11' => 'required|in:1,0',
             'ecp12' => 'required|in:1,0',
@@ -95,15 +96,15 @@ class InserirEixoEstudanteController extends Controller
 
                 
                 //validando os campos de eixo interacao socio emocional
-                'eis1' => 'required|in:1,0',
-                'eis2' => 'required|in:1,0',
-                'eis3' => 'required|in:1,0',
-                'eis4' => 'required|in:1,0',
-                'eis5' => 'required|in:1,0',
-                'eis6' => 'required|in:1,0',
-                'eis7' => 'required|in:1,0',
-                'eis8' => 'required|in:1,0',
-                'eis9' => 'required|in:1,0',
+                'eis01' => 'required|in:1,0',
+                'eis02' => 'required|in:1,0',
+                'eis03' => 'required|in:1,0',
+                'eis04' => 'required|in:1,0',
+                'eis05' => 'required|in:1,0',
+                'eis06' => 'required|in:1,0',
+                'eis07' => 'required|in:1,0',
+                'eis08' => 'required|in:1,0',
+                'eis09' => 'required|in:1,0',
                 'eis10' => 'required|in:1,0',
                 'eis11' => 'required|in:1,0',
                 'eis12' => 'required|in:1,0',
@@ -158,20 +159,21 @@ class InserirEixoEstudanteController extends Controller
                 'ecm31' => $request->input('ecm31'),
                 'ecm32' => $request->input('ecm32'),
                 'fk_alu_id_ecomling' => $alunoId,
-                'data_insert_com_lin'=> $dataInventario_formatada
+                'data_insert_com_lin'=> $dataInventario_formatada,
+                'fase_inv_com_lin'=> $fase_inventario
             ]);
 
             // Inserção no EixoComportamento
             $eixoComportamento = EixoComportamento::create([
-                'ecp01' => $request->input('ecp1'),
-                'ecp02' => $request->input('ecp2'),
-                'ecp03' => $request->input('ecp3'),
-                'ecp04' => $request->input('ecp4'),
-                'ecp05' => $request->input('ecp5'),
-                'ecp06' => $request->input('ecp6'),
-                'ecp07' => $request->input('ecp7'),
-                'ecp08' => $request->input('ecp8'),
-                'ecp09' => $request->input('ecp9'),
+                'ecp01' => $request->input('ecp01'),
+                'ecp02' => $request->input('ecp02'),
+                'ecp03' => $request->input('ecp03'),
+                'ecp04' => $request->input('ecp04'),
+                'ecp05' => $request->input('ecp05'),
+                'ecp06' => $request->input('ecp06'),
+                'ecp07' => $request->input('ecp07'),
+                'ecp08' => $request->input('ecp08'),
+                'ecp09' => $request->input('ecp09'),
                 'ecp10' => $request->input('ecp10'),
                 'ecp11' => $request->input('ecp11'),
                 'ecp12' => $request->input('ecp12'),
@@ -181,18 +183,20 @@ class InserirEixoEstudanteController extends Controller
                 'ecp16' => $request->input('ecp16'),
                 'ecp17' => $request->input('ecp17'),
                 'fk_alu_id_ecomp' => $alunoId,
-                'data_insert_comportamento'=> $dataInventario_formatada
+                'data_insert_comportamento'=> $dataInventario_formatada,
+                'fase_inv_comportamento'=> $fase_inventario
+
             ]);
             $eixo_socio_emocional = EixoInteracaoSocEmocional::create([
-                'eis01' => $request->input('eis1'),
-                'eis02' => $request->input('eis2'),
-                'eis03' => $request->input('eis3'),
-                'eis04' => $request->input('eis4'),
-                'eis05' => $request->input('eis5'),
-                'eis06' => $request->input('eis6'),
-                'eis07' => $request->input('eis7'),
-                'eis08' => $request->input('eis8'),
-                'eis09' => $request->input('eis9'),
+                'eis01' => $request->input('eis01'),
+                'eis02' => $request->input('eis02'),
+                'eis03' => $request->input('eis03'),
+                'eis04' => $request->input('eis04'),
+                'eis05' => $request->input('eis05'),
+                'eis06' => $request->input('eis06'),
+                'eis07' => $request->input('eis07'),
+                'eis08' => $request->input('eis08'),
+                'eis09' => $request->input('eis09'),
                 'eis10' => $request->input('eis10'),
                 'eis11' => $request->input('eis11'),
                 'eis12' => $request->input('eis12'),
@@ -201,9 +205,11 @@ class InserirEixoEstudanteController extends Controller
                 'eis15' => $request->input('eis15'),
                 'eis16' => $request->input('eis16'),    
                 'eis17' => $request->input('eis17'),
-                'eis018' => $request->input('eis18'),    
+                'eis18' => $request->input('eis18'),    
                 'fk_alu_id_eintsoc' => $alunoId ,
-                'data_insert_int_socio'=> $dataInventario_formatada
+                'data_insert_int_socio'=> $dataInventario_formatada,
+                'fase_inv_int_socio'=> $fase_inventario
+
 
             ]);
                    $preenchimento_inventario = PreenchimentoInventario::create([

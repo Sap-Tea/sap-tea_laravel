@@ -20,7 +20,7 @@ use App\Http\Controllers\EscolaController;
 use App\Http\Controllers\AlunosController;
 use App\Http\Controllers\OrgaoController;
 use App\Http\Controllers\downloadController;
-
+use App\Http\Controllers\VisualizaInventarioEstudanteController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -76,8 +76,16 @@ Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.inde
 Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])
     ->name('perfil.estudante.mostrar');
 
+    // rotas que visualiza e altera perfil do estudante
 Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualizaPerfil'])->name('visualizar.perfil');
 Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
+
+    // rotas que visualiza e imprime inventario de estudandtes
+    Route::get('/visualizar-inventario', [AlunoController::class, 'visualiza_aluno_inventario'])->name('visualizar.inventario');
+   // Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
+    
+
+
 
 Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
 Route::post('/sondagem/inserir_inventario', [InserirEixoEstudanteController::class, 
