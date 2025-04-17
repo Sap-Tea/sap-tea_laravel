@@ -27,7 +27,7 @@
     <div class="container">
         <div class="header">
             <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo" class="logo">
-            <h1>CONSULTA DE INVENTÁRIO - {{ $aluno->alu_nome }}</h1>
+            <h3>CONSULTA DE INVENTÁRIO - {{ $aluno->alu_nome }}</h3>
             <p>Data da Consulta: {{ date('d/m/Y') }}</p>
         </div>
 
