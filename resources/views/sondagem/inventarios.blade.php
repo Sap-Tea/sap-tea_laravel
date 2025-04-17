@@ -36,17 +36,17 @@
                 </p>
 
             
-            <p>Orgão: <input type="text" style="width: 300px;" value = "{{$aluno->org_razaosocial}}" readonly></p>
+            <p>Orgão: <input type="text" style="width: 300px;" value = "{{$alunoDetalhado->org_razaosocial}}" readonly></p>
 
-            <p>Escola: <input type="text" style="width: 300px;" value = "{{$aluno->esc_razao_social}}" readonly ></p>
+            <p>Escola: <input type="text" style="width: 300px;" value = "{{$alunoDetalhado->esc_razao_social}}" readonly ></p>
             <p>Nome do Aluno: <input type="text" style="width: 250px;"value = "{{$aluno->alu_nome}}" readonly></p>
             
             <p>Data de Nascimento: <input type="date" value ="{{$aluno->alu_dtnasc}}" readonly>
                  Idade: <input value = "{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly type="text" min="0" style="width: 50px;"></p>
-            <p>Ano/Série: <input type="text" style="width: 150px;" value = "{{$aluno->serie_desc}}" readonly> 
+            <p>Ano/Série: <input type="text" style="width: 150px;" value = "{{$alunoDetalhado->serie_desc}}" readonly> 
                 Turma:
-                <input value = "{{$aluno->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly> 
-                Período: <input type="text"style="width: 200px;" style="width: 250px;" value = "{{$aluno->desc_modalidade}}" readonly></p>
+                <input value = "{{$alunoDetalhado->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly> 
+                Período: <input type="text"style="width: 200px;" style="width: 250px;" value = "{{$alunoDetalhado->desc_modalidade}}" readonly></p>
         </div>
         <div class="support">
             <p><strong>Responsável pelo preenchimento:</strong></p>

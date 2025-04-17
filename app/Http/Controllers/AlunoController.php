@@ -23,8 +23,7 @@ class AlunoController extends Controller
             'Compreende que pode receber ajuda de pessoas conhecidas que estão ao seu redor?',
             'Comunica fatos, acontecimentos e ações de seu cotidiano de modo compreensível, ainda que não seja por meio da linguagem verbal?',
             'Comunica suas necessidades básicas (banheiro, água, comida, entre outros)?',
-            'Entende expressões faciais em uma conversa?',
-            '',
+            'Entende expressões faciais em uma conversa?',            
             'Executa mais de um comando sequencialmente?',
             'Expressa-se com clareza e objetividade?',
             'Faz uso de expressões faciais para se comunicar?',
@@ -102,24 +101,44 @@ class AlunoController extends Controller
         return view('alunos.perfil_estudante', compact('aluno'));
     }
 
-    public function visualiza_aluno_inventario($id)
-    {
-        $alunosDetalhados = Aluno::getAlunosDetalhados($id);
+    public function mostra_aluno_inventario($id)
+{
+    // Busca dados detalhados (campos extras)
+    $alunoDetalhado = Aluno::getAlunosDetalhados($id)[0] ?? abort(404);
 
-        if (!empty($alunosDetalhados)) {
-            $aluno = $alunosDetalhados[0];
-        } else {
-            abort(404);
-        }
-        $aluno = Aluno::with([
-            'eixoComunicacao',
-            'eixoComportamento',
-            'eixoSocioEmocional',
-            'preenchimento'
-        ])->findOrFail($id);
+    // Busca relacionamentos via Eloquent
+    $aluno = Aluno::with([
+        'eixoComunicacao',
+        'eixoComportamento', 
+        'eixoSocioEmocional',
+        'preenchimento'
+    ])->findOrFail($id);
+
+    return view('sondagem.inventarios', [
+        'aluno' => $aluno, // Objeto Eloquent com relacionamentos
+        'alunoDetalhado' => $alunoDetalhado, // Dados da query customizada
+        'Perguntas_eixo_comunicacao' => $this->Perguntas_eixo_comunicacao,
+        'perguntas_eixo_comportamento' => $this->perguntas_eixo_comportamento,
+        'eixo_int_socio_emocional' => $this->eixo_int_socio_emocional
+    ]);
+}
+
+    
+    public function visualiza_aluno_inventario($id)
+{
+    $alunoDetalhado = Aluno::getAlunosDetalhados($id)[0] ?? abort(404);
+
+    // Busca relacionamentos via Eloquent
+    $aluno = Aluno::with([
+        'eixoComunicacao',
+        'eixoComportamento', 
+        'eixoSocioEmocional',
+        'preenchimento'
+    ])->findOrFail($id);
 
         return view('sondagem.visualizar_inventario', [
             'aluno' => $aluno, // Objeto Aluno com todos os relacionamentos
+          'alunoDetalhado' => $alunoDetalhado,
             'eixoComunicacao' => $aluno->eixoComunicacao, // Dados da tabela eixo_comunicacao_linguagem
             'eixoComportamento' => $aluno->eixoComportamento, // Dados da tabela eixo_comportamento
             'eixoSocioEmocional' => $aluno->eixoSocioEmocional, // Dados da tabela eixo_interacao_soc_emocional
@@ -128,7 +147,8 @@ class AlunoController extends Controller
             'Perguntas_eixo_comunicacao' => $this->Perguntas_eixo_comunicacao,
             'perguntas_eixo_comportamento' => $this->perguntas_eixo_comportamento,
             'eixo_int_socio_emocional' => $this->eixo_int_socio_emocional
-        ]);    }
+        ]);  
+      }
 
     
 }
