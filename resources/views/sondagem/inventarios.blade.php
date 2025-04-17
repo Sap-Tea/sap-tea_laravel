@@ -146,7 +146,7 @@
         <button type="submit" class="btn btn-primary">Salvar</button>
                      
         <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
-        <button type="button" class="pdf-button">Gerar PDF</button>
+        
 
     </div>
 
@@ -157,40 +157,51 @@
     <!-- Importação das bibliotecas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <script>
-        document.querySelector(".pdf-button").addEventListener("click", function() {
-            const {
-                jsPDF
-            } = window.jspdf;
-            const element = document.getElementById("capture"); // Seleciona a área desejada
+document.querySelector(".pdf-button").addEventListener("click", function() {
+    const { jsPDF } = window.jspdf;
+    const element = document.querySelector('.container');
 
-            html2canvas(element, {
-                scale: 0.9, // Melhora a qualidade da imagem capturada
-                useCORS: true
-            }).then(canvas => {
-                const imgData = canvas.toDataURL("image/png");
-                const pdf = new jsPDF("p", "mm", "a4");
+    html2canvas(element, {
+        scale: 0.9,
+        useCORS: true
+    }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const imgWidth = 210;
+        const pageHeight = 297;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                const imgWidth = 210; // Largura A4 em mm
-                const pageHeight = 297; // Altura A4 em mm
-                const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém a proporção
+        let y = 0;
+        while (y < imgHeight) {
+            pdf.addImage(imgData, "PNG", 0, y * -1, imgWidth, imgHeight);
+            y += pageHeight;
+            if (y < imgHeight) pdf.addPage();
+        }
 
-                let y = 0;
+        // Pegando o nome do aluno do input (garante que é o mesmo mostrado na tela)
+        let nomeAluno = document.querySelector('input[value="{{ $aluno->alu_nome }}"]').value || "{{ $aluno->alu_nome }}";
+        // Remove acentos e caracteres especiais, troca espaços por _
+        nomeAluno = nomeAluno
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9]/g, '_')
+            .replace(/_+/g, '_')
+            .replace(/^_+|_+$/g, '');
 
-                while (y < imgHeight) {
-                    pdf.addImage(imgData, "PNG", 0, y * -1, imgWidth, imgHeight);
-                    y += pageHeight;
+        // Data no formato DD-MM-AAAA
+        const hoje = new Date();
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const ano = hoje.getFullYear();
+        const dataAtual = `${dia}-${mes}-${ano}`;
 
-                    if (y < imgHeight) {
-                        pdf.addPage(); // Adiciona nova página se necessário
-                    }
-                }
+        // Nome do arquivo
+        const nomeArquivo = `Inventario_${nomeAluno}_${dataAtual}.pdf`;
 
-                pdf.save("formulario.pdf");
-            }).catch(error => console.error("Erro ao gerar PDF:", error));
-        });
-    </script>
+        pdf.save(nomeArquivo);
+    }).catch(error => console.error("Erro ao gerar PDF:", error));
+});
+</script>
 
 <script>
     document.getElementById('form').addEventListener('submit', function(e) {
