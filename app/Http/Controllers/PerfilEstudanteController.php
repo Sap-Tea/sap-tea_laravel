@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Aluno; // Importa o modelo Aluno
 use Carbon\Carbon; // Para manipulação de datas
+use App\Models\PerfilEstudante;
 
  
 
