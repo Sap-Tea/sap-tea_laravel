@@ -14,7 +14,7 @@ class AlunoController extends Controller
     public function __construct()
     {
         $this->Perguntas_eixo_comunicacao = [
-            'Amplia gradativamente seu vocabulário?xxxxx',     
+            'Amplia gradativamente seu vocabulário?',     
             'Amplia gradativamente sua comunicação social?',
             'Apresenta entonação vocal, com boa articulação e ritmo adequado?',
             'Ativa conhecimentos prévios em situações de novas aprendizagens?',
