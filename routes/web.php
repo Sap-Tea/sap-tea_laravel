@@ -35,7 +35,9 @@ use App\Http\Controllers\VisualizaInventarioEstudanteController;
 Route::get('/teste', [TesteController::class, 'teste']);
 
 // Rota principal
-Route::get('/', 'PrincipalController@Principal');
+Route::get('/', function () {
+    return view('index');
+})->name('index');
 
 // Sobre nós
 Route::get('/Sobre-nos', 'SobreNosController@sobreNos');
