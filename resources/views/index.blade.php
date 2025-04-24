@@ -31,7 +31,7 @@
     <img src="{{ asset('img/logo_sap.png') }}" alt="Logo">
 </div>
 
-<li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Cadastro ⬇️ </a>
+<li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Cadastro ⬇ </a>
                 <ul class="submenu_escola">
                 <li><a href="{{ route('instituicao') }}" style="pointer-events: none; color: gray; cursor: default;">Instituição</a></li>
 
@@ -44,7 +44,7 @@
     <li>
 <ul>
     <li>
-        <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇️ </a>
+        <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇ </a>
         <ul class="submenu">
             <li><a href="{{ route('eixos.alunos') }}" class="menu-link">.1 Inicial</a></li>
             <li><a href="{{ route('sondagem.continuada1') }}"style="pointer-events: none; color: gray; cursor: default;" class="menu-link">.2 Continuada</a></li>
@@ -53,7 +53,7 @@
         </ul>
     </li>
 </ul>
-            <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Rotina e Monitoramento ⬇️ </a>
+            <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Rotina e Monitoramento ⬇ </a>
                 <ul class="submenu_escola">
                 <li><a href="{{ route('modalidade.inicial') }}">.1 Inicial</a></li>
                     <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.2 Continuada</a></li>
@@ -63,7 +63,7 @@
             </li>
         </ul>
         <ul>
-            <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Indicativo de Atividades e Habilidades⬇️ </a>
+            <li><a href="#" data-target="formulario-cad-escola"><i class="fa-solid fa-school"></i> Indicativo de Atividades e Habilidades⬇ </a>
                 <ul class="submenu_escola">
                     <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.1 Inicial</a></li>
                     <li><a href="#" data-target="modalidade-ensino"style="pointer-events: none; color: gray; cursor: default;">.2 Continuada</a></li>
