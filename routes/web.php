@@ -144,3 +144,15 @@ Route::get('/alunos', [AlunosController::class, 'index'])->name('alunos');
 
 // Rota para o download
 Route::get('/download', [downloadController::class, 'index'])->name('download');
+
+
+use App\Http\Controllers\SomeController;  // Certifique-se de incluir o controlador
+
+// Rota para "Como Eu Sou"
+Route::get('/como-eu-sou', [SomeController::class, 'comoEuSou'])->name('como-eu-sou');
+
+// Rota para "Emociômetro"
+Route::get('/emociometro', [SomeController::class, 'emociometro'])->name('emociometro');
+
+// Rota para "Minha Rede de Ajuda"
+Route::get('/minha-rede-de-ajuda', [SomeController::class, 'minhaRedeDeAjuda'])->name('minha-rede-de-ajuda');

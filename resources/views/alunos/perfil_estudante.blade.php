@@ -298,7 +298,95 @@
                 <textarea rows="3" name="crise_estresse"></textarea>
             </div>
 
-           
+            <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        /* Cor das linhas conforme as novas cores */
+        tr:nth-child(1) td {
+            background-color: #fff9c4; /* Amarelo claro */
+        }
+        tr:nth-child(2) td {
+            background-color: #e1f5fe; /* Azul claro */
+        }
+        tr:nth-child(3) td {
+            background-color: #c8e6c9; /* Verde claro */
+        }
+        tr:nth-child(4) td {
+            background-color: #ffe0b2; /* Laranja claro */
+        }
+        tr:nth-child(5) td {
+            background-color: #f8bbd0; /* Rosa claro */
+        }
+        tr:nth-child(6) td {
+            background-color: #fff9c4; /* Amarelo claro */
+        }
+
+        tr:hover {
+            background-color: #d1c4e9; /* Efeito hover (roxo claro) */
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome do Profissional</th>
+                <th>Especialidade/Área</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" name="nome_profissional" placeholder="Nome do Profissional"></td>
+                <td><input type="text" name="especialidade_area" placeholder="Especialidade/Área"></td>
+                <td><input type="text" name="observacoes" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="nome_profissional" placeholder="Nome do Profissional"></td>
+                <td><input type="text" name="especialidade_area" placeholder="Especialidade/Área"></td>
+                <td><input type="text" name="observacoes" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="nome_profissional" placeholder="Nome do Profissional"></td>
+                <td><input type="text" name="especialidade_area" placeholder="Especialidade/Área"></td>
+                <td><input type="text" name="observacoes" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="nome_profissional" placeholder="Nome do Profissional"></td>
+                <td><input type="text" name="especialidade_area" placeholder="Especialidade/Área"></td>
+                <td><input type="text" name="observacoes" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="nome_profissional" placeholder="Nome do Profissional"></td>
+                <td><input type="text" name="especialidade_area" placeholder="Especialidade/Área"></td>
+                <td><input type="text" name="observacoes" placeholder="Observações"></td>
+            </tr>
+        </tbody>
+    </table>
 
             <div class="button-group">
                 <button type="submit" class="btn btn-primary">Salvar</button>
@@ -328,6 +416,7 @@
         });
     });
 </script>
+
 </body>
 </html>
 

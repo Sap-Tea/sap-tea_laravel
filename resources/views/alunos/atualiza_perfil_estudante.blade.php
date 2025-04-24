@@ -13,6 +13,7 @@
 <img src="{{ asset('img/logogando.png') }}" alt="Logo Superior Esquerda" class="logo-top-left">
 <img src="{{ asset('img/logo_baixo.png') }}" alt="Logo Inferior Direita" class="logo-bottom-right">
 <img src="{{ asset('img/logo_sap.png') }}" alt="Logo Transparente Central" class="logo-center">
+<div class="logo-repeated"></div>
 
 <div class="container">
     <h2>I - Perfil do Estudante</h2>
@@ -169,17 +170,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Gosta de fazer no tempo livre:</label>
+                    <label>Gosta de fazer no tempo livre?</label>
                     <textarea name="atividades_livre">{{$perfil->livre_gosta_fazer }}</textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Deixa o estudante muito feliz:</label>
+                    <label>Deixa o estudante muito feliz?</label>
                     <textarea name="feliz">{{$perfil->feliz_est }}</textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Deixa o estudante muito triste ou desconfortável:</label>
+                    <label>Deixa o estudante muito triste ou desconfortável?</label>
                     <textarea name="triste">{{$perfil->trist_est }}</textarea>
                 </div>
 
@@ -226,7 +227,7 @@
 
 
                 <div class="form-group">
-                    <label>Caso sim,Como manejar em sala de aula</label>
+                    <label>Caso sim,Como manejar em sala de aula?</label>
                     <textarea name="manejo_sensibilidade">{{$perfil->maneja_04 }}</textarea>
                 </div>
 
@@ -260,10 +261,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?
+                    <label>O que ajuda a sua interação na escola ?
                     </label>
-                    <textarea rows="3" name="interacao_escola" >{{$perfil->interacao_escola_04 }}</textarea>
+                    <textarea rows="3" name="interacao_escola1" >{{$perfil->interacao_escola_04 }}</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label> o que dificulta a sua interação na escola?
+                    </label>
+                    <textarea rows="3" name="interacao_escola2" >{{$perfil->interacao_escola_04 }}</textarea>
+                </div>
+
+
 
                 <div class="form-group">
                     <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
@@ -297,7 +306,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>O que desperta seu interesse para realizar uma tarefa/atividade</label>
+                    <label>O que desperta seu interesse para realizar uma tarefa/atividades?</label>
                     <textarea rows="3" name="interesse_tarefa">{{$perfil->prefere_ts_04 }}</textarea>
                 </div>
 
@@ -319,7 +328,77 @@
                     <label>Caso o estudante tenha uma crise ou situação de estresse elevado, o que fazer?</label>
                     <textarea rows="3" name="crise_estresse">{{$perfil->crise_esta_05 }}</textarea>
                 </div>
+ <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        tr:nth-child(odd) {
+            background-color: #e0f7fa;
+        }
+        tr:nth-child(even) {
+            background-color: #fff9c4;
+        }
+        tr:hover {
+            background-color: #d1c4e9;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
 
+    <h2>Cadastro de Profissionais</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome do Profissional</th>
+                <th>Especialidade/Área</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+        </tbody>
+    </table>
               
             @endif
 
