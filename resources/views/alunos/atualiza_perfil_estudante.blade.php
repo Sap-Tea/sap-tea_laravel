@@ -15,7 +15,7 @@
 <img src="{{ asset('img/logo_sap.png') }}" alt="Logo Transparente Central" class="logo-center">
 <div class="logo-repeated"></div>
 
-<div class="container">
+<div id="pdf-content" class="container">
     <h2>I - Perfil do Estudante</h2>
 
     <!-- Verifica se há dados do aluno selecionado -->
@@ -23,7 +23,7 @@
         <!-- Seleciona o primeiro aluno da lista ($dados[0]) -->
         @php $aluno = $dados[0]; @endphp
 
-        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}">
+        <form id="perfilForm" method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}">
             @csrf
 
             <!-- Dados do aluno selecionado -->
@@ -328,11 +328,64 @@
                     <label>Caso o estudante tenha uma crise ou situação de estresse elevado, o que fazer?</label>
                     <textarea rows="3" name="crise_estresse">{{$perfil->crise_esta_05 }}</textarea>
                 </div>
+ 
+                <h2>Cadastro de Profissionais</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome do Profissional</th>
+                            <th>Especialidade/Área</th>
+                            <th>Observações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="Nome do Profissional"></td>
+                            <td><input type="text" placeholder="Especialidade/Área"></td>
+                            <td><input type="text" placeholder="Observações"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder="Nome do Profissional"></td>
+                            <td><input type="text" placeholder="Especialidade/Área"></td>
+                            <td><input type="text" placeholder="Observações"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder="Nome do Profissional"></td>
+                            <td><input type="text" placeholder="Especialidade/Área"></td>
+                            <td><input type="text" placeholder="Observações"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder="Nome do Profissional"></td>
+                            <td><input type="text" placeholder="Especialidade/Área"></td>
+                            <td><input type="text" placeholder="Observações"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder="Nome do Profissional"></td>
+                            <td><input type="text" placeholder="Especialidade/Área"></td>
+                            <td><input type="text" placeholder="Observações"></td>
+                        </tr>
+                    </tbody>
+                </table>
+             
+ 
+ 
+ 
  <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            page-break-inside: avoid;
         }
         th, td {
             padding: 10px;
@@ -358,47 +411,39 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        .logo-top-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .logo-bottom-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+        .logo-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+        }
+        .logo-repeated {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('{{ asset('img/logo_sap.png') }}');
+            background-repeat: repeat;
+            background-position: center;
+            opacity: 0.1;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Cadastro de Profissionais</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome do Profissional</th>
-                <th>Especialidade/Área</th>
-                <th>Observações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-        </tbody>
-    </table>
               
             @endif
 
@@ -415,30 +460,69 @@
     @endif
 </div>
 
-<!-- Scripts para geração de PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Scripts para geração de Excel -->
+    <script>
+        document.querySelector(".pdf-button").addEventListener("click", function () {
+            // Encontra o formulário
+            const form = document.getElementById('perfilForm');
+            if (!form) {
+                alert('Formulário não encontrado');
+                return;
+            }
 
-<script>
-    document.querySelector(".pdf-button").addEventListener("click", function () {
-        const { jsPDF } = window.jspdf;
+            // Cria o FormData
+            const formData = new FormData(form);
+            
+            // Função para fazer download de um arquivo
+            function downloadFile(endpoint) {
+                fetch(endpoint, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao gerar arquivo');
+                    }
+                    
+                    // Se a resposta for JSON, é um erro
+                    if (response.headers.get('content-type')?.includes('application/json')) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Erro ao gerar arquivo');
+                        });
+                    }
+                    
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Cria um nome de arquivo único
+                    const fileName = 'perfil_' + new Date().getTime() + '.' + 
+                        endpoint.split('.').pop();
+                    
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Erro ao baixar arquivo:', error);
+                    alert('Erro ao baixar arquivo: ' + error.message);
+                });
+            }
 
-        // Seleciona a parte da página que será capturada
-        const element = document.body;
+            // Inicia os downloads
+            downloadFile('{{ route('download.excel') }}');
+            downloadFile('{{ route('download.pdf') }}');
 
-        // Usa html2canvas para converter a página em imagem
-        html2canvas(element, { scale: 1.0 }).then(canvas => {
-            const imgData = canvas.toDataURL("image/jpeg", 0.8);
-
-            const pdf = new jsPDF("p", "mm", "a4");
-            const imgWidth = 210;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-            pdf.save("Perfil_Estudante.pdf");
+            alert('Documentos sendo baixados...');
         });
-    });
-</script>
+    </script>
 
 </body>
 </html>

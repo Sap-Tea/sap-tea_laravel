@@ -21,6 +21,8 @@ use App\Http\Controllers\AlunosController;
 use App\Http\Controllers\OrgaoController;
 use App\Http\Controllers\downloadController;
 use App\Http\Controllers\VisualizaInventarioEstudanteController;
+use App\Http\Controllers\ExportExcelController;
+use App\Http\Controllers\GeneratePDFController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -123,6 +125,12 @@ Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->
 
 Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
 
+// Rota para exportar Excel
+Route::post('/export/excel', [ExportExcelController::class, 'export'])->name('export.excel');
+
+// Rota para gerar PDF
+Route::post('/gerar/pdf', [GeneratePDFController::class, 'generatePDF'])->name('gerar.pdf');
+
 
 // criando uma rota para acessar foccus-xampp
 Route::get('/foccus-xampp', function () {
@@ -156,3 +164,9 @@ Route::get('/emociometro', [SomeController::class, 'emociometro'])->name('emocio
 
 // Rota para "Minha Rede de Ajuda"
 Route::get('/minha-rede-de-ajuda', [SomeController::class, 'minhaRedeDeAjuda'])->name('minha-rede-de-ajuda');
+
+// Rota para gerar PDF
+Route::post('/gerar-pdf', [GeneratePDFController::class, 'generatePDF'])->name('gerar.pdf');
+Route::post('/download-word', [DocumentController::class, 'generateWordExcel'])->name('download.word');
+Route::post('/download-excel', [DocumentController::class, 'downloadExcel'])->name('download.excel');
+Route::post('/download-pdf', [DocumentController::class, 'downloadPDF'])->name('download.pdf');

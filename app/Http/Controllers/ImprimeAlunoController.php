@@ -5,18 +5,11 @@ use App\Models\Aluno;
 class ImprimeAlunoController extends Controller
 {
     public function imprimeAluno(Request $request)
-{
-    $nome = $request->input('nome');
-    $alunos = Aluno::where('alu_nome', 'like', '%' . $nome . '%')->get();
+    {
+        $nome = $request->input('nome', '');
+        $alunos = Aluno::where('alu_nome', 'like', "%{$nome}%")
+                       ->paginate(10);
 
-    
-
-    if ($alunos) {
         return view('Alunos.imprime_aluno', compact('alunos'));
-    } else {
-        return redirect()->back()->with('message', 'Aluno não encontrado.');
     }
-}
-
-
 }
