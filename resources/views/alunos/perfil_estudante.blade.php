@@ -735,6 +735,13 @@
         if (cancelBtn) {
             cancelBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
+                
+                // Desabilita todos os botões para evitar múltiplos cliques
+                const allButtons = document.querySelectorAll('button');
+                allButtons.forEach(button => {
+                    button.disabled = true;
+                });
                 
                 // Redireciona para a página inicial
                 window.location.href = '{{ route('index') }}';

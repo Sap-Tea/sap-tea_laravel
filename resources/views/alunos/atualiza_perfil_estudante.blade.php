@@ -1,3 +1,4 @@
+============================================
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -15,7 +16,7 @@
 <img src="{{ asset('img/logo_sap.png') }}" alt="Logo Transparente Central" class="logo-center">
 <div class="logo-repeated"></div>
 
-<div id="pdf-content" class="container">
+<div class="container">
     <h2>I - Perfil do Estudante</h2>
 
     <!-- Verifica se há dados do aluno selecionado -->
@@ -23,7 +24,7 @@
         <!-- Seleciona o primeiro aluno da lista ($dados[0]) -->
         @php $aluno = $dados[0]; @endphp
 
-        <form id="perfilForm" method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}">
+        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}">
             @csrf
 
             <!-- Dados do aluno selecionado -->
@@ -328,64 +329,11 @@
                     <label>Caso o estudante tenha uma crise ou situação de estresse elevado, o que fazer?</label>
                     <textarea rows="3" name="crise_estresse">{{$perfil->crise_esta_05 }}</textarea>
                 </div>
- 
-                <h2>Cadastro de Profissionais</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome do Profissional</th>
-                            <th>Especialidade/Área</th>
-                            <th>Observações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="text" placeholder="Nome do Profissional"></td>
-                            <td><input type="text" placeholder="Especialidade/Área"></td>
-                            <td><input type="text" placeholder="Observações"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" placeholder="Nome do Profissional"></td>
-                            <td><input type="text" placeholder="Especialidade/Área"></td>
-                            <td><input type="text" placeholder="Observações"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" placeholder="Nome do Profissional"></td>
-                            <td><input type="text" placeholder="Especialidade/Área"></td>
-                            <td><input type="text" placeholder="Observações"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" placeholder="Nome do Profissional"></td>
-                            <td><input type="text" placeholder="Especialidade/Área"></td>
-                            <td><input type="text" placeholder="Observações"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" placeholder="Nome do Profissional"></td>
-                            <td><input type="text" placeholder="Especialidade/Área"></td>
-                            <td><input type="text" placeholder="Observações"></td>
-                        </tr>
-                    </tbody>
-                </table>
-             
- 
- 
- 
  <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
-        .container {
-            max-width: 100%;
-            padding: 20px;
-            margin: 0 auto;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            page-break-inside: avoid;
         }
         th, td {
             padding: 10px;
@@ -411,39 +359,47 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .logo-top-left {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .logo-bottom-right {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-        }
-        .logo-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.1;
-        }
-        .logo-repeated {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('{{ asset('img/logo_sap.png') }}');
-            background-repeat: repeat;
-            background-position: center;
-            opacity: 0.1;
-            z-index: -1;
-        }
     </style>
 </head>
 <body>
 
+    <h2>Cadastro de Profissionais</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome do Profissional</th>
+                <th>Especialidade/Área</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="Nome do Profissional"></td>
+                <td><input type="text" placeholder="Especialidade/Área"></td>
+                <td><input type="text" placeholder="Observações"></td>
+            </tr>
+        </tbody>
+    </table>
               
             @endif
 
@@ -460,69 +416,76 @@
     @endif
 </div>
 
-<!-- Scripts para geração de Excel -->
-    <script>
-        document.querySelector(".pdf-button").addEventListener("click", function () {
-            // Encontra o formulário
-            const form = document.getElementById('perfilForm');
-            if (!form) {
-                alert('Formulário não encontrado');
-                return;
-            }
+<!-- Importação das bibliotecas (deixe antes do script) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-            // Cria o FormData
-            const formData = new FormData(form);
-            
-            // Função para fazer download de um arquivo
-            function downloadFile(endpoint) {
-                fetch(endpoint, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao gerar arquivo');
-                    }
-                    
-                    // Se a resposta for JSON, é um erro
-                    if (response.headers.get('content-type')?.includes('application/json')) {
-                        return response.json().then(data => {
-                            throw new Error(data.message || 'Erro ao gerar arquivo');
-                        });
-                    }
-                    
-                    return response.blob();
-                })
-                .then(blob => {
-                    // Cria um nome de arquivo único
-                    const fileName = 'perfil_' + new Date().getTime() + '.' + 
-                        endpoint.split('.').pop();
-                    
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(error => {
-                    console.error('Erro ao baixar arquivo:', error);
-                    alert('Erro ao baixar arquivo: ' + error.message);
-                });
-            }
+<script>
+document.querySelector(".pdf-button").addEventListener("click", function() {
+    const { jsPDF } = window.jspdf;
+    const element = document.querySelector('.container');
 
-            // Inicia os downloads
-            downloadFile('{{ route('download.excel') }}');
-            downloadFile('{{ route('download.pdf') }}');
+    html2canvas(element, {
+        scale: 0.9,
+        useCORS: true
+    }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const imgWidth = 210;
+        const pageHeight = 297;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            alert('Documentos sendo baixados...');
-        });
-    </script>
+        let y = 0;
+        while (y < imgHeight) {
+            pdf.addImage(imgData, "PNG", 0, y * -1, imgWidth, imgHeight);
+            y += pageHeight;
+            if (y < imgHeight) pdf.addPage();
+        }
+
+        // Pegando o nome do aluno diretamente da variável PHP
+        const nomeAluno = "{{ $aluno->alu_nome }}";
+        // Remove acentos e caracteres especiais, troca espaços por _
+        const nomeFormatado = nomeAluno
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/[^a-zA-Z0-9]/g, '_')
+            .replace(/_+/g, '_')
+            .replace(/^_+|_+$/g, '');
+
+        // Data no formato DD-MM-AAAA
+        const hoje = new Date();
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const ano = hoje.getFullYear();
+        const dataAtual = `${dia}-${mes}-${ano}`;
+
+        // Nome do arquivo
+        const nomeArquivo = `Perfil_${nomeFormatado}_${dataAtual}.pdf`;
+
+        pdf.save(nomeArquivo);
+    }).catch(error => console.error("Erro ao gerar PDF:", error));
+});
+</script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
