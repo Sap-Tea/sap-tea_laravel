@@ -38,8 +38,11 @@ Route::get('/teste', [TesteController::class, 'teste']);
 
 // Rota principal
 Route::get('/', function () {
-    return view('index');
+    return view('welcome');
 })->name('index');
+
+// Rota para gerar o template PDF
+Route::get('/generate-template-pdf', [GenerateTemplatePDFController::class, 'generateTemplate'])->name('generate.template.pdf');
 
 // Sobre nós
 Route::get('/Sobre-nos', 'SobreNosController@sobreNos');

@@ -1,4 +1,3 @@
-============================================
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -11,8 +10,10 @@
 </head>
 
 <body>
-<img src="{{ asset('img/logogando.png') }}" alt="Logo Superior Esquerda" class="logo-top-left">
+<!--
+    <img src="{{ asset('img/logogando.png') }}" alt="Logo Superior Esquerda" class="logo-top-left">
 <img src="{{ asset('img/logo_baixo.png') }}" alt="Logo Inferior Direita" class="logo-bottom-right">
+-->
 <img src="{{ asset('img/logo_sap.png') }}" alt="Logo Transparente Central" class="logo-center">
 <div class="logo-repeated"></div>
 
@@ -435,6 +436,14 @@ document.querySelector(".pdf-button").addEventListener("click", function() {
         const pageHeight = 297;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
+        // Adiciona as imagens como marca d'água
+        // Logo superior esquerda
+        pdf.addImage("{{ asset('img/logogando.png') }}", "PNG", 10, 10, 50, 50, undefined, 'FAST');
+        // Logo inferior direita
+        pdf.addImage("{{ asset('img/logo_baixo.png') }}", "PNG", 160, 240, 50, 50, undefined, 'FAST');
+        // Logo central
+        pdf.addImage("{{ asset('img/logo_sap.png') }}", "PNG", 85, 120, 40, 40, undefined, 'FAST');
+
         let y = 0;
         while (y < imgHeight) {
             pdf.addImage(imgData, "PNG", 0, y * -1, imgWidth, imgHeight);
@@ -468,6 +477,7 @@ document.querySelector(".pdf-button").addEventListener("click", function() {
 
 </body>
 </html>
+
 
 
 
