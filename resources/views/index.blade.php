@@ -37,7 +37,7 @@
             <li>
                 <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Rotina e Monitoramento ⬇</a>
                 <ul class="submenu_escola">
-                    <li><a href="{{ route('rota_monitoramento.inicial') }}">.1 Inicial</a></li>
+                    <li><a href="{{ route('rotina.monitoramento.inicial') }}">.1 Inicial</a></li>
                     <li><a href="#" class="disabled">.2 Continuada</a></li>
                     <li><a href="#" class="disabled">.3 Continuada</a></li>
                     <li><a href="#" class="disabled">.4 Final</a></li>

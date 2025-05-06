@@ -51,4 +51,25 @@ class PerfilEstudanteController extends Controller
             return view('alunos.imprime_aluno_eixo', compact('alunos','idade_eixo'));
         }
         
+    public function rotina_monitoramento_inicial()
+    {
+        // Busca alunos que existem nas três tabelas de eixo e estão matriculados
+        $alunos = Aluno::whereHas('matriculas')
+                    ->whereHas('eixoComunicacao', function($query) {
+                        $query->whereNotNull('data_insert_com_lin')
+                              ->whereNotNull('fase_inv_com_lin');
+                    })
+                    ->whereHas('eixoComportamento', function($query) {
+                        $query->whereNotNull('data_insert_comportamento')
+                              ->whereNotNull('fase_inv_comportamento');
+                    })
+                    ->whereHas('eixoSocioEmocional', function($query) {
+                        $query->whereNotNull('data_insert_int_socio')
+                              ->whereNotNull('fase_inv_int_socio');
+                    })
+                    ->orderBy('alu_nome', 'asc')
+                    ->get();
+
+        return view('alunos.rotina_monitoramento_inicial', compact('alunos'));
+    }
 }

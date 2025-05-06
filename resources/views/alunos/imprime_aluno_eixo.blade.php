@@ -96,6 +96,6 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
     @endif
 
     <!-- Botão Voltar -->
-    <a href="{{ route('index') }}" class="btn btn-secondary mt-3">Voltar -> Menu</a>
+    <a href="{{ route('home') }}" class="btn btn-secondary mt-3">Voltar -> Menu</a>
 </div>
 @endsection
