@@ -23,15 +23,7 @@
         </div>
 
         <ul>
-            <li>
-                <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Cadastro ⬇</a>
-                <ul class="submenu_escola">
-                    <li><a href="{{ route('instituicao') }}" class="disabled">Instituição</a></li>
-                    <li><a href="{{ route('escola') }}" class="disabled">Escola</a></li>
-                    <li><a href="{{ route('alunos') }}" class="disabled">Aluno</a></li>
-                    <li><a href="{{ route('orgao') }}" class="disabled">Órgão</a></li>
-                </ul>
-            </li>
+           
            <li>
     <a href="#" class="menu-toggle sondagem"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇</a>
     <ul class="submenu">
@@ -45,7 +37,7 @@
             <li>
                 <a href="#" class="menu-toggle"><i class="fa-solid fa-school"></i> Rotina e Monitoramento ⬇</a>
                 <ul class="submenu_escola">
-                    <li><a href="{{ route('modalidade.inicial') }}">.1 Inicial</a></li>
+                    <li><a href="{{ route('rota_monitoramento.inicial') }}">.1 Inicial</a></li>
                     <li><a href="#" class="disabled">.2 Continuada</a></li>
                     <li><a href="#" class="disabled">.3 Continuada</a></li>
                     <li><a href="#" class="disabled">.4 Final</a></li>

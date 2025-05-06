@@ -62,12 +62,8 @@
             <p><input type="radio" name="comunicacao" class="radio-toggle" value = "3"> Comunicação não Verbal</p>
         </div>
     </div>
-
-
     <div id="capture">
         <h2>Cadastro de inventários</h2>
-
-     
             <table>
                 <thead>
                     <tr>
@@ -84,13 +80,8 @@
                         <td><input type="radio" name="ecm{{ sprintf('%02d', $i_comunicacao + 1) }}" value="0" required></td>
                     </tr>
                 @endforeach
-       
-
-
         </tbody>
         </table>
-
-        
             <table>
                 <thead>
                     <tr>
@@ -110,9 +101,6 @@
         
         </tbody>
         </table>
-
-
-        
             <table>
                 <thead>
                     <tr>
@@ -129,31 +117,17 @@
                         <td><input type="radio" name="eis{{ sprintf('%02d', $i_int_emocional + 1) }}" value="0" required></td>
                     </tr>
                 @endforeach
-
-
-
-        
-
-
-
         </tbody>
         </table>
-
     </div>
     <br>
     <div class="button-group">
-
         <button type="submit" class="btn btn-primary">Salvar</button>
-                     
+                   
         <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
         
-
     </div>
-
-
     </form>
-
-
     <!-- Importação das bibliotecas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -211,17 +185,17 @@ document.querySelector(".pdf-button").addEventListener("click", function() {
         // Seleciona todos os grupos de radio obrigatórios
         const requiredRadios = [
             // Comunicação/Linguagem
-            @for ($i = 1; $i <= 32; $i++)
+            for ($i = 1; $i <= 32; $i++)
                 'ecm{{ sprintf("%02d", $i) }}',
-            @endfor
+            endfor
             // Comportamento
-            @for ($i = 1; $i <= 17; $i++)
+            for ($i = 1; $i <= 17; $i++)
                 'ecp{{ sprintf("%02d", $i) }}',
-            @endfor
+            endfor
             // Socioemocional
-            @for ($i = 1; $i <= 18; $i++)
+            for ($i = 1; $i <= 18; $i++)
                 'eis{{ sprintf("%02d", $i) }}',
-            @endfor
+            endfor
             // Outros campos obrigatórios
             'responsavel', 'suporte', 'comunicacao'
         ];
@@ -246,11 +220,7 @@ document.querySelector(".pdf-button").addEventListener("click", function() {
         }
     });
     </script>
-    
-
-
-
-
+   
 </body>
 
 </html>
