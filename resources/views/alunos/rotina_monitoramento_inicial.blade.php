@@ -35,6 +35,6 @@
     </table>
 
     <!-- Botão Voltar -->
-    <a href="{{ route('home') }}" class="btn btn-secondary mt-3">Voltar</a>
+    <a href="{{ route('index') }}" class="btn btn-secondary mt-3">Voltar</a>
 </div>
 @endsection

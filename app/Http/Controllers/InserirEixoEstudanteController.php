@@ -11,11 +11,28 @@ use Carbon\Carbon;
 
 class InserirEixoEstudanteController extends Controller
 {
-    public function inserir_eixo_estudante(Request $request)
+    public function inserir_eixo_estudante(Request $request, $id = null)
     {
-//        dd($request->all());
-        // Obtenção do ID do aluno
-        $alunoId = $request->input('aluno_id');
+        // Log detalhado para depuração
+        \Log::info('=== INÍCIO DA REQUISIÇÃO DE INSERÇÃO DE INVENTÁRIO ===');
+        \Log::info('Dados recebidos no formulário:', $request->all());
+        \Log::info('ID do aluno da rota:', ['id' => $id]);
+        \Log::info('URL da requisição:', ['url' => $request->fullUrl()]);
+        \Log::info('Método da requisição:', ['method' => $request->method()]);
+        \Log::info('Cabeçalhos da requisição:', $request->headers->all());
+        
+        // Obtenção do ID do aluno a partir do parâmetro da rota ou do formulário
+        $alunoId = $id ?? $request->input('aluno_id');
+        
+        if (!$alunoId) {
+            \Log::error('ID do aluno não fornecido');
+            return response()->json([
+                'success' => false,
+                'message' => 'ID do aluno não fornecido.',
+                'data' => $request->all(),
+                'id_da_rota' => $id
+            ], 400);
+        }
         $data_inventario = $request->input('data_inicio_inventario');
         $fase_inventario = "In";
 

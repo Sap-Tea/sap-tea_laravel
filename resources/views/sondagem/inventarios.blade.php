@@ -16,8 +16,8 @@
 
 <body>
 
-        <form method="POST" action="{{ route('inserir_inventario', ['id' => $aluno->alu_id]) }}">
-        <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
+        <form id="formInventario" method="POST" action="{{ route('inserir_inventario', ['id' => $aluno->alu_id]) }}">
+        <input type="hidden" name="aluno_id" value="{{ $aluno->alu_id }}">
 @csrf
     <div class="menu">
         <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo" class="logo">
@@ -185,17 +185,17 @@ document.querySelector(".pdf-button").addEventListener("click", function() {
         // Seleciona todos os grupos de radio obrigatórios
         const requiredRadios = [
             // Comunicação/Linguagem
-            for ($i = 1; $i <= 32; $i++)
+            @for($i = 1; $i <= 32; $i++)
                 'ecm{{ sprintf("%02d", $i) }}',
-            endfor
+            @endfor
             // Comportamento
-            for ($i = 1; $i <= 17; $i++)
+            @for($i = 1; $i <= 17; $i++)
                 'ecp{{ sprintf("%02d", $i) }}',
-            endfor
+            @endfor
             // Socioemocional
-            for ($i = 1; $i <= 18; $i++)
+            @for($i = 1; $i <= 18; $i++)
                 'eis{{ sprintf("%02d", $i) }}',
-            endfor
+            @endfor
             // Outros campos obrigatórios
             'responsavel', 'suporte', 'comunicacao'
         ];
@@ -224,4 +224,27 @@ document.querySelector(".pdf-button").addEventListener("click", function() {
 </body>
 
 </html>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('formInventario');
+        
+        form.addEventListener('submit', function(e) {
+            console.log('Formulário enviado');
+            console.log('URL de ação:', form.action);
+            console.log('Método:', form.method);
+            
+            // Mostrar todos os dados do formulário
+            const formData = new FormData(form);
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ': ' + value);
+            }
+            
+            // Não interromper o envio do formulário
+            return true;
+        });
+    });
+</script>
+@endpush
 @endsection

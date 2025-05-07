@@ -5,30 +5,13 @@
     <h2>Relação dos Alunos</h2>
 
     <!-- Formulário de Pesquisa -->
-     
-    <form id = "pesquisaForm" method="POST" action="{{ route('inserir_inventario') }}">
+    <form id="pesquisaForm" method="GET" action="{{ route('imprime_aluno') }}">
         <div class="input-group mb-3">
             <input type="text" name="nome" class="form-control" placeholder="Pesquisar por aluno"
                    value="{{ request('nome') }}">
-            <button id="pesquisarBtn" class="btn btn-primary" type="submit">Pesquisar</button>
-
+            <button class="btn btn-primary" type="submit">Pesquisar</button>
         </div>
     </form>
-
-<script>
-document.getElementById('pesquisarBtn').addEventListener('click', function(event) {
-    event.preventDefault(); // Previne o envio padrão do formulário
-
-    // Pega o valor do campo de pesquisa
-    var nome = document.querySelector('input[name="nome"]').value;
-
-    // Redireciona para a rota imprime_aluno com o parâmetro nome
-    window.location.href = "{{route('imprime_aluno') }}?nome=" + nome;
-});
-
-
-
-</script>
 
     
     <!-- Tabela de Resultados -->
@@ -96,6 +79,6 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
     @endif
 
     <!-- Botão Voltar -->
-    <a href="{{ route('home') }}" class="btn btn-secondary mt-3">Voltar -> Menu</a>
+    <a href="{{ route('index') }}" class="btn btn-secondary mt-3">Voltar -> Menu</a>
 </div>
 @endsection

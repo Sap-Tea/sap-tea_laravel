@@ -37,16 +37,13 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-// Rota de teste
-Route::get('/teste', [TesteController::class, 'teste']);
+// Rota raiz redireciona para /index
+Route::redirect('/', '/index');
 
-// Rota raiz - exibe a view index
-Route::get('/', function () {
+// Rota principal
+Route::get('/index', function () {
     return view('index');
-})->name('home');
-
-// Rota /index redireciona para a raiz
-Route::redirect('/index', '/');
+})->name('index');
 
 // Rota para gerar o template PDF
 Route::get('/generate-template-pdf', [GenerateTemplatePDFController::class, 'generateTemplate'])->name('generate.template.pdf');
@@ -105,8 +102,7 @@ Route::prefix('sondagem')->group(function () {
     Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'index_inventario'])->name('eixos.alunos');
 
     Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
-    Route::post('inserir_inventario', [InserirEixoEstudanteController::class, 
-'inserir_eixo_estudante'])->name('inserir_inventario');
+    Route::post('/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
 
     Route::get('/visualizar-inventario/{id}', [AlunoController::class, 'visualiza_aluno_inventario'])->name('visualizar.inventario');
     // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
