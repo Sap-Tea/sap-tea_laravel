@@ -40,6 +40,9 @@ use App\Http\Controllers\AuthController;
 // Rota raiz redireciona para /index
 Route::redirect('/', '/index');
 
+// Rota para exibir resultado do aluno em JSON
+Route::get('/sondagem/resultado-aluno/{alu_id}', [SondagemController::class, 'resultadoAluno']);
+
 // Rota principal
 Route::get('/index', function () {
     return view('index');
@@ -167,6 +170,7 @@ Route::get('/minha-rede-de-ajuda', [SomeController::class, 'minhaRedeDeAjuda'])-
 
 // Rota para gerar PDF
 Route::post('/gerar-pdf', [GeneratePDFController::class, 'generatePDF'])->name('gerar.pdf');
-Route::post('/download-word', [DocumentController::class, 'generateWordExcel'])->name('download.word');
-Route::post('/download-excel', [DocumentController::class, 'downloadExcel'])->name('download.excel');
-Route::post('/download-pdf', [DocumentController::class, 'downloadPDF'])->name('download.pdf');
+// Rotas comentadas porque DocumentController não existe e está causando erro
+// Route::post('/download-word', [DocumentController::class, 'generateWordExcel'])->name('download.word');
+// Route::post('/download-excel', [DocumentController::class, 'downloadExcel'])->name('download.excel');
+// Route::post('/download-pdf', [DocumentController::class, 'downloadPDF'])->name('download.pdf');
