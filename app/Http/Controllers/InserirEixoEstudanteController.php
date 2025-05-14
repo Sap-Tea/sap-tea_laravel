@@ -241,8 +241,16 @@ class InserirEixoEstudanteController extends Controller
 
 
             DB::statement('UPDATE aluno SET flag_inventario = ? WHERE alu_id = ?', ['*', $alunoId]);
-            // Retorno de sucesso
-            return redirect('sondagem/eixos-estudante')->with('success', 'Dados salvos com sucesso!');
+
+            // Gera o JSON de debug dos três eixos juntos e retorna ao usuário
+            try {
+                $processaResultadosController = app(\App\Http\Controllers\ProcessaResultadosController::class);
+                $resultado = $processaResultadosController->inserirTodosEixos($alunoId);
+                return redirect('sondagem/eixos-estudante')->with('success', 'Inventário salvo com sucesso! Aguarde, estamos gerando as atividades.');
+            } catch (\Exception $e) {
+                \Log::error('Erro ao inserir resultados dos eixos: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Erro ao inserir resultados dos eixos!');
+            }
         } catch (\Exception $e) {
             // Tratamento de erro
             return redirect()->back()->with('error', 'Erro ao salvar dados: '.$e->getMessage());

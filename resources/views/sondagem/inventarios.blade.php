@@ -2,6 +2,17 @@
 
 @section('content')
 
+@if (session('success'))
+    <div class="alert alert-success" style="margin-top: 20px;">
+        {{ session('success') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-danger" style="margin-top: 20px;">
+        {{ session('error') }}
+    </div>
+@endif
+
 <!DOCTYPE html>
 <html lang="pt">
 
@@ -137,6 +148,21 @@
         
     </div>
     </form>
+
+    <!-- Overlay de Aguarde -->
+    <div id="aguardeOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:30px; border-radius:8px; max-width:350px; margin:auto; text-align:center; box-shadow:0 2px 12px #0004;">
+            <div style="margin-bottom:18px; font-size:1.2em;">Aguarde, estamos gerando as atividades...</div>
+            <div class="progress-bar-striped progress-bar-animated" style="height:24px; background:linear-gradient(90deg,#007bff 40%,#66b3ff 100%); border-radius:12px; width:100%; animation: progressBar 2s linear infinite;"></div>
+            <style>
+                @keyframes progressBar {
+                    0% {background-position: 0% 0;}
+                    100% {background-position: 100% 0;}
+                }
+            </style>
+        </div>
+    </div>
+
     <!-- Importação das bibliotecas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -193,7 +219,8 @@ if(form && btnSalvar && modal && confirmar && cancelar && mensagem) {
         var rotaAnterior = document.referrer || window.sessionStorage.getItem('rota_anterior') || '';
         window.sessionStorage.setItem('rota_anterior', rotaAnterior);
         document.getElementById('rota_anterior').value = rotaAnterior;
-        form.submit();
+        document.getElementById('aguardeOverlay').style.display = 'flex';
+        setTimeout(() => { form.submit(); }, 150);
     });
     cancelar.addEventListener('click', function() {
         modal.style.display = 'none';
