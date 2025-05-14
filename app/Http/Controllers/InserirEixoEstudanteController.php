@@ -242,7 +242,7 @@ class InserirEixoEstudanteController extends Controller
 
             DB::statement('UPDATE aluno SET flag_inventario = ? WHERE alu_id = ?', ['*', $alunoId]);
             // Retorno de sucesso
-            return redirect()->back()->with('success', 'Dados salvos com sucesso!');
+            return redirect('sondagem/eixos-estudante')->with('success', 'Dados salvos com sucesso!');
         } catch (\Exception $e) {
             // Tratamento de erro
             return redirect()->back()->with('error', 'Erro ao salvar dados: '.$e->getMessage());

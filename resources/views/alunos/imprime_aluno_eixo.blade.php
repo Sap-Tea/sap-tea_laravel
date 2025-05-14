@@ -41,12 +41,10 @@
                   
                     <!-- Botão cadastra -->
                     <td>
-                        @if($aluno->flag_inventario === "*").
-                            <button class="btn btn-primary btn-sm" disabled>Cadastra Inventário</button>
+                        @if($aluno->flag_inventario === "*")
+                            <button class="btn btn-danger btn-sm d-inline-block align-middle" style="background-color:#e74c3c; border-color:#c0392b; color:#fff; opacity:0.8;" disabled>Sondagem Inicial</button>
                         @else
-                        
-                        <a href="{{ route('alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm">Cadastra Inventário</a>
-
+                            <a href="{{ route('alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm d-inline-block align-middle">Sondagem Inicial</a>
                         @endif
                     </td>
 
@@ -55,10 +53,10 @@
                         @if($aluno->flag_inventario === null)
                             <button class="btn btn-warning btn-sm text-white" 
                                     style="background-color: #e67e22; border-color: #d35400;"
-                                    disabled>Visualiza inventário</button>
+                                    disabled>Visualiza - gera Pdf </button>
                         @else
                             <a href="{{ route('visualizar.inventario', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary btn-sm">Visualizar Inventário</a>
+                               class="btn btn-primary btn-sm">Visualiza - gera Pdf </a>
                         @endif
                     </td>
                 </tr>

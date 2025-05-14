@@ -17,6 +17,7 @@
 <body>
 
         <form id="formInventario" method="POST" action="{{ route('inserir_inventario', ['id' => $aluno->alu_id]) }}">
+    <input type="hidden" name="rota_anterior" id="rota_anterior" value="">
         <input type="hidden" name="aluno_id" value="{{ $aluno->alu_id }}">
 @csrf
     <div class="menu">
@@ -122,8 +123,16 @@
     </div>
     <br>
     <div class="button-group">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-                   
+    <button type="button" class="btn btn-primary" id="btnSalvar">Salvar</button>
+    <!-- Modal de confirmação -->
+    <div id="modalConfirmacao" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:30px; border-radius:8px; max-width:350px; margin:auto; text-align:center;">
+            <p id="mensagemConfirmacao"></p>
+            <button type="button" id="confirmarEnvio" class="btn btn-success" style="margin-right:10px;">Confirmar</button>
+            <button type="button" id="cancelarEnvio" class="btn btn-danger">Cancelar</button>
+        </div>
+    </div>
+
         <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
         
     </div>
@@ -132,6 +141,66 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
+// Confirmação segura ao enviar formulário
+const form = document.getElementById('formInventario');
+const btnSalvar = document.getElementById('btnSalvar');
+const modal = document.getElementById('modalConfirmacao');
+const confirmar = document.getElementById('confirmarEnvio');
+const cancelar = document.getElementById('cancelarEnvio');
+const mensagem = document.getElementById('mensagemConfirmacao');
+
+if(form && btnSalvar && modal && confirmar && cancelar && mensagem) {
+    btnSalvar.addEventListener('click', function(e) {
+        // Validação do formulário antes de mostrar o modal
+        let radiosValid = true;
+        // Validação manual dos grupos de radio dinâmicos
+        // Comunicação/Linguagem
+        const comunicacaoCount = document.querySelectorAll('input[name^="ecm"]').length / 2;
+        for(let i=1; i<=comunicacaoCount; i++) {
+            const radios = document.querySelectorAll(`input[name='ecm${String(i).padStart(2, '0')}']`);
+            if (![...radios].some(r => r.checked)) { radiosValid = false; break; }
+        }
+        // Comportamento
+        const comportamentoCount = document.querySelectorAll('input[name^="ecp"]').length / 2;
+        for(let i=1; i<=comportamentoCount; i++) {
+            const radios = document.querySelectorAll(`input[name='ecp${String(i).padStart(2, '0')}']`);
+            if (![...radios].some(r => r.checked)) { radiosValid = false; break; }
+        }
+        // Socioemocional
+        const emocionalCount = document.querySelectorAll('input[name^="eis"]').length / 2;
+        for(let i=1; i<=emocionalCount; i++) {
+            const radios = document.querySelectorAll(`input[name='eis${String(i).padStart(2, '0')}']`);
+            if (![...radios].some(r => r.checked)) { radiosValid = false; break; }
+        }
+        // Demais campos obrigatórios
+        if (form.checkValidity() && radiosValid) {
+            // Pega a data atual formatada
+            const dataAtual = new Date();
+            const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+            mensagem.textContent = `Confirma o envio do inventário? Data: ${dataFormatada}`;
+            modal.style.display = 'flex';
+        } else {
+            // Dispara validação padrão do HTML5
+            form.reportValidity();
+            if (!radiosValid) {
+                alert('Por favor, preencha todas as respostas dos inventários antes de salvar!');
+            }
+        }
+    });
+    confirmar.addEventListener('click', function() {
+        modal.style.display = 'none';
+        // Guardar rota anterior no sessionStorage e no campo hidden
+        var rotaAnterior = document.referrer || window.sessionStorage.getItem('rota_anterior') || '';
+        window.sessionStorage.setItem('rota_anterior', rotaAnterior);
+        document.getElementById('rota_anterior').value = rotaAnterior;
+        form.submit();
+    });
+    cancelar.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+}
+
+// --- PDF BUTTON SCRIPT ---
 document.querySelector(".pdf-button").addEventListener("click", function() {
     const { jsPDF } = window.jspdf;
     const element = document.querySelector('.container');
