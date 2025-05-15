@@ -70,6 +70,6 @@ class PerfilEstudanteController extends Controller
                     ->orderBy('alu_nome', 'asc')
                     ->get();
 
-        return view('alunos.rotina_monitoramento_inicial', compact('alunos'));
+        return view('rotina_monitoramento.rotina_monitoramento_inicial', compact('alunos'));
     }
 }

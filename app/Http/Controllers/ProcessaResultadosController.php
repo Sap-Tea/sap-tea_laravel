@@ -207,15 +207,20 @@ class ProcessaResultadosController extends Controller
                     'fk_hab_pro_com_lin' => $hab->id_hab_pro_com_lin,
                     'fk_id_pro_com_lin' => $hab->fk_id_pro_com_lin,
                     'fk_result_alu_id_ecomling' => $eixo->fk_alu_id_ecomling,
-                    'date_cadastro' => Carbon::now(),
+                    'date_cadastro' => \Carbon\Carbon::now(),
                     'tipo_fase_com_lin' => $eixo->fase_inv_com_lin
                 ];
             }
         }
-        // Insere na tabela de resultados
-        foreach ($habilidades as $dados) {
-            ResultEixoComLin::create($dados);
-        }
-        return response()->json(['message' => 'Resultados processados com sucesso', 'dados' => $habilidades]);
+        // Otimização: insert em lote com transação
+        $resultadosInseridos = [];
+        \DB::transaction(function () use (&$habilidades, &$resultadosInseridos) {
+            if (count($habilidades) > 0) {
+                \App\Models\ResultEixoComLin::insert($habilidades);
+                // Para exibir o JSON igual antes, buscamos os registros inseridos (opcional: pode-se retornar só os dados enviados)
+                $resultadosInseridos = $habilidades;
+            }
+        });
+        return response()->json(['message' => 'Resultados processados com sucesso', 'dados' => $resultadosInseridos]);
     }
 }
