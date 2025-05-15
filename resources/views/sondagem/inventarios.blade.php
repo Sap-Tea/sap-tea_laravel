@@ -55,10 +55,10 @@
             
             <p>Data de Nascimento: <input type="date" value ="{{$aluno->alu_dtnasc}}" readonly>
                  Idade: <input value = "{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly type="text" min="0" style="width: 50px;"></p>
-            <p>Ano/Série: <input type="text" style="width: 150px;" value = "{{$alunoDetalhado->serie_desc}}" readonly> 
+            <p>RA: <input type="text" style="width: 150px;" value = "{{$aluno->alu_ra}}" readonly>
                 Turma:
-                <input value = "{{$alunoDetalhado->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly> 
-                Período: <input type="text"style="width: 200px;" style="width: 250px;" value = "{{$alunoDetalhado->desc_modalidade}}" readonly></p>
+                <input value = "{{$alunoDetalhado->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly>
+                Período: <input type="text" style="width: 200px;" value = "{{$alunoDetalhado->desc_modalidade}}" readonly></p>
         </div>
         <div class="support">
             <p><strong>Responsável pelo preenchimento:</strong></p>
