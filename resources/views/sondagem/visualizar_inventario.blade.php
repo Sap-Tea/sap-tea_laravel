@@ -7,6 +7,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Inventário</title>
+    <style>
+        /* ====== CSS de inventario.css ====== */
+        /* Estilo geral */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        /* Títulos */
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #db7a19;
+        }
+        /* Tabelas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th,
+        td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #db7a19;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        /* Inputs */
+        input[type="radio"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #db7a19;
+            border-radius: 4px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            background-color: #ffffff;
+        }
+        input[type="radio"]:checked::after {
+            content: "X";
+            font-size: 16px;
+            font-weight: bold;
+            color: rgb(14, 14, 14);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type="radio"]:hover {
+            border-color: #db7a19;
+        }
+        /* ====== CSS de header.css ====== */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            background-color: #f4f4f4;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 3px solid #d9534f;
+            position: relative;
+        }
+        .menu h1 {
+            margin: 0;
+            font-size: 22px;
+            color: #d9534f;
+        }
+        .menu p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .fields, .support {
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: left;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+        }
+        .support {
+            background-color: #ffffff;
+        }
+        .menu input[type="text"], .menu input[type="date"], .menu input[type="number"] {
+            width: auto;
+            padding: 3px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 150px;
+        }
+        .logo-right {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+        }
+    </style>
     <link rel="stylesheet" href="{{ asset('css/inventario.css') }}">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
    
@@ -89,7 +216,7 @@
                                 $campo = 'ecm' . sprintf('%02d', $i+1);
                                 $valor = $eixoComunicacao->$campo ?? null;
                             @endphp
-                            <tr>
+                            <tr style="background-color: #A1D9F6;">
                                 <td>{{ $pergunta }}</td>
                                 <td>
                                     <input type="radio" 
@@ -126,7 +253,7 @@
                                 $campo = 'ecp' . sprintf('%02d', $i+1);
                                 $valor = $eixoComportamento->$campo ?? null;
                             @endphp
-                            <tr>
+                            <tr style="background-color: #FFEB3B;">
                                 <td>{{ $pergunta }}</td>
                                 <td>
                                     <input type="radio" 
@@ -163,7 +290,7 @@
                                 $campo = 'eis' . sprintf('%02d', $i+1);
                                 $valor = $eixoSocioEmocional->$campo ?? null;
                             @endphp
-                            <tr>
+                            <tr style="background-color: #d7EAD9 !important;">
                                 <td>{{ $pergunta }}</td>
                                 <td>
                                     <input type="radio" 
