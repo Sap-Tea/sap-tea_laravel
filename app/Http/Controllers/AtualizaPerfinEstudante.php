@@ -12,11 +12,14 @@ class AtualizaPerfinEstudante extends Controller
     // Consulta para obter dados do aluno
 
 $query = "SELECT alu.alu_id, alu.alu_nome, alu.alu_dtnasc,
-                     moda.desc_modalidade, moda.desc_serie_modalidade,
-                     fun.func_nome, tp.desc_tipo_funcao,tur.fk_cod_func
-              FROM aluno AS alu 
+                     tm.desc_modalidade,
+                     ser.serie_desc AS desc_serie_modalidade,
+                     fun.func_nome, tp.desc_tipo_funcao, tur.fk_cod_func
+              FROM aluno AS alu
               LEFT JOIN matricula AS mat ON alu.alu_id = mat.fk_id_aluno
               LEFT JOIN modalidade AS moda ON mat.fk_cod_mod = moda.id_modalidade
+              LEFT JOIN tipo_modalidade AS tm ON moda.fk_id_modalidade = tm.id_tipo_modalidade
+              LEFT JOIN serie AS ser ON ser.fk_mod_id = mat.fk_cod_mod
               LEFT JOIN turma AS tur ON tur.cod_valor = mat.fk_cod_valor_turma
               LEFT JOIN funcionario AS fun ON fun.func_id = 37
               LEFT JOIN tipo_funcao AS tp ON tp.tipo_funcao_id = fun.func_cod_funcao

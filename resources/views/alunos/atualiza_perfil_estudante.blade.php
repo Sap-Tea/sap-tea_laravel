@@ -7,18 +7,182 @@
     
     <!-- Importando CSS no Laravel -->
     <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
+    <style>
+    body {
+        min-height: 100vh;
+        background: #fff;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .logo-top-left {
+        position: fixed;
+        top: 25mm;
+        left: 20mm;
+        width: 60mm;
+        opacity: 0.25;
+        z-index: 1;
+        filter: drop-shadow(0 2px 8px #0002) grayscale(1);
+        pointer-events: none;
+    }
+    .logo-bottom-right {
+        position: fixed;
+        bottom: 20mm;
+        right: 20mm;
+        width: 60mm;
+        opacity: 0.25;
+        z-index: 1;
+        filter: drop-shadow(0 2px 8px #0002) grayscale(1);
+        pointer-events: none;
+    }
+    .container {
+        position: relative;
+        background: #fff;
+        z-index: 1;
+        padding: 36px 28px 36px 28px;
+        border-radius: 8px;
+        margin: 0 auto 0 auto;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+        max-width: 190mm;
+        min-height: 277mm;
+        width: 100%;
+        box-sizing: border-box;
+        opacity: 1;
+    }
+    .vertical-watermark {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+    .watermark-top, .watermark-bottom {
+        width: 60mm;
+        opacity: 0.18;
+        filter: grayscale(1);
+    }
+    .watermark-center {
+        width: 30mm;
+        opacity: 0.08;
+        filter: grayscale(1);
+    }
+    .form-content {
+        position: relative;
+        z-index: 2;
+    }
+    .watermark-bg {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        background: url('{{ asset('img/logo_sap.png') }}') no-repeat center center;
+        background-size: 30vw auto;
+        opacity: 0.08;
+    }
+    h2 {
+        text-align: center;
+        color: #204080;
+        font-weight: 600;
+        margin-bottom: 32px;
+        letter-spacing: 0.02em;
+    }
+    @media print {
+        html, body {
+            width: 210mm;
+            height: 297mm;
+            background: #fff !important;
+        }
+        .container {
+            box-shadow: none;
+            margin: 0;
+            padding: 20mm 10mm 20mm 10mm;
+            border-radius: 0;
+            min-height: 277mm;
+            max-width: 190mm;
+            width: 100%;
+            page-break-after: always;
+            background-size: 65% auto;
+            background-position: center;
+        }
+        .logo-top-left, .logo-bottom-right {
+            opacity: 0.18 !important;
+            filter: grayscale(1) !important;
+        }
+    }
+    @page {
+        size: A4;
+        margin: 0;
+    }
+    
+    }
+    .container {
+        position: relative;
+        z-index: 100;
+        background: #fff;
+        padding: 48px 36px 48px 36px;
+        border-radius: 14px;
+        margin: 80px auto 80px auto;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+        max-width: 980px;
+        min-height: 900px;
+    }
+    h2 {
+        text-align: center;
+        color: #204080;
+        font-weight: 600;
+        margin-bottom: 32px;
+        letter-spacing: 0.02em;
+    }
+    @media (max-width: 700px) {
+        .container {
+            padding: 18px 3vw 18px 3vw;
+            margin: 20vw 0 10vw 0;
+        }
+        .logo-top-left, .logo-bottom-right {
+            width: 70px;
+            top: 12px !important;
+            left: 12px !important;
+            right: 12px !important;
+            bottom: 12px !important;
+        }
+        .logo-center {
+            width: 160px;
+        }
+    }
+    @media print {
+        body {
+            background: #fff !important;
+        }
+        .logo-top-left, .logo-bottom-right, .logo-center {
+            opacity: 0.18 !important;
+            filter: grayscale(1) !important;
+        }
+        .container {
+            box-shadow: none;
+            margin: 0;
+            padding: 22px 8px 22px 8px;
+            border-radius: 0;
+        }
+    }
+</style>
 </head>
 
 <body>
-<!--
-    <img src="{{ asset('img/logogando.png') }}" alt="Logo Superior Esquerda" class="logo-top-left">
-<img src="{{ asset('img/logo_baixo.png') }}" alt="Logo Inferior Direita" class="logo-bottom-right">
--->
-<img src="{{ asset('img/logo_sap.png') }}" alt="Logo Transparente Central" class="logo-center">
-<div class="logo-repeated"></div>
-
 <div class="container">
-    <h2>I - Perfil do Estudante</h2>
+    <div class="vertical-watermark">
+        <img src="{{ asset('img/logogando.png') }}" alt="Logo Topo" class="watermark-top">
+        <img src="{{ asset('img/logo_sap.png') }}" alt="Marca d'água Central" class="watermark-center">
+        <img src="{{ asset('img/logo_baixo.png') }}" alt="Logo Rodapé" class="watermark-bottom">
+    </div>
+    <div class="form-content" style="position:relative;z-index:2;">
+        <h2>I - Perfil do Estudante</h2>
 
     <!-- Verifica se há dados do aluno selecionado -->
     @if(isset($dados) && count($dados) > 0)
@@ -422,16 +586,47 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-document.querySelector(".pdf-button").addEventListener("click", function() {
-    const { jsPDF } = window.jspdf;
-    const element = document.querySelector('.container');
-
-    html2canvas(element, {
-        scale: 0.9,
-        useCORS: true
-    }).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
+// Geração de PDF multipágina A4 com marca d'água e nome personalizado
+if(document.querySelector('.pdf-button')){
+    document.querySelector('.pdf-button').addEventListener('click', function() {
+        const container = document.querySelector('.container');
+        html2canvas(container, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: null,
+        }).then(function(canvas) {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF("p", "mm", "a4");
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let y = 0;
+            while (y < imgHeight) {
+                pdf.addImage(imgData, "PNG", 0, y * -1, imgWidth, imgHeight);
+                y += pageHeight;
+                if (y < imgHeight) pdf.addPage();
+            }
+            // Nome do aluno diretamente da variável PHP (ajuste conforme necessário)
+            const nomeAluno = "Alice Figueiredo";
+            // Remove acentos e caracteres especiais, troca espaços por _
+            const nomeFormatado = nomeAluno
+                .normalize('NFD').replace(/[̀-ͯ]/g, '')
+                .replace(/[^a-zA-Z0-9]/g, '_')
+                .replace(/_+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            // Data no formato DD-MM-AAAA
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const ano = hoje.getFullYear();
+            const dataAtual = `${dia}-${mes}-${ano}`;
+            // Nome do arquivo
+            const nomeArquivo = `Perfil_${nomeFormatado}_${dataAtual}.pdf`;
+            pdf.save(nomeArquivo);
+        }).catch(error => console.error("Erro ao gerar PDF:", error));
+    });
+}
+</script>        const pdf = new jsPDF("p", "mm", "a4");
         const imgWidth = 210;
         const pageHeight = 297;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
