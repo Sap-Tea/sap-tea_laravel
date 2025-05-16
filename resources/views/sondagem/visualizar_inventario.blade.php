@@ -204,7 +204,7 @@
                 <h2>EIXO COMUNICAÇÃO/LINGUAGEM</h2>
                 <table>
                     <thead>
-                        <tr>
+                        <tr style="background-color: #A1D9F6;">
                             <th>Pergunta</th>
                             <th>Sim</th>
                             <th>Não</th>
@@ -241,7 +241,7 @@
                 <h2>EIXO COMPORTAMENTO</h2>
                 <table>
                     <thead>
-                        <tr>
+                        <tr style="background-color: #A1D9F6;">
                             <th>Pergunta</th>
                             <th>Sim</th>
                             <th>Não</th>
@@ -278,7 +278,7 @@
                 <h2>EIXO INTERAÇÃO SOCIOEMOCIONAL</h2>
                 <table>
                     <thead>
-                        <tr>
+                        <tr style="background-color: #A1D9F6;">
                             <th>Pergunta</th>
                             <th>Sim</th>
                             <th>Não</th>
