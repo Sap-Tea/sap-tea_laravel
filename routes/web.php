@@ -121,37 +121,16 @@ Route::post('/formulario-submit', function (Request $request) {
     return back()->with('success', 'Formulário enviado com sucesso!');
 })->name('formulario.submit');
 
-/*Grupo de rotas para professores
-Route::group(['prefix' => 'professor'], function () {
-    Route::get('/imprime-aluno', [ControllerPerfil::class, 'imprimeAluno'])->name('aluno.perfil');
-});
-*/
-// Rotas de perfil estudante 
-Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.index');
-Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])
-    ->name('perfil.estudante.mostrar');
-
-// Rotas de visualização e atualização de perfil
-Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualizaPerfil'])
-    ->name('visualizar.perfil');
-Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])
-    ->name('atualiza.perfil.estudante');
-
-// Inserir perfil
-Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])
-    ->name('inserir_perfil');
-
-
-
-
-Route::get('/imprime-aluno', [ImprimeAlunoController::class, 'imprimeAluno'])->name('imprime_aluno');
-Route::post('/atualizar-perfil', [AtualizacaoPerfilController::class, 'atualizar'])->name('atualizar.perfil');
-
-
-
-
 // Grupo de rotas para sondagens
-Route::prefix('sondagem')->group(function () {
+Route::middleware(['auth:funcionario', 'funcao.especial'])->prefix('sondagem')->group(function () {
+    // Rotas de perfil
+    Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.index');
+    Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])->name('perfil.estudante.mostrar');
+    Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualizaPerfil'])->name('visualizar.perfil');
+    Route::post('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
+    Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
+    Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
+
     // Rota para processar resultados dos três eixos
     Route::post('/processa-resultados/{alunoId}', [\App\Http\Controllers\ProcessaResultadosController::class, 'processaTodosEixos'])->name('processa_resultados');
     Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'index_inventario'])->name('eixos.alunos');
@@ -180,7 +159,7 @@ Route::prefix('rotina_monitoramento')->group(function () {
 //minha alteracao
 Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
-Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
+// Rota de perfil movida para o grupo de Sondagem.
 // Rota para exportar Excel
 Route::post('/export/excel', [ExportExcelController::class, 'export'])->name('export.excel');
 // Rota para gerar PDF
@@ -204,6 +183,9 @@ Route::get('/escola', [EscolaController::class, 'index'])->name('escola');
 
 // Rota para o Aluno
 Route::get('/alunos', [AlunosController::class, 'index'])->name('alunos');
+
+// Rota para impressão de alunos (corrige erro de rota nas views)
+Route::get('/imprime-aluno', [ImprimeAlunoController::class, 'imprimeAluno'])->name('imprime_aluno');
 
 // Rota para o download
 Route::get('/download', [downloadController::class, 'index'])->name('download');
