@@ -1,5 +1,7 @@
 <?php
 namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Aluno; // Importa o modelo Aluno
 use Carbon\Carbon; // Para manipulação de datas
@@ -24,7 +26,7 @@ class PerfilEstudanteController extends Controller
     ]);
 }
 
-public function index_inventario()
+public function index_inventario(Request $request)
 {
     $professor = auth('funcionario')->user();
     $funcId = $professor->func_id;
@@ -33,6 +35,29 @@ public function index_inventario()
         ->orderBy('alu_nome', 'asc')
         ->get();
 
+    // Teste: se vier do menu de rotina, mostre botões diferentes
+    $contexto = $request->get('contexto');
+    if ($contexto === 'rotina') {
+        return view('alunos.imprime_aluno_eixo', [
+            'alunos' => $alunos,
+            'titulo' => 'Rotina de Monitoramento',
+            'botoes' => [
+                [
+                    'label' => 'Cadastrar Rotina',
+                    'rota'  => 'rotina.monitoramento.cadastrar',
+                    'classe' => 'btn-success'
+                ],
+                [
+                    'label' => 'Visualizar Rotina',
+                    'rota'  => 'rotina.monitoramento.visualizar',
+                    'classe' => 'btn-info'
+                ]
+            ],
+            'professor_nome' => $professor->func_nome,
+        ]);
+    }
+
+    // Default: inventário
     return view('alunos.imprime_aluno_eixo', [
         'alunos' => $alunos,
         'titulo' => 'Alunos do Professor',
@@ -40,7 +65,7 @@ public function index_inventario()
         'rota_pdf' => 'visualizar.inventario',
         'exibeBotaoInventario' => true,
         'exibeBotaoPdf' => true,
-        'flag_teste' => false,
+        'professor_nome' => $professor->func_nome,
     ]);
 }
 
@@ -68,23 +93,63 @@ public function index_inventario()
         
     public function rotina_monitoramento_inicial()
     {
-        // Busca alunos que existem nas três tabelas de eixo e estão matriculados
-        $alunos = Aluno::whereHas('matriculas')
-                    ->whereHas('eixoComunicacao', function($query) {
-                        $query->whereNotNull('data_insert_com_lin')
-                              ->whereNotNull('fase_inv_com_lin');
-                    })
-                    ->whereHas('eixoComportamento', function($query) {
-                        $query->whereNotNull('data_insert_comportamento')
-                              ->whereNotNull('fase_inv_comportamento');
-                    })
-                    ->whereHas('eixoSocioEmocional', function($query) {
-                        $query->whereNotNull('data_insert_int_socio')
-                              ->whereNotNull('fase_inv_int_socio');
-                    })
-                    ->orderBy('alu_nome', 'asc')
-                    ->get();
+        $professor = auth('funcionario')->user();
+        $funcId = $professor->func_id;
 
-        return view('rotina_monitoramento.rotina_monitoramento_inicial', compact('alunos'));
+        $alunos = \App\Models\Aluno::porProfessor($funcId)
+            ->orderBy('alu_nome', 'asc')
+            ->get();
+
+        return view('alunos.imprime_aluno_eixo', [
+            'alunos' => $alunos,
+            'titulo' => 'Rotina de Monitoramento',
+            'botoes' => [
+                [
+                    'label' => 'Cadastrar Rotina',
+                    'rota'  => 'rotina.monitoramento.cadastrar',
+                    'classe' => 'btn-success'
+                ],
+                [
+                    'label' => 'Visualizar Rotina',
+                    'rota'  => 'rotina.monitoramento.visualizar',
+                    'classe' => 'btn-info'
+                ]
+            ],
+            'professor_nome' => $professor->func_nome,
+        ]);
+    }
+
+    /**
+     * Exibe a tela de cadastro de rotina para o aluno selecionado
+     */
+    public function cadastrar_rotina_aluno($id)
+    {
+        $aluno = \App\Models\Aluno::findOrFail($id);
+        $professor = auth('funcionario')->user();
+        return view('rotina_monitoramento.monitoramento_aluno', [
+            'aluno' => $aluno,
+            'professor_nome' => $professor->func_nome,
+        ]);
+    }
+
+    /**
+     * Salva a rotina de monitoramento do aluno
+     */
+    public function salvar_rotina(Request $request, $id)
+    {
+        $request->validate([
+            'descricao' => 'required|string|max:1000',
+        ]);
+
+        // Exemplo genérico de salvamento, ajuste conforme seu modelo real
+        \DB::table('rotinas')->insert([
+            'aluno_id' => $id,
+            'descricao' => $request->descricao,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('rotina.monitoramento.cadastrar', ['id' => $id])
+            ->with('success', 'Rotina salva com sucesso!');
     }
 }

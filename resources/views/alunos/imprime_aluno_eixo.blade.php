@@ -4,6 +4,12 @@
 <div class="container mt-4">
     <h2>{{ $titulo ?? 'Relação dos Alunos' }}</h2>
 
+    @if(isset($professor_nome))
+        <div class="alert alert-secondary mb-3">
+            <strong>Professor Responsável:</strong> {{ $professor_nome }}
+        </div>
+    @endif
+
     <!-- Formulário de Pesquisa -->
     <form id="pesquisaForm" method="GET" action="{{ route('imprime_aluno') }}">
         <div class="input-group mb-3">
@@ -38,6 +44,12 @@
                   
                     <!-- Botões de ação flexíveis -->
                     <td>
+                        @if(isset($botoes))
+                            @foreach($botoes as $botao)
+                                <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $botao['classe'] }} btn-sm">{{ $botao['label'] }}</a>
+                            @endforeach
+                        @endif
+
                         @if(($exibeBotaoInventario ?? false) && $aluno->flag_inventario !== "*")
                             <a href="{{ route($rota_acao ?? 'alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm d-inline-block align-middle">Sondagem Inicial</a>
                         @elseif(($exibeBotaoInventario ?? false) && $aluno->flag_inventario === "*")

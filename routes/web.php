@@ -79,6 +79,21 @@ Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
 
 // =========================
 // ROTINA E MONITORAMENTO
+
+// Rotas de teste para os botões customizados de rotina
+Route::get('/rotina/cadastrar/{id}', [
+    App\Http\Controllers\PerfilEstudanteController::class,
+    'cadastrar_rotina_aluno']
+)->name('rotina.monitoramento.cadastrar');
+
+Route::post('/rotina/salvar/{id}', [
+    App\Http\Controllers\PerfilEstudanteController::class,
+    'salvar_rotina']
+)->name('rotina.monitoramento.salvar');
+
+Route::get('/rotina/visualizar/{id}', function($id) {
+    return 'Visualizar rotina para aluno ' . $id;
+})->name('rotina.monitoramento.visualizar');
 // =========================
 Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
     // Exemplo de rota inicial de Rotina e Monitoramento
