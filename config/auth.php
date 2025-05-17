@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Tempo do cookie 'remember me' em minutos (1 dia)
+    'remember' => [
+        'expire' => 1440,
+    ],
 
     /*
     |--------------------------------------------------------------------------
