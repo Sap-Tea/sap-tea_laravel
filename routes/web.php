@@ -38,15 +38,24 @@ use App\Http\Controllers\AuthController;
 */
 
 // Rota raiz redireciona para /index
-Route::redirect('/', '/index');
-
-// Rota para exibir resultado do aluno em JSON
-Route::get('/sondagem/resultado-aluno/{alu_id}', [SondagemController::class, 'resultadoAluno']);
-
-// Rota principal
+Route::get('/', function () {
+    return redirect('/index');
+});
 Route::get('/index', function () {
     return view('index');
 })->name('index');
+
+// Logout
+use Illuminate\Http\Request;
+Route::post('/logout', function (Request $request) {
+    auth()->guard('funcionario')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect()->route('login')->with('status', 'Sessão encerrada com sucesso!');
+})->name('logout');
+
+// Rota para exibir resultado do aluno em JSON
+Route::get('/sondagem/resultado-aluno/{alu_id}', [SondagemController::class, 'resultadoAluno']);
 
 // Rota para gerar o template PDF
 Route::get('/generate-template-pdf', [GenerateTemplatePDFController::class, 'generateTemplate'])->name('generate.template.pdf');
@@ -57,6 +66,21 @@ Route::get('/contato', [ContatoController::class, 'contato'])->name('contato');
 
 // Autenticação
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+// Recuperação de senha padrão Laravel
+Route::get('/password/reset', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [AuthController::class, 'reset'])->name('password.update');
+
+// Troca de senha no primeiro acesso
+Route::get('/password/first-change', [AuthController::class, 'showFirstChangeForm'])->name('password.first.change');
+Route::post('/password/first-change', [AuthController::class, 'processFirstChange']);
+
+// Primeiro acesso (email + CPF)
+Route::get('/primeiro-acesso', [AuthController::class, 'showPrimeiroAcessoForm'])->name('primeiro.acesso');
+Route::post('/primeiro-acesso', [AuthController::class, 'primeiroAcesso']);
 
 // Sondagem inicial
 Route::get('/sondagem-inicial', [SondagemController::class, 'index'])->name('sondagem.inicial');
@@ -176,3 +200,11 @@ Route::post('/gerar-pdf', [GeneratePDFController::class, 'generatePDF'])->name('
 // Route::post('/download-word', [DocumentController::class, 'generateWordExcel'])->name('download.word');
 // Route::post('/download-excel', [DocumentController::class, 'downloadExcel'])->name('download.excel');
 // Route::post('/download-pdf', [DocumentController::class, 'downloadPDF'])->name('download.pdf');
+
+
+Route::get('/teste-email', function () {
+    \Mail::raw('Teste de email do Laravel', function($message) {
+        $message->to('marcosbarroso.info@gmail.com')->subject('Teste');
+    });
+    return 'Email enviado!';
+});

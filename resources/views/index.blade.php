@@ -21,7 +21,18 @@
         <div class="menu-logo">
             <img src="{{ asset('img/logo_sap.png') }}" alt="Logo">
         </div>
-
+        <div class="user-welcome" style="text-align:center; margin-bottom:15px;">
+            <div style="font-size:1.15em; font-weight:600; color:#0056b3;">Olá, {{ Auth::guard('funcionario')->user()->func_nome ?? 'Usuário' }}!</div>
+            <div style="font-size:0.97em; color:#555;">{{ Auth::guard('funcionario')->user()->email_func ?? '' }}</div>
+            <form method="POST" action="{{ route('logout') }}" style="margin-top:8px;">
+                @csrf
+                <button type="submit" style="background:#e74c3c; color:#fff; border:none; border-radius:4px; padding:4px 16px; font-weight:500; cursor:pointer;">Sair</button>
+            </form>
+        </div>
+        <div class="welcome-block" style="background:#f0f6ff; border-left:5px solid #0056b3; padding:16px 18px; margin-bottom:18px; border-radius:7px;">
+            <div style="font-size:1.15em; font-weight:600; color:#0056b3; margin-bottom:5px;">Bem-vindo ao SAP-TEA!</div>
+            <div style="font-size:1em; color:#222;">Esta é sua área inicial. Utilize o menu ao lado para acessar as funcionalidades.<br>Conte sempre com o suporte do SAP-TEA para apoiar o desenvolvimento dos alunos TEA.<br><span style="color:#009688; font-weight:500;">"Juntos superando desafios, celebrando conquistas!"</span></div>
+        </div>
         <ul>
            
            <li>

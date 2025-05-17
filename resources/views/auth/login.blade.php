@@ -93,18 +93,93 @@
         
         </a>
         </a>
-        
     </div>
     <div class="page">
         <img src="{{ asset('img/sap_logo2.png') }}" alt="Imagem representativa">
         <div class="formLogin">
             <img src="{{ asset('img/logo_sap.png') }}" alt="Imagem de Login" class="logoSap">
-            <label for="usuario">Usuário</label>
-            <input type="text" name="usuario" id="usuario" placeholder="Digite seu usuário" autofocus>
-            <label for="senha">Senha</label>
-            <input type="password" name="senha" id="senha" placeholder="Digite sua senha">
-            <a href="/">Esqueci minha senha</a>
-            <button class="btn" onclick="compararValor()">Acessar</button>
+            <div class="login-header">
+        <h2>Bem-vindo ao SAP-TEA</h2>
+        <p class="login-instrucoes">Acesse com seu e-mail institucional e senha cadastrada.<br>Se for o <strong>primeiro acesso</strong>, clique no link abaixo para cadastrar sua senha.</p>
+    </div>
+    @if (session('status'))
+        <div class="notificacao sucesso" id="notificacao">
+            {{ session('status') }}
+        </div>
+    @endif
+    <form method="POST" action="{{ route('login') }}" class="login-form">
+        @csrf
+        <div class="form-group">
+            <label for="email_func">E-mail</label>
+            <input type="email" name="email_func" id="email_func" placeholder="Digite seu e-mail" required autofocus value="{{ old('email_func') }}">
+        </div>
+        <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" name="password" id="password" placeholder="Digite sua senha" required>
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+            <input type="checkbox" name="remember" id="remember" style="margin-right: 7px;">
+            <label for="remember" style="margin-bottom: 0; font-size: 1em; cursor: pointer;">Lembre-me nesta máquina</label>
+        </div>
+        <button class="btn btn-acesso" type="submit">Entrar</button>
+        <div class="login-links">
+            <a href="{{ route('password.request') }}" class="link-senha">Esqueci minha senha</a>
+        </div>
+    </form>
+    <div class="login-links" style="margin-top: 22px;">
+        <a href="{{ url('/primeiro-acesso') }}" class="link-senha" style="font-size:1.02em;font-weight:bold;">Primeiro acesso? Clique aqui para cadastrar sua senha</a>
+    </div>
+    @if ($errors->any())
+        <div class="notificacao erro" id="notificacao">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+    <style>
+        .login-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-instrucoes {
+            font-size: 1.05em;
+            color: #333;
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+        .login-form {
+            margin-top: 10px;
+        }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .btn-acesso {
+            width: 100%;
+            background: #0056b3;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
+        .btn-acesso:hover {
+            background: #003a75;
+        }
+        .login-links {
+            text-align: center;
+            margin-top: 5px;
+        }
+        .link-senha {
+            color: #0056b3;
+            text-decoration: underline;
+            font-size: 1em;
+            white-space: nowrap;
+        }
+        .link-senha:hover {
+            color: #003a75;
+        }
+    </style>
         </div>
         <div class="notificacao" id="notificacao"></div>
     </div>
