@@ -16,18 +16,33 @@ class PerfilEstudanteController extends Controller
                    ->orderBy('alu_nome', 'asc')
                    ->get();
 
-    return view('alunos.imprime_aluno', compact('alunos'));
+    return view('alunos.imprime_aluno', [
+        'alunos' => $alunos,
+        'titulo' => 'Alunos Matriculados',
+        'rota_inventario' => 'perfil_estudante.index_inventario',
+        'flag_teste' => true,
+    ]);
 }
 
-    public function index_inventario()
-    {
-        // Busca apenas alunos matriculados, ordenados por nome
-        $alunos = Aluno::whereHas('matriculas')
-                    ->orderBy('alu_nome', 'asc')
-                    ->get();
+public function index_inventario()
+{
+    $professor = auth('funcionario')->user();
+    $funcId = $professor->func_id;
 
-        return view('alunos.imprime_aluno_eixo', compact('alunos'));
-    } 
+    $alunos = \App\Models\Aluno::porProfessor($funcId)
+        ->orderBy('alu_nome', 'asc')
+        ->get();
+
+    return view('alunos.imprime_aluno_eixo', [
+        'alunos' => $alunos,
+        'titulo' => 'Alunos do Professor',
+        'rota_acao' => 'alunos.inventario',
+        'rota_pdf' => 'visualizar.inventario',
+        'exibeBotaoInventario' => true,
+        'exibeBotaoPdf' => true,
+        'flag_teste' => false,
+    ]);
+}
 
  
         public function mostrar($id)

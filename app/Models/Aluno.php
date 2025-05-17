@@ -67,4 +67,25 @@ public function preenchimento()
     return $this->hasOne(PreenchimentoInventario::class, 'fk_id_aluno');
 }
 
+    /**
+     * Scope para filtrar alunos que estejam em turmas de um determinado professor (funcionario).
+     * Uso: Aluno::porProfessor($funcId)->get();
+     */
+    public function scopePorProfessor($query, $funcId)
+    {
+        return $query->whereHas('matriculas.turma', function($q) use ($funcId) {
+            $q->where('fk_cod_func', $funcId);
+        });
+    }
+
+    /**
+     * Scope para alunos em turma do professor logado E turma vinculada a enturmação
+     */
+    public function scopePorProfessorEnturmado($query, $funcId)
+    {
+        return $query->whereHas('matriculas.turma', function($q) use ($funcId) {
+            $q->where('fk_cod_func', $funcId)
+              ->whereHas('enturmacao');
+        });
+    }
 }

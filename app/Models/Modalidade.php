@@ -13,4 +13,10 @@ class Modalidade extends Model
     {
         return $this->hasMany(Matricula::class, 'fk_cod_mod', 'id_modalidade');
     }
+
+    // Relacionamento com TipoModalidade
+    public function tipo()
+    {
+        return $this->belongsTo(TipoModalidade::class, 'fk_id_modalidade', 'id_tipo_modalidade');
+    }
 }

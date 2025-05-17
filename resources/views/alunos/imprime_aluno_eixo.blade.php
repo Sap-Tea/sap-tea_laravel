@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>Relação dos Alunos</h2>
+    <h2>{{ $titulo ?? 'Relação dos Alunos' }}</h2>
 
     <!-- Formulário de Pesquisa -->
     <form id="pesquisaForm" method="GET" action="{{ route('imprime_aluno') }}">
@@ -13,7 +13,6 @@
         </div>
     </form>
 
-    
     <!-- Tabela de Resultados -->
     <table class="table table-striped">
         <thead>
@@ -21,9 +20,8 @@
                 <th>#</th>
                 <th>RA do Aluno</th>
                 <th>Nome do Aluno</th>
-                <th>Responsável</th>
-                <th>Tel. Responsável</th>
-                <th>Email</th>
+                <th>Nome da Escola</th>
+                <th>Modalidade de Ensino</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -35,28 +33,23 @@
                     <!-- Dados do aluno -->
                     <td>{{ $aluno->alu_ra }}</td>
                     <td>{{ $aluno->alu_nome }}</td>
-                    <td>{{ $aluno->alu_nome_resp }}</td>
-                    <td>{{ $aluno->alu_tel_resp }}</td>
-                    <td>{{ $aluno->alu_email_resp }}</td>
+                    <td>{{ optional($aluno->matriculas->first()->turma->escola)->esc_razao_social ?? '---' }}</td>
+                    <td>{{ optional(optional($aluno->matriculas->first()->modalidade)->tipo)->desc_modalidade ?? '---' }}</td>
                   
-                    <!-- Botão cadastra -->
+                    <!-- Botões de ação flexíveis -->
                     <td>
-                        @if($aluno->flag_inventario === "*")
+                        @if(($exibeBotaoInventario ?? false) && $aluno->flag_inventario !== "*")
+                            <a href="{{ route($rota_acao ?? 'alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm d-inline-block align-middle">Sondagem Inicial</a>
+                        @elseif(($exibeBotaoInventario ?? false) && $aluno->flag_inventario === "*")
                             <button class="btn btn-danger btn-sm d-inline-block align-middle" style="background-color:#e74c3c; border-color:#c0392b; color:#fff; opacity:0.8;" disabled>Sondagem Inicial</button>
-                        @else
-                            <a href="{{ route('alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm d-inline-block align-middle">Sondagem Inicial</a>
                         @endif
-                    </td>
 
-                    <!-- Botão visualiza/atualiza -->
-                    <td>
-                        @if($aluno->flag_inventario === null)
-                            <button class="btn btn-warning btn-sm text-white" 
-                                    style="background-color: #e67e22; border-color: #d35400;"
-                                    disabled>Visualiza - gera Pdf </button>
-                        @else
-                            <a href="{{ route('visualizar.inventario', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary btn-sm">Visualiza - gera Pdf </a>
+                        @if($exibeBotaoPdf ?? false)
+                            @if($aluno->flag_inventario === null)
+                                <button class="btn btn-warning btn-sm text-white" style="background-color: #e67e22; border-color: #d35400;" disabled>Visualiza - gera Pdf </button>
+                            @else
+                                <a href="{{ route($rota_pdf ?? 'visualizar.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm">Visualiza - gera Pdf </a>
+                            @endif
                         @endif
                     </td>
                 </tr>

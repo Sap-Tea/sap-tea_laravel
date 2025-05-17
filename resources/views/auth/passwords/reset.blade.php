@@ -28,7 +28,24 @@
                     <label for="password_confirmation">Confirme a nova senha</label>
                     <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Confirme a nova senha" required>
                 </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()">
+                    <label for="mostrarSenha" style="font-size:0.95em;cursor:pointer;">Mostrar senha</label>
+                </div>
                 <button class="btn btn-acesso" type="submit">Redefinir senha</button>
+                <script>
+                    function mostrarOcultarSenha() {
+                        var senha = document.getElementById('password');
+                        var confirma = document.getElementById('password_confirmation');
+                        if(document.getElementById('mostrarSenha').checked){
+                            senha.type = 'text';
+                            confirma.type = 'text';
+                        } else {
+                            senha.type = 'password';
+                            confirma.type = 'password';
+                        }
+                    }
+                </script>
                 <div class="login-links">
                     <a href="{{ route('login') }}" class="link-senha">Voltar ao login</a>
                 </div>

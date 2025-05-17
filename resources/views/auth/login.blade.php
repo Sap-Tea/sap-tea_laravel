@@ -107,20 +107,57 @@
             {{ session('status') }}
         </div>
     @endif
-    <form method="POST" action="{{ route('login') }}" class="login-form">
+    <form method="POST" action="{{ route('login') }}" class="login-form" autocomplete="on" onsubmit="salvarLoginSenha()">
         @csrf
         <div class="form-group">
             <label for="email_func">E-mail</label>
-            <input type="email" name="email_func" id="email_func" placeholder="Digite seu e-mail" required autofocus value="{{ old('email_func') }}">
+            <input type="email" name="email_func" id="email_func" placeholder="Digite seu e-mail" required autofocus value="{{ old('email_func') }}" autocomplete="username">
         </div>
         <div class="form-group">
             <label for="password">Senha</label>
-            <input type="password" name="password" id="password" placeholder="Digite sua senha" required>
+            <input type="password" name="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
         </div>
         <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
             <input type="checkbox" name="remember" id="remember" style="margin-right: 7px;">
             <label for="remember" style="margin-bottom: 0; font-size: 1em; cursor: pointer;">Lembre-me nesta máquina</label>
+            <input type="checkbox" id="mostrarSenhaLogin" onclick="mostrarOcultarSenhaLogin()" style="margin-left: 16px;">
+            <label for="mostrarSenhaLogin" style="font-size:0.97em;cursor:pointer;margin-left:2px;">Mostrar senha</label>
         </div>
+        <script>
+            function mostrarOcultarSenhaLogin() {
+                var senha = document.getElementById('password');
+                if(document.getElementById('mostrarSenhaLogin').checked){
+                    senha.type = 'text';
+                } else {
+                    senha.type = 'password';
+                }
+            }
+        </script>
+        <script>
+        // Preencher campos se houver dados salvos
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('lembrar_login') === 'true') {
+                var emailSalvo = localStorage.getItem('login_email') || '';
+                var senhaSalva = localStorage.getItem('login_senha') || '';
+                document.getElementById('email_func').value = emailSalvo;
+                document.getElementById('password').value = senhaSalva;
+                document.getElementById('remember').checked = true;
+            }
+        });
+        // Salvar dados ao enviar o formulário
+        function salvarLoginSenha() {
+            var lembrar = document.getElementById('remember').checked;
+            if(lembrar) {
+                localStorage.setItem('lembrar_login', 'true');
+                localStorage.setItem('login_email', document.getElementById('email_func').value);
+                localStorage.setItem('login_senha', document.getElementById('password').value);
+            } else {
+                localStorage.removeItem('lembrar_login');
+                localStorage.removeItem('login_email');
+                localStorage.removeItem('login_senha');
+            }
+        }
+        </script>
         <button class="btn btn-acesso" type="submit">Entrar</button>
         <div class="login-links">
             <a href="{{ route('password.request') }}" class="link-senha">Esqueci minha senha</a>
