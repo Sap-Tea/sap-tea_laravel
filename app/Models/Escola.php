@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Escola extends Model
 {
+    public function orgao()
+    {
+        return $this->belongsTo(\App\Models\Orgao::class, 'fk_org_esc_id', 'org_id');
+    }
+
     protected $table = 'escola';
     protected $primaryKey = 'esc_id';
     public $timestamps = false;

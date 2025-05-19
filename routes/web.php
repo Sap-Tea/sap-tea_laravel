@@ -167,6 +167,8 @@ Route::middleware(['auth:funcionario', 'funcao.especial'])->prefix('sondagem')->
 
 //criando grupo de rota para rotina e monitoramento
 // Rotas para rotina e monitoramento
+Route::get('/rotina_monitoramento/aluno/{id}', [\App\Http\Controllers\PerfilEstudanteController::class, 'rotina_monitoramento_aluno'])->name('rotina.monitoramento.aluno');
+Route::get('/rotina/cadastrar/{id}', [\App\Http\Controllers\PerfilEstudanteController::class, 'rotina_monitoramento_aluno'])->name('rotina.cadastrar.aluno');
 Route::prefix('rotina_monitoramento')->group(function () {
     // Rota para página inicial de rotina e monitoramento
     Route::get('/rot_monit_inicial', [PerfilEstudanteController::class, 'rotina_monitoramento_inicial'])->name('rotina.monitoramento.inicial');

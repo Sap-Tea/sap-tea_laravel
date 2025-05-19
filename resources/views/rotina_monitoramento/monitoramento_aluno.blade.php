@@ -207,65 +207,79 @@
   </style>
 </head>
 <body>
-
+    @if(!isset($alunoDetalhado) || empty($alunoDetalhado))
+        <div style="background: #ffdddd; color: #a00; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+            <strong>Erro:</strong> Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.
+        </div>
+    @else
+        @php
+            $detalhe = is_array($alunoDetalhado) ? (object)($alunoDetalhado[0] ?? []) : $alunoDetalhado;
+        @endphp
   <div class="container">
     <!-- CABEÇALHO -->
     <div class="header">
-      <img src="logo1.png" alt="Logo Educação" />
+      <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo Educação" />
       <div class="title">
         ROTINA E MONITORAMENTO DE <br>
         APLICAÇÃO DE ATIVIDADES 1 - INICIAL
       </div>
-      <img src="logo2.png" alt="Logo Focus" />
+      <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" />
     </div>
 
     <!-- INFORMAÇÕES PRINCIPAIS -->
     <div class="info-section">
       <label>
-        Secretaria de Educação do Município:
-        <input type="text" />
+        Secretaria de Educação do Município:
+        <input type="text" value="{{ $detalhe->org_razaosocial ?? '-' }}" readonly />
       </label>
       <label>
         Escola:
-        <input type="text" />
+        <input type="text" value="{{ $detalhe->esc_razao_social ?? '-' }}" readonly />
       </label>
       <label>
         Nome do Aluno:
-        <input type="text" />
+        <input type="text" value="{{ $detalhe->alu_nome ?? '-' }}" readonly />
       </label>
       <label>
         Data de Nascimento:
-        <input type="text" placeholder="//" />
+        <input type="text" value="{{ $detalhe->alu_dtnasc ?? '-' }}" readonly />
       </label>
       <label>
         Idade:
-        <input type="text" />
+        <input type="text" value="{{ $detalhe->alu_dtnasc ? \Carbon\Carbon::parse($detalhe->alu_dtnasc)->age : '-' }}" readonly />
       </label>
       <label>
-        Ano/Série:
-        <input type="text" />
+        Modalidade:
+        <input type="text" value="{{ $detalhe->desc_modalidade ?? '-' }}" readonly />
       </label>
+
       <label>
         Turma:
-        <input type="text" />
+        <input type="text" value="{{ $detalhe->fk_cod_valor_turma ?? '-' }}" readonly />
       </label>
       <label>
         RA:
-        <input type="text" />
+        <input type="text" value="{{ $detalhe->numero_matricula ?? '-' }}" readonly />
       </label>
     </div>
 
     <!-- PERÍODO DE APLICAÇÃO -->
     <div class="period-section">
       <span class="period">
-        <strong>Período de Aplicação (Inicial):</strong>
-        <input type="date" placeholder="//" />
+        <strong>Período de Aplicação (Inicial):</strong>
+        <input type="text" name="periodo_inicial" value="{{ $data_inicial_com_lin ? \Carbon\Carbon::parse($data_inicial_com_lin)->format('d/m/Y') : '' }}" readonly />
       </span>
       <span class="period">
-        <strong>Período de Aplicação (Final):</strong>
-        <input type="" placeholder="//" />
+        <strong>Período de Aplicação (Final):</strong>
+        <input type="text" name="periodo_final" value="{{ $data_inicial_com_lin ? \Carbon\Carbon::parse($data_inicial_com_lin)->addDays(60)->format('d/m/Y') : '' }}" readonly />
       </span>
     </div>
+
+    @if($data_inicial_com_lin)
+      <div style="color: #b30000; font-weight: bold; margin-bottom: 10px; font-size: 16px;">
+        Já se passaram {{ \Carbon\Carbon::parse($data_inicial_com_lin)->diffInDays(\Carbon\Carbon::now()) }} dias desde o início do prazo.
+      </div>
+    @endif
 
     <!-- INSTRUÇÕES -->
     <div class="instructions">
@@ -277,83 +291,126 @@
     </div>
 
     <!-- TABELA DE ATIVIDADES -->
-    <div class="table-title">Atividades Realizadas</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Atividade</th>
-          <th>Data (Inicial)</th>
-          <th>Sim</th>
-          <th>Não</th>
-          <th>Data (Final)</th>
-          <th>Sim</th>
-          <th>Não</th>
-          <th>Observações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>ECM01 - A mágica da gentileza</td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" /></td>
-        </tr>
-        <tr>
-          <td>ECM02 - A mágica do brincar</td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" /></td>
-        </tr>
-        <tr>
-          <td>ECM03 - A mágica de compartilhar</td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" /></td>
-        </tr>
-        <tr>
-          <td>ECM04 - A mágica do cuidar</td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" /></td>
-        </tr>
-        <tr>
-          <td>ECM05 - A mágica do aprender</td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" /></td>
-        </tr>
-        <tr>
-          <td>ECM06 - Expressão lúdica</td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" placeholder="//" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="checkbox" /></td>
-          <td><input type="text" /></td>
-        </tr>
-      </tbody>
-    </table>
+    {{-- EIXO LINGUAGEM --}}
+    @php
+      $atividades_linguagem = [
+        ['codigo' => 'ECM01', 'descricao' => 'A mágica da gentileza'],
+        ['codigo' => 'ECM02', 'descricao' => 'A mágica do brincar'],
+        ['codigo' => 'ECM03', 'descricao' => 'A mágica de compartilhar'],
+      ];
+    @endphp
+    <div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+      <div class="table-title" style="font-size:18px; color:#b28600;">Eixo Comunicação/Linguagem</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Atividade</th>
+            <th>Data (Inicial)</th>
+            <th>Sim</th>
+            <th>Não</th>
+            <th>Data (Final)</th>
+            <th>Sim</th>
+            <th>Não</th>
+            <th>Observações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($atividades_linguagem as $i => $atividade)
+            <tr>
+              <td>{{ $atividade['codigo'] }} - {{ $atividade['descricao'] }}</td>
+              <td><input type="date" name="linguagem[{{$i}}][data_inicial]"></td>
+              <td><input type="checkbox" name="linguagem[{{$i}}][sim_inicial]" value="1"></td>
+              <td><input type="checkbox" name="linguagem[{{$i}}][nao_inicial]" value="1"></td>
+              <td><input type="date" name="linguagem[{{$i}}][data_final]"></td>
+              <td><input type="checkbox" name="linguagem[{{$i}}][sim_final]" value="1"></td>
+              <td><input type="checkbox" name="linguagem[{{$i}}][nao_final]" value="1"></td>
+              <td><input type="text" name="linguagem[{{$i}}][observacoes]"></td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+
+    {{-- EIXO COMPORTAMENTO --}}
+    @php
+      $atividades_comportamento = [
+        ['codigo' => 'ECC01', 'descricao' => 'Respeito às regras'],
+        ['codigo' => 'ECC02', 'descricao' => 'Colaboração em grupo'],
+        ['codigo' => 'ECC03', 'descricao' => 'Autocontrole'],
+      ];
+    @endphp
+    <div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+      <div class="table-title" style="font-size:18px; color:#176ca7;">Eixo Comportamento</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Atividade</th>
+            <th>Data (Inicial)</th>
+            <th>Sim</th>
+            <th>Não</th>
+            <th>Data (Final)</th>
+            <th>Sim</th>
+            <th>Não</th>
+            <th>Observações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($atividades_comportamento as $i => $atividade)
+            <tr>
+              <td>{{ $atividade['codigo'] }} - {{ $atividade['descricao'] }}</td>
+              <td><input type="date" name="comportamento[{{$i}}][data_inicial]"></td>
+              <td><input type="checkbox" name="comportamento[{{$i}}][sim_inicial]" value="1"></td>
+              <td><input type="checkbox" name="comportamento[{{$i}}][nao_inicial]" value="1"></td>
+              <td><input type="date" name="comportamento[{{$i}}][data_final]"></td>
+              <td><input type="checkbox" name="comportamento[{{$i}}][sim_final]" value="1"></td>
+              <td><input type="checkbox" name="comportamento[{{$i}}][nao_final]" value="1"></td>
+              <td><input type="text" name="comportamento[{{$i}}][observacoes]"></td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+
+    {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL --}}
+    @php
+      $atividades_emocional = [
+        ['codigo' => 'ESE01', 'descricao' => 'Empatia'],
+        ['codigo' => 'ESE02', 'descricao' => 'Expressão de sentimentos'],
+        ['codigo' => 'ESE03', 'descricao' => 'Resolução de conflitos'],
+      ];
+    @endphp
+    <div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+      <div class="table-title" style="font-size:18px; color:#267a3e;">Eixo Interação Socioemocional</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Atividade</th>
+            <th>Data (Inicial)</th>
+            <th>Sim</th>
+            <th>Não</th>
+            <th>Data (Final)</th>
+            <th>Sim</th>
+            <th>Não</th>
+            <th>Observações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($atividades_emocional as $i => $atividade)
+            <tr>
+              <td>{{ $atividade['codigo'] }} - {{ $atividade['descricao'] }}</td>
+              <td><input type="date" name="emocional[{{$i}}][data_inicial]"></td>
+              <td><input type="checkbox" name="emocional[{{$i}}][sim_inicial]" value="1"></td>
+              <td><input type="checkbox" name="emocional[{{$i}}][nao_inicial]" value="1"></td>
+              <td><input type="date" name="emocional[{{$i}}][data_final]"></td>
+              <td><input type="checkbox" name="emocional[{{$i}}][sim_final]" value="1"></td>
+              <td><input type="checkbox" name="emocional[{{$i}}][nao_final]" value="1"></td>
+              <td><input type="text" name="emocional[{{$i}}][observacoes]"></td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+
 
     <!-- OBSERVAÇÕES FINAIS -->
     <div class="observations">
@@ -383,6 +440,7 @@
         <button type="button" class="pdf-button">Gerar PDF</button>
     </div>
   </div>
+@endif
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

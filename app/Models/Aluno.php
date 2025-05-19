@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class Aluno extends Model
 {
+    public function escola()
+    {
+        return $this->belongsTo(\App\Models\Escola::class, 'fk_escola_id', 'esc_id');
+    }
+
     protected $table = 'aluno';
     protected $primaryKey = 'alu_id';
 

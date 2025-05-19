@@ -11,6 +11,17 @@ use App\Models\PerfilEstudante;
 
 class PerfilEstudanteController extends Controller
 {
+    public function rotina_monitoramento_aluno($aluno_id)
+    {
+        $alunoDetalhado = \App\Models\Aluno::getAlunosDetalhados($aluno_id);
+        // Buscar data inicial do eixo comunicação linguagem
+        $eixoCom = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $aluno_id)
+            ->where('fase_inv_com_lin', 'In')
+            ->first();
+        $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
+        return view('rotina_monitoramento.monitoramento_aluno', compact('alunoDetalhado', 'data_inicial_com_lin'));
+    }
+
     public function index()
 {
     // Busca apenas alunos matriculados, ordenados por nome
