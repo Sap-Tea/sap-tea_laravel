@@ -34,14 +34,18 @@
             <div style="font-size:1em; color:#222;">Esta é sua área inicial. Utilize o menu ao lado para acessar as funcionalidades.<br>Conte sempre com o suporte do SAP-TEA para apoiar o desenvolvimento dos alunos TEA.<br><span style="color:#009688; font-weight:500;">"Juntos superando desafios, celebrando conquistas!"</span></div>
         </div>
         <ul>
-           
-           <li>
-    <a href="#" class="menu-toggle sondagem"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇</a>
-    <ul class="submenu">
-        <li><a href="{{ route('eixos.alunos') }}" class="menu-link">.1 Inicial</a></li>
-        <li><a href="{{ route('sondagem.continuada1') }}" class="disabled">.2 Continuada</a></li>
-        <li><a href="{{ route('sondagem.continuada2') }}" class="disabled">.3 Continuada</a></li>
-        <li><a href="{{ route('sondagem.final') }}" class="disabled">.4 Final</a></li>
+            <li>
+                <a href="{{ route('rotina.monitoramento.inicial') }}" class="menu-link"><i class="fa-solid fa-clipboard-list"></i> Monitoramento do Aluno</a>
+            </li>
+            <li>
+                <a href="#" class="menu-toggle sondagem"><i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇</a>
+                <ul class="submenu">
+                    <li><a href="{{ route('eixos.alunos') }}" class="menu-link">.1 Inicial</a></li>
+                    <li><a href="{{ route('sondagem.continuada1') }}" class="disabled">.2 Continuada</a></li>
+                    <li><a href="{{ route('sondagem.continuada2') }}" class="disabled">.3 Continuada</a></li>
+                    <li><a href="{{ route('sondagem.final') }}" class="disabled">.4 Final</a></li>
+                </ul>
+            </li>
     </ul>
 </li>
 
