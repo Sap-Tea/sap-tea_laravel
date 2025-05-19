@@ -135,11 +135,20 @@ public function index_inventario(Request $request)
      */
     public function cadastrar_rotina_aluno($id)
     {
-        $aluno = \App\Models\Aluno::findOrFail($id);
+        $alunoDetalhado = \App\Models\Aluno::getAlunosDetalhados($id);
         $professor = auth('funcionario')->user();
+        if (!$alunoDetalhado) {
+            return back()->withErrors(['msg' => 'Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.']);
+        }
+        // Buscar data inicial do eixo comunicação linguagem, se necessário
+        $eixoCom = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $id)
+            ->where('fase_inv_com_lin', 'In')
+            ->first();
+        $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
         return view('rotina_monitoramento.monitoramento_aluno', [
-            'aluno' => $aluno,
+            'alunoDetalhado' => $alunoDetalhado,
             'professor_nome' => $professor->func_nome,
+            'data_inicial_com_lin' => $data_inicial_com_lin,
         ]);
     }
 

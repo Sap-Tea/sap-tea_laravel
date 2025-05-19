@@ -102,6 +102,8 @@ Route::get('/rotina/visualizar/{id}', function($id) {
 Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
     // Exemplo de rota inicial de Rotina e Monitoramento
     Route::get('/rotina_monitoramento/inicial', [PerfilEstudanteController::class, 'rotina_monitoramento_inicial'])->name('rotina.monitoramento.inicial');
+    // Rota para cadastrar rotina de monitoramento do aluno
+    Route::get('/rotina_monitoramento/cadastrar/{id}', [PerfilEstudanteController::class, 'cadastrar_rotina_aluno'])->name('rotina.monitoramento.cadastrar');
     // Adicione aqui as demais rotas do menu Rotina e Monitoramento
 });
 

@@ -242,7 +242,7 @@
       </label>
       <label>
         Data de Nascimento:
-        <input type="text" value="{{ $detalhe->alu_dtnasc ?? '-' }}" readonly />
+        <input type="text" value="{{ $detalhe->alu_dtnasc ? \Carbon\Carbon::parse($detalhe->alu_dtnasc)->format('d/m/Y') : '-' }}" readonly />
       </label>
       <label>
         Idade:

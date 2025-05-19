@@ -54,6 +54,7 @@
                 <ul class="submenu_escola">
                     <li><a href="{{ route('rotina.monitoramento.inicial') }}">.1 Inicial</a></li>
                     <li><a href="#" class="disabled">.2 Continuada</a></li>
+                    <li><a href="#" class="disabled">.2 Continuada</a></li>
                     <li><a href="#" class="disabled">.3 Continuada</a></li>
                     <li><a href="#" class="disabled">.4 Final</a></li>
                 </ul>
