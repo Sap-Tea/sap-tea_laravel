@@ -226,6 +226,12 @@
       <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" />
     </div>
 
+    @if(!empty($professor_nome))
+      <div style="background: #ffe9b3; color: #b36b00; font-size: 1.3em; font-weight: bold; text-align: center; padding: 10px 0; border-radius: 7px; margin-bottom: 18px; box-shadow: 0 1px 6px #0001;">
+        Professor(a) Responsável: {{ $professor_nome }}
+      </div>
+    @endif
+
     <!-- INFORMAÇÕES PRINCIPAIS -->
     <div class="info-section">
       <label>

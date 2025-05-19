@@ -19,7 +19,9 @@ class PerfilEstudanteController extends Controller
             ->where('fase_inv_com_lin', 'In')
             ->first();
         $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
-        return view('rotina_monitoramento.monitoramento_aluno', compact('alunoDetalhado', 'data_inicial_com_lin'));
+        $professor_logado = auth('funcionario')->user();
+        $professor_nome = $professor_logado ? $professor_logado->func_nome : null;
+        return view('rotina_monitoramento.monitoramento_aluno', compact('alunoDetalhado', 'data_inicial_com_lin', 'professor_nome'));
     }
 
     public function index()
