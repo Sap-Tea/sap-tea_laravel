@@ -449,10 +449,68 @@
       </div>
     </div>
     <div class="button-group">
+        <button type="button" class="pdf-button btn btn-primary">Gerar PDF</button>
+
+    <!-- Importação das bibliotecas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.pdf-button').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            // Seleciona o conteúdo principal do formulário para o PDF
+            const element = document.querySelector('.container, .menu, main, body');
+            html2canvas(element, {
+                scale: 0.9,
+                useCORS: true
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let y = 0;
+                while (y < imgHeight) {
+                    pdf.addImage(imgData, 'PNG', 0, y * -1, imgWidth, imgHeight);
+                    y += pageHeight;
+                    if (y < imgHeight) pdf.addPage();
+                }
+                // Pegando o nome do aluno do input ou campo correspondente
+                let nomeAluno = '';
+                // Busca input que contenha o nome do aluno (readonly) na info-section
+                const nomeInput = document.querySelector('.info-section label:nth-child(3) input');
+                if (nomeInput && nomeInput.value && nomeInput.value.trim() !== '' && nomeInput.value !== '-') {
+                    nomeAluno = nomeInput.value;
+                }
+                if (!nomeAluno) nomeAluno = 'aluno';
+                nomeAluno = nomeAluno
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-zA-Z0-9 ]/g, '')
+                    .replace(/\s+/g, '_')
+                    .replace(/^_+|_+$/g, '')
+                    .toLowerCase();
+                const hoje = new Date();
+                const dia = String(hoje.getDate()).padStart(2, '0');
+                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+                const ano = hoje.getFullYear();
+                const dataAtual = `${dia}-${mes}-${ano}`;
+                nomeAluno = nomeAluno
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-zA-Z0-9 ]/g, '')
+                    .replace(/\s+/g, '_')
+                    .replace(/^_+|_+$/g, '')
+                    .toLowerCase();
+const nomeArquivo = `Rotina_monitoramento_${nomeAluno}_${dataAtual}.pdf`;
+                pdf.save(nomeArquivo);
+            }).catch(error => console.error('Erro ao gerar PDF:', error));
+        });
+    });
+    </script>
+
         
         <a href="{{ route('index') }}" class="btn btn-primary">Salvar</a>
     <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
-        <button type="button" class="pdf-button">Gerar PDF</button>
+        
     </div>
   </div>
 @endif
