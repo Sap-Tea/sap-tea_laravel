@@ -39,7 +39,19 @@ class PerfilEstudanteController extends Controller
             ->first();
         $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
         $professor_nome = $professor_logado ? $professor_logado->func_nome : null;
-        return view('rotina_monitoramento.monitoramento_aluno', compact('alunoDetalhado', 'data_inicial_com_lin', 'professor_nome'));
+
+        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_id_pro_com_lin', $aluno_id)->get();
+        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $aluno_id)->get();
+        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $aluno_id)->get();
+
+        return view('rotina_monitoramento.monitoramento_aluno', compact(
+            'alunoDetalhado',
+            'data_inicial_com_lin',
+            'professor_nome',
+            'comunicacao_resultados',
+            'comportamento_resultados',
+            'socioemocional_resultados'
+        ));
     }
 
     public function index()
