@@ -90,6 +90,11 @@
                         <i class="fa-solid fa-users"></i> Minha Rede de Ajuda
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('download.material', ['tipo' => 'turma-supergando']) }}">
+                        <i class="fa-solid fa-people-group"></i> Turma Supergando
+                    </a>
+                </li>
             </ul>
             <div style="font-size:13px;color:#555;margin:6px 0 18px 0;">
                 <i class="fa-solid fa-circle-info"></i> Clique em um dos materiais acima para acessar e baixar os arquivos no Google Drive.
