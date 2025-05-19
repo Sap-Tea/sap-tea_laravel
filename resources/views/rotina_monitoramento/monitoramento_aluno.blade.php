@@ -324,7 +324,7 @@
           </tr>
         </thead>
         <tbody>
-          @foreach($comunicacao_resultados as $i => $resultado)
+          @foreach(collect($comunicacao_resultados)->sortBy(fn($r) => optional($comunicacao_propostas[$r->fk_hab_pro_com_lin] ?? null)->cod_pro_com_lin) as $i => $resultado)
     @php
         $proposta = $comunicacao_propostas[$resultado->fk_hab_pro_com_lin] ?? null;
     @endphp
@@ -364,7 +364,7 @@
           </tr>
         </thead>
         <tbody>
-          @foreach($comportamento_resultados as $i => $resultado)
+          @foreach(collect($comportamento_resultados)->sortBy(fn($r) => optional($comportamento_propostas[$r->fk_hab_pro_comportamento] ?? null)->cod_pro_comportamento) as $i => $resultado)
     @php
         $proposta = $comportamento_propostas[$resultado->fk_hab_pro_comportamento] ?? null;
     @endphp
@@ -404,7 +404,7 @@
           </tr>
         </thead>
         <tbody>
-          @foreach($socioemocional_resultados as $i => $resultado)
+          @foreach(collect($socioemocional_resultados)->sortBy(fn($r) => optional($socioemocional_propostas[$r->fk_hab_pro_int_socio] ?? null)->cod_pro_int_soc) as $i => $resultado)
     @php
         $proposta = $socioemocional_propostas[$resultado->fk_hab_pro_int_socio] ?? null;
     @endphp
