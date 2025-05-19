@@ -207,7 +207,16 @@
   </style>
 </head>
 <body>
-    @if(!isset($alunoDetalhado) || empty($alunoDetalhado))
+    @php
+  // Debug: Mostra todas as variáveis disponíveis na view (remover em produção)
+  // dd(get_defined_vars());
+@endphp
+
+@if(!isset($comunicacao_resultados))
+  <div style="color:red;font-weight:bold;">Variável <code>$comunicacao_resultados</code> não está definida nesta view!</div>
+@endif
+
+@if(!isset($alunoDetalhado) || empty($alunoDetalhado))
         <div style="background: #ffdddd; color: #a00; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
             <strong>Erro:</strong> Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.
         </div>
@@ -297,20 +306,14 @@
     </div>
 
     <!-- TABELA DE ATIVIDADES -->
-    {{-- EIXO LINGUAGEM --}}
-    @php
-      $atividades_linguagem = [
-        ['codigo' => 'ECM01', 'descricao' => 'A mágica da gentileza'],
-        ['codigo' => 'ECM02', 'descricao' => 'A mágica do brincar'],
-        ['codigo' => 'ECM03', 'descricao' => 'A mágica de compartilhar'],
-      ];
-    @endphp
+    {{-- EIXO COMUNICAÇÃO/LINGUAGEM (DINÂMICO) --}}
     <div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
       <div class="table-title" style="font-size:18px; color:#b28600;">Eixo Comunicação/Linguagem</div>
       <table>
         <thead>
           <tr>
-            <th>Atividade</th>
+            <th>Código</th>
+            <th>Descrição</th>
             <th>Data (Inicial)</th>
             <th>Sim</th>
             <th>Não</th>
@@ -321,36 +324,36 @@
           </tr>
         </thead>
         <tbody>
-          @foreach($atividades_linguagem as $i => $atividade)
-            <tr>
-              <td>{{ $atividade['codigo'] }} - {{ $atividade['descricao'] }}</td>
-              <td><input type="date" name="linguagem[{{$i}}][data_inicial]"></td>
+          @foreach($comunicacao_resultados as $i => $resultado)
+    @php
+        $proposta = $comunicacao_propostas[$resultado->fk_hab_pro_com_lin] ?? null;
+    @endphp
+    @if($proposta)
+        <tr>
+            <td>{{ $proposta->cod_pro_com_lin }}</td>
+            <td>{{ $proposta->desc_pro_com_lin }}</td>
+              <td><input type="date" name="linguagem[{{$i}}][data_inicial]" value=""></td>
               <td><input type="checkbox" name="linguagem[{{$i}}][sim_inicial]" value="1"></td>
               <td><input type="checkbox" name="linguagem[{{$i}}][nao_inicial]" value="1"></td>
-              <td><input type="date" name="linguagem[{{$i}}][data_final]"></td>
+              <td><input type="date" name="linguagem[{{$i}}][data_final]" value=""></td>
               <td><input type="checkbox" name="linguagem[{{$i}}][sim_final]" value="1"></td>
               <td><input type="checkbox" name="linguagem[{{$i}}][nao_final]" value="1"></td>
-              <td><input type="text" name="linguagem[{{$i}}][observacoes]"></td>
+              <td><input type="text" name="linguagem[{{$i}}][observacoes]" value=""></td>
             </tr>
-          @endforeach
+    @endif
+@endforeach
         </tbody>
       </table>
     </div>
 
-    {{-- EIXO COMPORTAMENTO --}}
-    @php
-      $atividades_comportamento = [
-        ['codigo' => 'ECC01', 'descricao' => 'Respeito às regras'],
-        ['codigo' => 'ECC02', 'descricao' => 'Colaboração em grupo'],
-        ['codigo' => 'ECC03', 'descricao' => 'Autocontrole'],
-      ];
-    @endphp
+    {{-- EIXO COMPORTAMENTO (DINÂMICO) --}}
     <div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
       <div class="table-title" style="font-size:18px; color:#176ca7;">Eixo Comportamento</div>
       <table>
         <thead>
           <tr>
-            <th>Atividade</th>
+            <th>Código</th>
+            <th>Descrição</th>
             <th>Data (Inicial)</th>
             <th>Sim</th>
             <th>Não</th>
@@ -361,36 +364,36 @@
           </tr>
         </thead>
         <tbody>
-          @foreach($atividades_comportamento as $i => $atividade)
-            <tr>
-              <td>{{ $atividade['codigo'] }} - {{ $atividade['descricao'] }}</td>
-              <td><input type="date" name="comportamento[{{$i}}][data_inicial]"></td>
+          @foreach($comportamento_resultados as $i => $resultado)
+    @php
+        $proposta = $comportamento_propostas[$resultado->fk_hab_pro_comportamento] ?? null;
+    @endphp
+    @if($proposta)
+        <tr>
+            <td>{{ $proposta->cod_pro_comportamento }}</td>
+            <td>{{ $proposta->desc_pro_comportamento }}</td>
+              <td><input type="date" name="comportamento[{{$i}}][data_inicial]" value=""></td>
               <td><input type="checkbox" name="comportamento[{{$i}}][sim_inicial]" value="1"></td>
               <td><input type="checkbox" name="comportamento[{{$i}}][nao_inicial]" value="1"></td>
-              <td><input type="date" name="comportamento[{{$i}}][data_final]"></td>
+              <td><input type="date" name="comportamento[{{$i}}][data_final]" value=""></td>
               <td><input type="checkbox" name="comportamento[{{$i}}][sim_final]" value="1"></td>
               <td><input type="checkbox" name="comportamento[{{$i}}][nao_final]" value="1"></td>
-              <td><input type="text" name="comportamento[{{$i}}][observacoes]"></td>
+              <td><input type="text" name="comportamento[{{$i}}][observacoes]" value=""></td>
             </tr>
-          @endforeach
+    @endif
+@endforeach
         </tbody>
       </table>
     </div>
 
-    {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL --}}
-    @php
-      $atividades_emocional = [
-        ['codigo' => 'ESE01', 'descricao' => 'Empatia'],
-        ['codigo' => 'ESE02', 'descricao' => 'Expressão de sentimentos'],
-        ['codigo' => 'ESE03', 'descricao' => 'Resolução de conflitos'],
-      ];
-    @endphp
+    {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (DINÂMICO) --}}
     <div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
       <div class="table-title" style="font-size:18px; color:#267a3e;">Eixo Interação Socioemocional</div>
       <table>
         <thead>
           <tr>
-            <th>Atividade</th>
+            <th>Código</th>
+            <th>Descrição</th>
             <th>Data (Inicial)</th>
             <th>Sim</th>
             <th>Não</th>
@@ -401,18 +404,24 @@
           </tr>
         </thead>
         <tbody>
-          @foreach($atividades_emocional as $i => $atividade)
-            <tr>
-              <td>{{ $atividade['codigo'] }} - {{ $atividade['descricao'] }}</td>
-              <td><input type="date" name="emocional[{{$i}}][data_inicial]"></td>
+          @foreach($socioemocional_resultados as $i => $resultado)
+    @php
+        $proposta = $socioemocional_propostas[$resultado->fk_hab_pro_int_socio] ?? null;
+    @endphp
+    @if($proposta)
+        <tr>
+            <td>{{ $proposta->cod_pro_int_soc }}</td>
+            <td>{{ $proposta->desc_pro_int_soc }}</td>
+              <td><input type="date" name="emocional[{{$i}}][data_inicial]" value=""></td>
               <td><input type="checkbox" name="emocional[{{$i}}][sim_inicial]" value="1"></td>
               <td><input type="checkbox" name="emocional[{{$i}}][nao_inicial]" value="1"></td>
-              <td><input type="date" name="emocional[{{$i}}][data_final]"></td>
+              <td><input type="date" name="emocional[{{$i}}][data_final]" value=""></td>
               <td><input type="checkbox" name="emocional[{{$i}}][sim_final]" value="1"></td>
               <td><input type="checkbox" name="emocional[{{$i}}][nao_final]" value="1"></td>
-              <td><input type="text" name="emocional[{{$i}}][observacoes]"></td>
+              <td><input type="text" name="emocional[{{$i}}][observacoes]" value=""></td>
             </tr>
-          @endforeach
+    @endif
+@endforeach
         </tbody>
       </table>
     </div>

@@ -44,13 +44,21 @@ class PerfilEstudanteController extends Controller
         $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $aluno_id)->get();
         $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $aluno_id)->get();
 
+        // Buscar propostas e indexar por id
+        $comunicacao_propostas = \App\Models\PropostaComLin::all()->keyBy('id_pro_com_lin');
+        $comportamento_propostas = \App\Models\PropostaComportamento::all()->keyBy('id_pro_comportamento');
+        $socioemocional_propostas = \App\Models\PropostaIntSoc::all()->keyBy('id_pro_int_soc');
+
         return view('rotina_monitoramento.monitoramento_aluno', compact(
             'alunoDetalhado',
             'data_inicial_com_lin',
             'professor_nome',
             'comunicacao_resultados',
             'comportamento_resultados',
-            'socioemocional_resultados'
+            'socioemocional_resultados',
+            'comunicacao_propostas',
+            'comportamento_propostas',
+            'socioemocional_propostas'
         ));
     }
 
@@ -180,10 +188,27 @@ public function index_inventario(Request $request)
             ->where('fase_inv_com_lin', 'In')
             ->first();
         $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
+
+        // Buscar resultados dos três eixos
+        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_id_pro_com_lin', $id)->get();
+        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $id)->get();
+        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $id)->get();
+
+        // Buscar propostas e indexar por id
+        $comunicacao_propostas = \App\Models\PropostaComLin::all()->keyBy('id_pro_com_lin');
+        $comportamento_propostas = \App\Models\PropostaComportamento::all()->keyBy('id_pro_comportamento');
+        $socioemocional_propostas = \App\Models\PropostaIntSoc::all()->keyBy('id_pro_int_soc');
+
         return view('rotina_monitoramento.monitoramento_aluno', [
             'alunoDetalhado' => $alunoDetalhado,
             'professor_nome' => $professor->func_nome,
             'data_inicial_com_lin' => $data_inicial_com_lin,
+            'comunicacao_resultados' => $comunicacao_resultados,
+            'comportamento_resultados' => $comportamento_resultados,
+            'socioemocional_resultados' => $socioemocional_resultados,
+            'comunicacao_propostas' => $comunicacao_propostas,
+            'comportamento_propostas' => $comportamento_propostas,
+            'socioemocional_propostas' => $socioemocional_propostas,
         ]);
     }
 
