@@ -74,17 +74,31 @@
         <ul>
             <li><a href="{{ route('foccus.xampp') }}"><i class="fa-solid fa-building-columns"></i> Gerenciamento</a></li>
             <h3>Download de Materiais</h3>
-<ul>
-    <li><a href="https://drive.google.com/drive/folders/SEU_LINK_AQUI" target="_blank"><i class="fa-solid fa-user"></i> Como Eu Sou</a></li>
-    <li><a href="https://drive.google.com/drive/folders/SEU_LINK_AQUI" target="_blank"><i class="fa-solid fa-heart"></i> Emociômetro</a></li>
-    <li><a href="https://drive.google.com/drive/folders/SEU_LINK_AQUI" target="_blank"><i class="fa-solid fa-users"></i> Minha Rede de Ajuda</a></li>
-</ul>
+            <ul>
+                <li>
+                    <a href="{{ route('download.material', ['tipo' => 'como-eu-sou']) }}">
+                        <i class="fa-solid fa-user"></i> Como Eu Sou
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('download.material', ['tipo' => 'emocionometro']) }}">
+                        <i class="fa-solid fa-heart"></i> Emocionômetro
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('download.material', ['tipo' => 'rede-ajuda']) }}">
+                        <i class="fa-solid fa-users"></i> Minha Rede de Ajuda
+                    </a>
+                </li>
+            </ul>
+            <div style="font-size:13px;color:#555;margin:6px 0 18px 0;">
+                <i class="fa-solid fa-circle-info"></i> Clique em um dos materiais acima para acessar e baixar os arquivos no Google Drive.
+            </div>
+        </div>
 
-    </div>
+        <div id="formulario-container"></div>
 
-    <div id="formulario-container"></div>
-
-    <script src="public/js/script.js"></script>
+        <script src="public/js/script.js"></script>
 
    
 </body>

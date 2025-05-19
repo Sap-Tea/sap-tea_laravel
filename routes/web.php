@@ -26,6 +26,7 @@ use App\Http\Controllers\GenerateTemplatePDFController;
 use App\Http\Controllers\SobreNosController;
 use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MaterialController; // Importação para os materiais
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,9 @@ use App\Http\Controllers\AuthController;
 | Essas rotas são carregadas pelo RouteServiceProvider dentro do grupo "web".
 |
 */
+
+// Rota para download de materiais pedagógicos
+Route::get('/download/material/{tipo}', [MaterialController::class, 'baixar'])->name('download.material');
 
 // Rota raiz redireciona para /index
 Route::get('/', function () {
