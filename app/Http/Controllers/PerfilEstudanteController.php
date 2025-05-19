@@ -13,13 +13,31 @@ class PerfilEstudanteController extends Controller
 {
     public function rotina_monitoramento_aluno($aluno_id)
     {
+        $professor_logado = auth('funcionario')->user();
+        $professor_id = $professor_logado ? $professor_logado->func_id : null;
+
+        // Garante que o aluno pertence ao professor logado
+        $aluno = \App\Models\Aluno::where('alu_id', $aluno_id)
+            ->whereHas('matriculas.turma', function($q) use ($professor_id) {
+                $q->where('fk_cod_func', $professor_id);
+            })->first();
+        if (!$aluno) {
+            return back()->withErrors(['msg' => 'Aluno não pertence ao professor logado ou não existe.']);
+        }
+
+        // Garante que existe registro nas três tabelas-eixo
+        $tem_eixo_com = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $aluno_id)->exists();
+        $tem_eixo_int = \App\Models\EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $aluno_id)->exists();
+        $tem_eixo_comp = \App\Models\EixoComportamento::where('fk_alu_id_ecomp', $aluno_id)->exists();
+        if (!($tem_eixo_com && $tem_eixo_int && $tem_eixo_comp)) {
+            return back()->withErrors(['msg' => 'O aluno precisa ter registros em todos os eixos (Comunicação, Interação Socioemocional e Comportamento) para acessar esta rotina.']);
+        }
+
         $alunoDetalhado = \App\Models\Aluno::getAlunosDetalhados($aluno_id);
-        // Buscar data inicial do eixo comunicação linguagem
         $eixoCom = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $aluno_id)
             ->where('fase_inv_com_lin', 'In')
             ->first();
         $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
-        $professor_logado = auth('funcionario')->user();
         $professor_nome = $professor_logado ? $professor_logado->func_nome : null;
         return view('rotina_monitoramento.monitoramento_aluno', compact('alunoDetalhado', 'data_inicial_com_lin', 'professor_nome'));
     }
@@ -110,6 +128,9 @@ public function index_inventario(Request $request)
         $funcId = $professor->func_id;
 
         $alunos = \App\Models\Aluno::porProfessor($funcId)
+            ->whereHas('eixoComunicacao')
+            ->whereHas('eixoSocioEmocional')
+            ->whereHas('eixoComportamento')
             ->orderBy('alu_nome', 'asc')
             ->get();
 
