@@ -77,7 +77,7 @@
             <ul>
                 <li>
                     <a href="{{ route('download.material', ['tipo' => 'como-eu-sou']) }}">
-                        <i class="fa-solid fa-user"></i> Como Eu Sou
+                        <i class="fa-solid fa-user"></i> Eu como sou
                     </a>
                 </li>
                 <li>
