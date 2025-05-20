@@ -326,11 +326,11 @@
                 <div class="form-group">
                     <label>Em quais momentos da rotina esse profissional se faz necessário?</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" name="locomocao"><label for="locomocao">Locomoção</label>
-                        <input type="checkbox" name="higiene"><label for="higiene">Higiene</label>
-                        <input type="checkbox" name="alimentacao"><label for="alimentacao">Alimentação</label>
-                        <input type="checkbox" name="comunicacao"><label for="comunicacao">Comunicação</label>
-                        <input type="checkbox" name="outros"><label for="outros">Outros momentos</label>
+                        <input type="checkbox" name="locomocao" {{ (isset($results[0]->locomocao) && $results[0]->locomocao == 1) ? 'checked' : '' }}><label for="locomocao">Locomoção</label>
+                        <input type="checkbox" name="higiene" {{ (isset($results[0]->higiene) && $results[0]->higiene == 1) ? 'checked' : '' }}><label for="higiene">Higiene</label>
+                        <input type="checkbox" name="alimentacao" {{ (isset($results[0]->alimentacao) && $results[0]->alimentacao == 1) ? 'checked' : '' }}><label for="alimentacao">Alimentação</label>
+                        <input type="checkbox" name="comunicacao" {{ (isset($results[0]->comunicacao) && $results[0]->comunicacao == 1) ? 'checked' : '' }}><label for="comunicacao">Comunicação</label>
+                        <input type="checkbox" name="outros" {{ (isset($results[0]->outros) && $results[0]->outros == 1) ? 'checked' : '' }}><label for="outros">Outros momentos</label>
                     </div>
                     <input type="text" name="out_momentos" placeholder="Quais?">
                 </div>
@@ -338,26 +338,26 @@
                 <div class="form-group">
                     <label>O estudante conta com Atendimento Educacional Especializado?</label>
                     <select name="at_especializado">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
+    <option value="1" {{ (isset($results[0]->at_especializado) && $results[0]->at_especializado == 1) ? 'selected' : '' }}>Sim</option>
+    <option value="0" {{ (isset($results[0]->at_especializado) && $results[0]->at_especializado == 0) ? 'selected' : '' }}>Não</option>
+</select>
                 </div>
                 
                 <div class="form-group">
                     <label>Nome do profissional do AEE:</label>
-                    <input type="text" name="nome_prof_AEE">
+                    <input type="text" name="nome_prof_AEE" value="{{ isset($results[0]->nome_prof_AEE) ? $results[0]->nome_prof_AEE : '' }}">
                 </div>
                 
                 <h2>II - Personalidade</h2>
                 
                 <div class="form-group">
                     <label>Principais características:</label>
-                    <textarea rows="3" name="caracteristicas"></textarea>
+                    <textarea rows="3" name="caracteristicas">{{ isset($results[0]->caracteristicas) ? $results[0]->caracteristicas : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Principais áreas de interesse (brinquedos, jogos, temas, etc.):</label>
-                    <textarea rows="3" name="areas_interesse"></textarea>
+                    <textarea rows="3" name="areas_interesse">{{ isset($results[0]->areas_interesse) ? $results[0]->areas_interesse : '' }}</textarea>
                 </div>
             </div>
             
@@ -367,22 +367,22 @@
                 
                 <div class="form-group">
                     <label>Gosta de fazer no tempo livre:</label>
-                    <textarea rows="3" name="atividades_livre"></textarea>
+                    <textarea rows="3" name="atividades_livre">{{ isset($results[0]->livre_gosta_fazer) ? $results[0]->livre_gosta_fazer : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Deixa o estudante muito feliz:</label>
-                    <textarea rows="3" name="feliz"></textarea>
+                    <textarea rows="3" name="feliz">{{ isset($results[0]->feliz_est) ? $results[0]->feliz_est : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Deixa o estudante muito triste ou desconfortável:</label>
-                    <textarea rows="3" name="triste"></textarea>
+                    <textarea rows="3" name="triste">{{ isset($results[0]->trist_est) ? $results[0]->trist_est : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Objeto de apego? Qual?</label>
-                    <textarea rows="3" name="objeto_apego"></textarea>
+                    <textarea rows="3" name="objeto_apego">{{ isset($results[0]->obj_apego) ? $results[0]->obj_apego : '' }}</textarea>
                 </div>
                 
                 <h2 class="comunicacao-section">III - Comunicação</h2>
@@ -390,22 +390,22 @@
                 <div class="form-group">
                     <label>Precisa de comunicação alternativa para expressar-se?</label>
                     <select name="precisa_comunicacao">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
+    <option value="1" {{ (isset($results[0]->precisa_comunicacao) && $results[0]->precisa_comunicacao == 1) ? 'selected' : '' }}>Sim</option>
+    <option value="0" {{ (isset($results[0]->precisa_comunicacao) && $results[0]->precisa_comunicacao == 0) ? 'selected' : '' }}>Não</option>
+</select>
                 </div>
                 
                 <div class="form-group">
                     <label>Entende instruções dadas de forma verbal?</label>
                     <select name="entende_instrucao">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
+    <option value="1" {{ (isset($results[0]->entende_instrucao) && $results[0]->entende_instrucao == 1) ? 'selected' : '' }}>Sim</option>
+    <option value="0" {{ (isset($results[0]->entende_instrucao) && $results[0]->entende_instrucao == 0) ? 'selected' : '' }}>Não</option>
+</select>
                 </div>
                 
                 <div class="form-group">
                     <label>Caso não, como você recomenda dar instruções?</label>
-                    <textarea rows="3" name="recomenda_instrucao"></textarea>
+                    <textarea rows="3" name="recomenda_instrucao">{{ isset($results[0]->recomenda_instrucao) ? $results[0]->recomenda_instrucao : '' }}</textarea>
                 </div>
             </div>
             
@@ -416,44 +416,44 @@
                 <div class="form-group">
                     <label>Apresenta sensibilidade:</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" name="s_auditiva"><label for="s_auditiva">Auditiva</label>
-                        <input type="checkbox" name="s_visual"><label for="s_visual">Visual</label>
-                        <input type="checkbox" name="s_tatil"><label for="s_tatil">Tátil</label>
-                        <input type="checkbox" name="s_outros"><label for="s_outros">Outros estímulos</label>
+                        <input type="checkbox" name="s_auditiva" {{ (isset($results[0]->auditivo_04) && $results[0]->auditivo_04 == 1) ? 'checked' : '' }}><label for="s_auditiva">Auditiva</label>
+                        <input type="checkbox" name="s_visual" {{ (isset($results[0]->visual_04) && $results[0]->visual_04 == 1) ? 'checked' : '' }}><label for="s_visual">Visual</label>
+                        <input type="checkbox" name="s_tatil" {{ (isset($results[0]->tatil_04) && $results[0]->tatil_04 == 1) ? 'checked' : '' }}><label for="s_tatil">Tátil</label>
+                        <input type="checkbox" name="s_outros" {{ (isset($results[0]->outros_04) && $results[0]->outros_04 == 1) ? 'checked' : '' }}><label for="s_outros">Outros estímulos</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Caso sim, como manejar em sala de aula</label>
-                    <textarea rows="3" name="manejo_sensibilidade"></textarea>
+                    <textarea rows="3" name="manejo_sensibilidade">{{ isset($results[0]->maneja_04) ? $results[0]->maneja_04 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Apresenta seletividade alimentar?</label>
                     <select name="seletividade_alimentar">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
+    <option value="1" {{ (isset($results[0]->asa_04) && $results[0]->asa_04 == 1) ? 'selected' : '' }}>Sim</option>
+    <option value="0" {{ (isset($results[0]->asa_04) && $results[0]->asa_04 == 0) ? 'selected' : '' }}>Não</option>
+</select>
                 </div>
                 
                 <div class="form-group">
                     <label>Alimentos preferidos:</label>
-                    <textarea rows="3" name="alimentos_preferidos"></textarea>
+                    <textarea rows="3" name="alimentos_preferidos">{{ isset($results[0]->alimentos_pref_04) ? $results[0]->alimentos_pref_04 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Alimentos que evita:</label>
-                    <textarea rows="3" name="alimentos_evita"></textarea>
+                    <textarea rows="3" name="alimentos_evita">{{ isset($results[0]->alimentos_evita_04) ? $results[0]->alimentos_evita_04 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Com quem tem mais afinidade na escola (professores, colegas)? Identifique</label>
-                    <textarea rows="3" name="afinidade_escola"></textarea>
+                    <textarea rows="3" name="afinidade_escola">{{ isset($results[0]->afinidade_escola_04) ? $results[0]->afinidade_escola_04 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Como reage no contato com novas pessoas ou situações</label>
-                    <textarea rows="3" name="reacao_contato"></textarea>
+                    <textarea rows="3" name="reacao_contato">{{ isset($results[0]->reacao_contato_04) ? $results[0]->reacao_contato_04 : '' }}</textarea>
                 </div>
             </div>
             
@@ -463,59 +463,59 @@
                 
                 <div class="form-group">
                     <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?</label>
-                    <textarea rows="3" name="interacao_escola"></textarea>
+                    <textarea rows="3" name="interacao_escola">{{ isset($results[0]->interacao_escola_05) ? $results[0]->interacao_escola_05 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
-                    <textarea rows="3" name="interesse_atividade"></textarea>
+                    <textarea rows="3" name="interesse_atividade">{{ isset($results[0]->interesse_atividade_05) ? $results[0]->interesse_atividade_05 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Como o(a) estudante aprende melhor?</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" name="r_visual"><label for="r_visual">Recurso visual</label>
-                        <input type="checkbox" name="r_auditivo"><label for="r_auditivo">Recurso auditivo</label>
-                        <input type="checkbox" name="m_concreto"><label for="m_concreto">Material concreto</label>
-                        <input type="checkbox" name="o_outro"><label for="o_outro">Outro - identificar</label>
+                        <input type="checkbox" name="r_visual" {{ (isset($results[0]->recurso_visual_05) && $results[0]->recurso_visual_05 == 1) ? 'checked' : '' }}><label for="r_visual">Recurso visual</label>
+                        <input type="checkbox" name="r_auditivo" {{ (isset($results[0]->recurso_auditivo_05) && $results[0]->recurso_auditivo_05 == 1) ? 'checked' : '' }}><label for="r_auditivo">Recurso auditivo</label>
+                        <input type="checkbox" name="m_concreto" {{ (isset($results[0]->material_concreto_05) && $results[0]->material_concreto_05 == 1) ? 'checked' : '' }}><label for="m_concreto">Material concreto</label>
+                        <input type="checkbox" name="o_outro" {{ (isset($results[0]->outro_identificar_05) && $results[0]->outro_identificar_05 == 1) ? 'checked' : '' }}><label for="o_outro">Outro - identificar</label>
                     </div>
                     
                     <div class="form-group">
                         <label></label>
-                        <textarea rows="3" name="outro_identificar"></textarea>
+                        <textarea rows="3" name="outro_identificar">{{ isset($results[0]->outro_identificar_text_05) ? $results[0]->outro_identificar_text_05 : '' }}</textarea>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
-                    <textarea rows="3" name="atividades_grupo"></textarea>
+                    <textarea rows="3" name="atividades_grupo">{{ isset($results[0]->atividades_grupo_05) ? $results[0]->atividades_grupo_05 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Quais estratégias são utilizadas e se mostram eficazes?</label>
-                    <textarea rows="3" name="estrategias_eficazes"></textarea>
+                    <textarea rows="3" name="estrategias_eficazes">{{ isset($results[0]->estrategias_eficazes_05) ? $results[0]->estrategias_eficazes_05 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>O que desperta seu interesse para realizar uma tarefa/atividade</label>
-                    <textarea rows="3" name="interesse_tarefa"></textarea>
+                    <textarea rows="3" name="interesse_tarefa">{{ isset($results[0]->interesse_tarefa_05) ? $results[0]->interesse_tarefa_05 : '' }}</textarea>
                 </div>
                 
                 <h2 class="comunicacao-section">V - Informações da família</h2>
                 
                 <div class="form-group">
                     <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
-                    <textarea rows="3" name="expectativas_familia"></textarea>
+                    <textarea rows="3" name="expectativas_familia">{{ isset($results[0]->expectativas_familia_05) ? $results[0]->expectativas_familia_05 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Existe alguma estratégia utilizada no contexto familiar que pode ser reaplicada na escola?</label>
-                    <textarea rows="3" name="estrategias_familia"></textarea>
+                    <textarea rows="3" name="estrategias_familia">{{ isset($results[0]->estrategias_familia_05) ? $results[0]->estrategias_familia_05 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Como a família lida com situações de crise ou estresse do estudante?</label>
-                    <textarea rows="3" name="crise_estresse"></textarea>
+                    <textarea rows="3" name="crise_estresse">{{ isset($results[0]->crise_estresse_05) ? $results[0]->crise_estresse_05 : '' }}</textarea>
                 </div>
             </div>
 
