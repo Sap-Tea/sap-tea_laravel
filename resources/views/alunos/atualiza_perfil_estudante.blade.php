@@ -189,9 +189,111 @@
         <!-- Seleciona o primeiro aluno da lista ($dados[0]) -->
         @php $aluno = $dados[0]; @endphp
 
-        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}">
+        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}" id="perfilFormAtualiza" autocomplete="off">
             @csrf
-
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Paginacao Multi-etapas
+                    const steps = document.querySelectorAll('.step-content');
+                    const tabs = document.querySelectorAll('.step-tab');
+                    const finishBtn = document.getElementById('finishBtn');
+                    const prevBtn = document.getElementById('prevBtn');
+                    const nextBtn = document.getElementById('nextBtn');
+                    let currentStep = 1;
+                    const totalSteps = steps.length;
+                    function updateProgressBar() {
+                        const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+                        const progressBar = document.getElementById('progressBar');
+                        if (progressBar) progressBar.style.width = percentage + '%';
+                    }
+                    function showStep(stepNumber) {
+                        steps.forEach(step => step.classList.remove('active'));
+                        tabs.forEach(tab => tab.classList.remove('active'));
+                        document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
+                        document.querySelector(`.step-tab[data-step="${stepNumber}"]`).classList.add('active');
+                        if (stepNumber === 1) {
+                            prevBtn.style.display = 'none';
+                            nextBtn.style.display = 'block';
+                        } else if (stepNumber === totalSteps) {
+                            prevBtn.style.display = 'block';
+                            nextBtn.style.display = 'none';
+                            finishBtn.style.display = 'block';
+                        } else {
+                            prevBtn.style.display = 'block';
+                            nextBtn.style.display = 'block';
+                            finishBtn.style.display = 'none';
+                        }
+                        updateProgressBar();
+                        sessionStorage.setItem('currentStepAtualiza', stepNumber);
+                    }
+                    if (prevBtn) prevBtn.addEventListener('click', function() { if (currentStep > 1) { currentStep--; showStep(currentStep); } });
+                    if (nextBtn) nextBtn.addEventListener('click', function() { if (currentStep < totalSteps) { currentStep++; showStep(currentStep); } });
+                    if (finishBtn) {
+                        finishBtn.disabled = false;
+                        finishBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const nomeAluno = document.querySelector('input[name="nome_aluno"]').value;
+                            const dataAtual = new Date();
+                            const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+                            const mensagem = `Deseja realmente atualizar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
+                            if (!confirm(mensagem)) return;
+                            this.disabled = true;
+                            this.innerHTML = '<i class="fas fa-check"></i> Perfil atualizado!';
+                            this.style.setProperty('background-color', '#ff9800', 'important');
+                            this.style.setProperty('color', '#fff', 'important');
+                            this.style.setProperty('border-color', '#ff9800', 'important');
+                            this.style.setProperty('cursor', 'not-allowed', 'important');
+                            document.getElementById('perfilFormAtualiza').submit();
+                        });
+                    }
+                    const form = document.getElementById('perfilFormAtualiza');
+                    if (form) {
+                        form.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter') {
+                                // Só permite Enter se for na última etapa
+                                const totalSteps = document.querySelectorAll('.step-content').length;
+                                if (currentStep !== totalSteps) {
+                                    e.preventDefault();
+                                    return false;
+                                }
+                            }
+                        });
+                        form.addEventListener('submit', function(e) {
+                            // Só permite submit se estiver na última etapa e botão finalizar estiver desabilitado (foi clicado)
+                            const finishBtn = document.getElementById('finishBtn');
+                            const totalSteps = document.querySelectorAll('.step-content').length;
+                            if (!finishBtn || !finishBtn.disabled || currentStep !== totalSteps) {
+                                e.preventDefault();
+                                return false;
+                            }
+                        });
+                    }
+                    tabs.forEach(tab => {
+                        tab.addEventListener('click', function() {
+                            currentStep = parseInt(this.getAttribute('data-step'));
+                            showStep(currentStep);
+                        });
+                    });
+                    const savedStep = sessionStorage.getItem('currentStepAtualiza');
+                    showStep(savedStep ? parseInt(savedStep) : 1);
+                });
+            </script>
+            <!-- Barra de progresso -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <!-- Abas de etapas -->
+            <div class="step-tabs">
+                <button type="button" class="step-tab" data-step="1">Dados Pessoais</button>
+                <button type="button" class="step-tab" data-step="2">Perfil do Estudante</button>
+                <button type="button" class="step-tab" data-step="3">Personalidade</button>
+                <button type="button" class="step-tab" data-step="4">Preferências</button>
+                <button type="button" class="step-tab" data-step="5">Informações da Família</button>
+                <button type="button" class="step-tab" data-step="6">Profissionais</button>
+            </div>
+            <!-- Conteúdo das etapas (você pode dividir os campos do formulário conforme as etapas) -->
+            <div class="step-content active" data-step="1">
+    <!-- Etapa 1: Dados Pessoais -->
             <!-- Dados do aluno selecionado -->
             <input type="hidden" name="aluno_id" value="{{ $aluno->alu_id }}">
             
@@ -221,10 +323,11 @@
                 <label>Nome do Professor:</label>
                 <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
             </div>
-
-            <!-- Dados adicionais do perfil -->
-            @if(isset($results) && count($results) > 0)
-                @php $perfil = $results[0]; @endphp
+</div>
+<div class="step-content" data-step="2">
+    <!-- Etapa 2: Perfil do Estudante -->
+@if(isset($results) && count($results) > 0)
+    @php $perfil = $results[0]; @endphp
 
                 <div class="form-group">
                     <label>Possui diagnóstico/laudo?</label>
@@ -251,7 +354,6 @@
                     </div>
                 </div>
 
-
                 <div class="form-group">
                     <label>Nível suporte</label>
                     <select name="nivel_suporte">
@@ -268,7 +370,6 @@
                         <option value="0" @if($perfil->uso_medicamento == 0) selected @endif>Não</option>
                     </select>
                 </div>
-
 
                 <div class="form-group">
                     <label>Quais?</label>
@@ -307,7 +408,6 @@
                     <input type="text" name="out_momentos" placeholder="Quais?" value="{{$perfil->out_momentos }}">
                 </div>
 
-
                 <div class="form-group">
                     <label>O estudante conta com Atendimento Educacional Especializado?</label>
                     <select name="at_especializado">
@@ -316,12 +416,13 @@
                     </select>
                 </div>
 
-
                 <div class="form-group">
                     <label>Nome do profissional do AEE:</label>
                     <input type="text" name="nome_prof_AEE" value="{{$perfil->nome_prof_AEE }}">
                 </div>
-
+</div>
+<div class="step-content" data-step="3">
+    <!-- Etapa 3: Personalidade -->
                 <h2> II - Personalidade</h2>
 
                 <div class="form-group">
@@ -354,8 +455,10 @@
                     <label>Objeto de apego? Qual?</label>
                     <textarea name="objeto_apego">{{$perfil->obj_apego }}</textarea>
                 </div>
-
-                <h2 class="comunicacao-section">III - Comunicação</h2>
+</div>
+<div class="step-content" data-step="4">
+    <!-- Etapa 4: Comunicação -->
+<h2 class="comunicacao-section">III - Comunicação</h2>
 
                 <div class="form-group">
                    <label>Precisa de comunicação alternativa para expressar-se?</label>
@@ -364,7 +467,6 @@
                      <option value="0" @if($perfil->precisa_comunicacao == 0) selected @endif>Não</option>
                  </select>
                 </div>
-
 
                 <div class="form-group">
                  <label>Entende instruções dadas de forma verbal?</label>
@@ -378,8 +480,10 @@
                     <label>Caso não,Como você recomenda dar instruções?</label>
                     <textarea name="recomenda_instrucao">{{$perfil->recomenda_instrucao }}</textarea>
                 </div>
-
-                <h2>IV - Preferencias, sensibilidade e dificuldades</h2>
+</div>
+<div class="step-content" data-step="5">
+    <!-- Etapa 5: Preferências, sensibilidade e dificuldades -->
+<h2>IV - Preferencias, sensibilidade e dificuldades</h2>
 
                 <div class="form-group">
                     <label>Apresenta sensibilidade:</label>
@@ -390,7 +494,6 @@
                             <input type="checkbox" name="s_outros" @if($perfil->outros_04) checked @endif><label for="s_outros">Outros estímulos</label>
                         </div>
                 </div>
-
 
                 <div class="form-group">
                     <label>Caso sim,Como manejar em sala de aula?</label>
@@ -404,7 +507,6 @@
                         <option value="0" @if($perfil->asa_04 == 0) selected @endif>Não</option>
                     </select>
                 </div>
-
 
                 <div class="form-group">
                     <label>Alimentos preferidos:</label>
@@ -438,8 +540,6 @@
                     <textarea rows="3" name="interacao_escola2" >{{$perfil->interacao_escola_04 }}</textarea>
                 </div>
 
-
-
                 <div class="form-group">
                     <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
                     <textarea rows="3" name="interesse_atividade">{{$perfil->interesse_atividade_04 }}</textarea>
@@ -460,7 +560,6 @@
     </div>
 </div>
 
-
                 <div class="form-group">
                     <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
                     <textarea rows="3" name="atividades_grupo">{{$perfil->realiza_tarefa_04 }}</textarea>
@@ -475,10 +574,10 @@
                     <label>O que desperta seu interesse para realizar uma tarefa/atividades?</label>
                     <textarea rows="3" name="interesse_tarefa">{{$perfil->prefere_ts_04 }}</textarea>
                 </div>
-
-
-                
-                <h2 class="comunicacao-section">V - Informações da família</h2>
+</div>
+<div class="step-content" data-step="6">
+    <!-- Etapa 6: Informações da família / Profissionais -->
+<h2 class="comunicacao-section">V - Informações da família</h2>
 
                 <div class="form-group">
                     <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
