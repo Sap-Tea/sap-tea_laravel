@@ -39,9 +39,8 @@ class AtualizacaoPerfilController extends Controller
             DB::commit();
 
             // Redireciona para a rota perfil.estudante com mensagem de sucesso e contador
-            return redirect()->route('alunos.perfil_estudante', ['id' => $id])
-                             ->with('success', 'Perfil atualizado com sucesso!')
-                             ->with('updateCount', $updateCount);
+            \Log::info('REQUEST ATUALIZA PERFIL', $request->all());
+return redirect()->route('perfil.estudante')->with('success', 'Perfil atualizado com sucesso!')->with('updateCount', $updateCount);
         } catch (\Exception $e) {
             // Reverte a transação em caso de erro
             DB::rollBack();
