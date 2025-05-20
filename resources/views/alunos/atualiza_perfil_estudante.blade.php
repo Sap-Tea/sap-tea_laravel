@@ -160,40 +160,7 @@
     <div class="container">
         <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => isset($aluno) ? $aluno->alu_id : '']) }}" id="perfilForm" autocomplete="off">
     @method('POST')
-    <script>
-        // Sempre posiciona na primeira aba ao carregar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Remove active de todas as abas e conteúdos
-            document.querySelectorAll('.step-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.step-content').forEach(content => content.classList.remove('active'));
-            // Ativa a primeira aba
-            const firstTab = document.querySelector('.step-tab[data-step="1"]');
-            const firstContent = document.querySelector('.step-content[data-step="1"]');
-            if (firstTab) firstTab.classList.add('active');
-            if (firstContent) firstContent.classList.add('active');
-
-        // Bloqueia o envio do formulário por Enter, exceto na última etapa
-            const form = document.getElementById('perfilForm');
-            form.addEventListener('keydown', function(e) {
-                // Enter (13) só é permitido se o finishBtn estiver visível
-                if (e.key === 'Enter') {
-                    const finishBtn = document.getElementById('finishBtn');
-                    if (!finishBtn || finishBtn.style.display === 'none') {
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-            });
-            // Impede submit padrão
-            form.addEventListener('submit', function(e) {
-                const finishBtn = document.getElementById('finishBtn');
-                if (!finishBtn || finishBtn.style.display === 'none') {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-        });
-    </script>
+    
             @csrf
             <input type="hidden" name="aluno_id" value="{{ isset($aluno) ? $aluno->alu_id : '' }}">
 
@@ -599,12 +566,17 @@
     </div>
 
     <!-- Navegação entre etapas -->
-    <div class="step-navigation">
-        <div class="navigation-group">
-            <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
-    <i class="fas fa-arrow-left"></i> Anterior
-        </div>
+<div class="step-navigation">
+    <div class="navigation-group">
+        <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
+            <i class="fas fa-arrow-left"></i> Anterior
+        </button>
+        <button type="button" class="next-btn" id="nextBtn">
+            Próximo <i class="fas fa-arrow-right"></i>
+        </button>
+        <button id="finishBtn" class="btn btn-primary finish-btn" style="display: none;">Finalizar</button>
     </div>
+</div>
 
     <style>
         .btn { padding: 10px 22px; border-radius: 6px; border: none; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
@@ -717,6 +689,7 @@
         
         // Mostra a etapa atual
         function showStep(stepNumber) {
+            currentStep = stepNumber;
             steps.forEach(step => step.classList.remove('active'));
             tabs.forEach(tab => tab.classList.remove('active'));
             
@@ -727,6 +700,7 @@
             if (stepNumber === 1) {
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'block';
+                finishBtn.style.display = 'none';
             } else if (stepNumber === totalSteps) {
                 prevBtn.style.display = 'block';
                 nextBtn.style.display = 'none';
@@ -746,95 +720,43 @@
         
         // Eventos para os botões de navegação
         if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
+            prevBtn.onclick = function() {
                 if (currentStep > 1) {
-                    currentStep--;
-                    showStep(currentStep);
+                    showStep(currentStep - 1);
                 }
-            });
+            };
         }
-        
         if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
+            nextBtn.onclick = function() {
                 if (currentStep < totalSteps) {
-                    currentStep++;
-                    showStep(currentStep);
+                    showStep(currentStep + 1);
                 }
-            });
+            };
         }
-        
         // Evento para o botão Finalizar
         if (finishBtn) {
             finishBtn.disabled = false;
-            finishBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    const nomeAluno = document.querySelector('input[name="nome_aluno"]').value;
-    const dataAtual = new Date();
-    const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
-    const mensagem = `Deseja realmente salvar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
-
-    if (!confirm(mensagem)) {
-        return;
-    }
-
-    // Exibe mensagem de sucesso (toast)
-    showToast('Perfil atualizado com sucesso!', 'success');
-
-    // Desabilita o botão de finalizar para evitar múltiplos envios
-    this.disabled = true;
-    this.innerHTML = '<i class="fas fa-check"></i> Cadastro de perfil já efetuado!';
-    this.style.setProperty('background-color', '#ff9800', 'important');
-    this.style.setProperty('color', '#fff', 'important');
-    this.style.setProperty('border-color', '#ff9800', 'important');
-    this.style.setProperty('cursor', 'not-allowed', 'important');
-
-    // Aguarda 1 segundo para o usuário ver a mensagem, então envia o formulário
-    setTimeout(function() {
-        document.getElementById('perfilForm').submit();
-    }, 1000);
-});
-
-// Função para exibir toast de sucesso
-function showToast(message, type) {
-    let toast = document.createElement('div');
-    toast.className = 'custom-toast ' + (type === 'success' ? 'toast-success' : '');
-    toast.innerHTML = `<i class='fas fa-check-circle'></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => { toast.classList.add('show'); }, 100);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => document.body.removeChild(toast), 500);
-    }, 2200);
-}
-
-// Estilo para o toast
-const toastStyle = document.createElement('style');
-toastStyle.innerHTML = `
-.custom-toast {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 9999;
-    background: #28a745;
-    color: #fff;
-    padding: 16px 32px;
-    border-radius: 8px;
-    font-size: 1.15rem;
-    box-shadow: 0 2px 12px rgba(40,167,69,0.15);
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: all 0.4s;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.custom-toast.toast-success { background: #28a745; }
-.custom-toast.show { opacity: 1; transform: translateY(0); }
-.custom-toast i { font-size: 1.3em; }
-`;
-document.head.appendChild(toastStyle);
+            finishBtn.onclick = function(e) {
+                e.preventDefault();
+                // Busca nome do aluno e data atual formatada
+                const nomeAluno = document.querySelector('input[name="nome_aluno"]')?.value || '';
+                const dataAtual = new Date();
+                const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+                const mensagem = `Deseja realmente salvar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
+                if (!confirm(mensagem)) {
+                    return;
+                }
+                // Desabilita o botão de finalizar para evitar múltiplos envios
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-check"></i> Cadastro de perfil já efetuado!';
+                this.style.setProperty('background-color', '#ff9800', 'important');
+                this.style.setProperty('color', '#fff', 'important');
+                this.style.setProperty('border-color', '#ff9800', 'important');
+                this.style.setProperty('cursor', 'not-allowed', 'important');
+                // Envia o formulário
+                document.getElementById('perfilForm').submit();
+            };
         }
-
         // Impede submit por Enter ou submit automático em todo o form (só permite via botão finalizar)
         const form = document.getElementById('perfilForm');
         if (form) {
@@ -844,47 +766,32 @@ document.head.appendChild(toastStyle);
                     return false;
                 }
             });
-            form.addEventListener('submit', function(e) {
-                // Só permite submit se o botão finalizar estiver desabilitado (foi clicado e confirmado)
-                const finishBtn = document.getElementById('finishBtn');
-                if (!finishBtn || !finishBtn.disabled) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
         }
-        
         // Evento para o botão Cancelar
         const cancelBtn = document.querySelector('.cancel-btn');
         if (cancelBtn) {
-            cancelBtn.addEventListener('click', function(e) {
+            cancelBtn.onclick = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
                 // Desabilita todos os botões para evitar múltiplos cliques
                 const allButtons = document.querySelectorAll('button');
                 allButtons.forEach(button => {
                     button.disabled = true;
                 });
-                
                 // Redireciona para a página inicial
                 window.location.href = '{{ route('index') }}';
-            });
+            };
         }
-        
         // Eventos para as abas
         tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                currentStep = parseInt(this.getAttribute('data-step'));
-                showStep(currentStep);
-            });
+            tab.onclick = function() {
+                showStep(parseInt(this.getAttribute('data-step')));
+            };
         });
-        
         // Carrega o estado salvo
         const savedStep = sessionStorage.getItem('currentStep');
         showStep(savedStep ? parseInt(savedStep) : 1);
     }
-
     // Inicializa o formulário quando o DOM estiver pronto
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeForm);
