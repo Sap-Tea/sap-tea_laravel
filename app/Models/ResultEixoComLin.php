@@ -17,6 +17,6 @@ class ResultEixoComLin extends Model
     ];
     public function proposta()
     {
-        return $this->belongsTo(PropostaComLin::class, 'fk_hab_pro_com_lin', 'id_pro_com_lin');
+        return $this->belongsTo(PropostaComLin::class, 'fk_id_pro_com_lin', 'id_pro_com_lin');
     }
 }

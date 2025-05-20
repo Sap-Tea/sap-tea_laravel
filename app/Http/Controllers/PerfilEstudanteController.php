@@ -13,6 +13,7 @@ class PerfilEstudanteController extends Controller
 {
     public function rotina_monitoramento_aluno($aluno_id)
     {
+        
         $professor_logado = auth('funcionario')->user();
         $professor_id = $professor_logado ? $professor_logado->func_id : null;
 
@@ -40,9 +41,9 @@ class PerfilEstudanteController extends Controller
         $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
         $professor_nome = $professor_logado ? $professor_logado->func_nome : null;
 
-        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_result_alu_id_ecomling', $aluno_id)->paginate(20);
-        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $aluno_id)->paginate(20);
-        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $aluno_id)->paginate(20);
+        $comunicacao_resultados = \App\Models\ResultEixoComLin::with('proposta')->where('fk_result_alu_id_ecomling', $aluno_id)->get();
+        $comportamento_resultados = \App\Models\ResultEixoComportamento::with('proposta')->where('fk_result_alu_id_comportamento', $aluno_id)->get();
+        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::with('proposta')->where('fk_result_alu_id_int_socio', $aluno_id)->get();
 
         // Buscar atividades do eixo comunicação/linguagem do aluno via JOIN
         $comunicacao_atividades = \DB::table('atividade_com_lin as acom')
