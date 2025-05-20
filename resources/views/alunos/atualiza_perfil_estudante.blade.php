@@ -159,7 +159,7 @@
 <body>
     <div class="container">
         <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => isset($aluno) ? $aluno->alu_id : '']) }}" id="perfilForm" autocomplete="off">
-    @method('POST')
+    @method('PUT')
     
             @csrf
             <input type="hidden" name="aluno_id" value="{{ isset($aluno) ? $aluno->alu_id : '' }}">
@@ -283,7 +283,7 @@
                     </div>
                     <div class="form-group">
                         <label>O estudante conta com profissional de apoio?</label>
-                        <select name="loc_01">
+                        <select name="prof_apoio">
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
