@@ -362,186 +362,114 @@
     </div>
 
     <!-- TABELA DE ATIVIDADES -->
-    {{-- ATIVIDADES DO EIXO COMUNICAÇÃO/LINGUAGEM --}}
-    <div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-      <div class="table-title" style="font-size:18px; color:#b28600;">Atividades do Eixo Comunicação/Linguagem</div>
-      <table class="result-table">
+    {{-- EIXO COMUNICAÇÃO/LINGUAGEM (PADRÃO VISUAL) --}}
+<div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+  <div class="table-title" style="font-size:20px; color:#b28600; text-align:center; margin-bottom:15px;">Eixo Comunicação/Linguagem</div>
+  <table class="result-table" style="background: #fff;">
     <thead>
-        <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-        </tr>
+      <tr style="background: #ffe066;">
+        <th style="width: 8%;">Código</th>
+        <th style="width: 28%;">Descrição</th>
+        <th style="width: 12%;">Data Inicial</th>
+        <th style="width: 5%;">Sim</th>
+        <th style="width: 5%;">Não</th>
+        <th style="width: 12%;">Data Final</th>
+        <th style="width: 5%;">Sim</th>
+        <th style="width: 5%;">Não</th>
+        <th style="width: 20%;">Observações</th>
+      </tr>
     </thead>
     <tbody>
-        @forelse($comunicacao_atividades as $atividade)
-    <tr>
+      @foreach($comunicacao_atividades as $i => $atividade)
+      <tr>
         <td>{{ $atividade->cod_ati_com_lin }}</td>
         <td>{{ $atividade->desc_ati_com_lin }}</td>
-    </tr>
-@empty
-    <tr><td colspan="2">Nenhuma atividade encontrada para este aluno.</td></tr>
-@endforelse
+        <td><input type="date" name="linguagem[{{$i}}][data_inicial]" style="width:100%"></td>
+        <td><input type="checkbox" name="linguagem[{{$i}}][sim_inicial]" value="1"></td>
+        <td><input type="checkbox" name="linguagem[{{$i}}][nao_inicial]" value="1"></td>
+        <td><input type="date" name="linguagem[{{$i}}][data_final]" style="width:100%"></td>
+        <td><input type="checkbox" name="linguagem[{{$i}}][sim_final]" value="1"></td>
+        <td><input type="checkbox" name="linguagem[{{$i}}][nao_final]" value="1"></td>
+        <td><input type="text" name="linguagem[{{$i}}][observacoes]" style="width:100%"></td>
+      </tr>
+      @endforeach
     </tbody>
-</table>
-    </div>
-
-    {{-- EIXO COMUNICAÇÃO/LINGUAGEM (DINÂMICO) --}}
-    <div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-      <div class="table-title" style="font-size:18px; color:#b28600;">Eixo Comunicação/Linguagem (Resultados)</div>
-      <table class="result-table">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-            <th>Data (Inicial)</th>
-            <th>Sim</th>
-            <th>Não</th>
-            <th>Data (Final)</th>
-            <th>Sim</th>
-            <th>Não</th>
-            <th>Observações</th>
-          </tr>
-        </thead>
-        <tbody>
-@foreach($comunicacao_resultados as $i => $resultado)
-    <tr>
-        <td>{{ optional($resultado->proposta)->cod_pro_com_lin ?? '-' }}</td>
-        <td>{{ optional($resultado->proposta)->desc_pro_com_lin ?? '-' }}</td>
-        <td><input type="date" name="linguagem[{{$i}}][data_inicial]" value=""></td>
-        <td style="text-align:center"><input type="checkbox" name="linguagem[{{$i}}][sim_inicial]" value="1"></td>
-        <td style="text-align:center"><input type="checkbox" name="linguagem[{{$i}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="linguagem[{{$i}}][data_final]" value=""></td>
-        <td style="text-align:center"><input type="checkbox" name="linguagem[{{$i}}][sim_final]" value="1"></td>
-        <td style="text-align:center"><input type="checkbox" name="linguagem[{{$i}}][nao_final]" value="1"></td>
-        <td><input type="text" name="linguagem[{{$i}}][observacoes]" value=""></td>
-    </tr>
-@endforeach
-</tbody>
-      </table>
-      
-    </div>
-
-    {{-- ATIVIDADES DO EIXO COMPORTAMENTO --}}
-    <div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-      <div class="table-title" style="font-size:18px; color:#176ca7;">Atividades do Eixo Comportamento</div>
-      <table class="result-table">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($comportamento_atividades as $atividade)
-          <tr>
-            <td>{{ $atividade->cod_ati_comportamento }}</td>
-            <td>{{ $atividade->desc_ati_comportamento }}</td>
-          </tr>
-@empty
-          <tr><td colspan="2">Nenhuma atividade encontrada para este aluno.</td></tr>
-@endforelse
-        </tbody>
-      </table>
-      <!-- Links de paginação do eixo Comportamento -->
-      <div style="margin-top: 10px;">
-    {{ $comportamento_resultados->withPath(route('rotina.monitoramento.cadastrar', ['id' => $detalhe->alu_id]))->links() }}
+  </table>
 </div>
-      <!-- Fim da paginação -->
-    </div>
 
-    {{-- EIXO COMPORTAMENTO (DINÂMICO) --}}
-    <div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-      <div class="table-title" style="font-size:18px; color:#176ca7;">Eixo Comportamento</div>
-      <table class="result-table">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-            <th>Data (Inicial)</th>
-            <th>Sim</th>
-            <th>Não</th>
-            <th>Data (Final)</th>
-            <th>Sim</th>
-            <th>Não</th>
-            <th>Observações</th>
-          </tr>
-        </thead>
-        <tbody>
-@foreach($comportamento_resultados as $i => $resultado)
-    <tr>
-        <td>{{ optional($resultado->proposta)->cod_pro_comportamento ?? '-' }}</td>
-        <td>{{ optional($resultado->proposta)->desc_pro_comportamento ?? '-' }}</td>
-        <td><input type="date" name="comportamento[{{$i}}][data_inicial]" value=""></td>
-        <td style="text-align:center"><input type="checkbox" name="comportamento[{{$i}}][sim_inicial]" value="1"></td>
-        <td style="text-align:center"><input type="checkbox" name="comportamento[{{$i}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="comportamento[{{$i}}][data_final]" value=""></td>
-        <td style="text-align:center"><input type="checkbox" name="comportamento[{{$i}}][sim_final]" value="1"></td>
-        <td style="text-align:center"><input type="checkbox" name="comportamento[{{$i}}][nao_final]" value="1"></td>
-        <td><input type="text" name="comportamento[{{$i}}][observacoes]" value=""></td>
-    </tr>
-@endforeach
-</tbody>
-      </table>
-      
-    </div>
+    
 
-    {{-- ATIVIDADES DO EIXO INTERAÇÃO SOCIOEMOCIONAL --}}
-    <div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-      <div class="table-title" style="font-size:18px; color:#267a3e;">Atividades do Eixo Interação Socioemocional</div>
-      <table class="result-table">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($socioemocional_atividades as $atividade)
-    <tr>
+    {{-- EIXO COMPORTAMENTO (PADRÃO VISUAL) --}}
+<div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+  <div class="table-title" style="font-size:20px; color:#176ca7; text-align:center; margin-bottom:15px;">Eixo Comportamento</div>
+  <table class="result-table" style="background: #fff;">
+    <thead>
+      <tr style="background: #90caf9;">
+        <th style="width: 8%;">Código</th>
+        <th style="width: 28%;">Descrição</th>
+        <th style="width: 12%;">Data Inicial</th>
+        <th style="width: 5%;">Sim</th>
+        <th style="width: 5%;">Não</th>
+        <th style="width: 12%;">Data Final</th>
+        <th style="width: 5%;">Sim</th>
+        <th style="width: 5%;">Não</th>
+        <th style="width: 20%;">Observações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($comportamento_atividades as $i => $atividade)
+      <tr>
+        <td>{{ $atividade->cod_ati_comportamento }}</td>
+        <td>{{ $atividade->desc_ati_comportamento }}</td>
+        <td><input type="date" name="comportamento[{{$i}}][data_inicial]" style="width:100%"></td>
+        <td><input type="checkbox" name="comportamento[{{$i}}][sim_inicial]" value="1"></td>
+        <td><input type="checkbox" name="comportamento[{{$i}}][nao_inicial]" value="1"></td>
+        <td><input type="date" name="comportamento[{{$i}}][data_final]" style="width:100%"></td>
+        <td><input type="checkbox" name="comportamento[{{$i}}][sim_final]" value="1"></td>
+        <td><input type="checkbox" name="comportamento[{{$i}}][nao_final]" value="1"></td>
+        <td><input type="text" name="comportamento[{{$i}}][observacoes]" style="width:100%"></td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
+</div>
+
+    
+
+    {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (PADRÃO VISUAL) --}}
+<div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+  <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
+  <table class="result-table" style="background: #fff;">
+    <thead>
+      <tr style="background: #b2dfdb;">
+        <th style="width: 8%;">Código</th>
+        <th style="width: 28%;">Descrição</th>
+        <th style="width: 12%;">Data Inicial</th>
+        <th style="width: 5%;">Sim</th>
+        <th style="width: 5%;">Não</th>
+        <th style="width: 12%;">Data Final</th>
+        <th style="width: 5%;">Sim</th>
+        <th style="width: 5%;">Não</th>
+        <th style="width: 20%;">Observações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($socioemocional_atividades as $i => $atividade)
+      <tr>
         <td>{{ $atividade->cod_ati_int_soc }}</td>
         <td>{{ $atividade->desc_ati_int_soc }}</td>
-    </tr>
-@empty
-    <tr><td colspan="2">Nenhuma atividade encontrada para este aluno.</td></tr>
-@endforelse
-        </tbody>
-      </table>
-    </div>
-
-    {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (DINÂMICO) --}}
-    <div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-      <div class="table-title" style="font-size:18px; color:#267a3e;">Eixo Interação Socioemocional</div>
-      <table class="result-table">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-            <th>Data (Inicial)</th>
-            <th>Sim</th>
-            <th>Não</th>
-            <th>Data (Final)</th>
-            <th>Sim</th>
-            <th>Não</th>
-            <th>Observações</th>
-          </tr>
-        </thead>
-        <tbody>
-@foreach($socioemocional_resultados as $i => $resultado)
-    <tr>
-        <td>{{ optional($resultado->proposta)->cod_pro_int_soc ?? '-' }}</td>
-        <td>{{ optional($resultado->proposta)->desc_pro_int_soc ?? '-' }}</td>
-        <td><input type="date" name="socioemocional[{{$i}}][data_inicial]" value=""></td>
-        <td style="text-align:center"><input type="checkbox" name="socioemocional[{{$i}}][sim_inicial]" value="1"></td>
-        <td style="text-align:center"><input type="checkbox" name="socioemocional[{{$i}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="socioemocional[{{$i}}][data_final]" value=""></td>
-        <td style="text-align:center"><input type="checkbox" name="socioemocional[{{$i}}][sim_final]" value="1"></td>
-        <td style="text-align:center"><input type="checkbox" name="socioemocional[{{$i}}][nao_final]" value="1"></td>
-        <td><input type="text" name="socioemocional[{{$i}}][observacoes]" value=""></td>
-    </tr>
-@endforeach
-</tbody>
-      </table>
-    </div>
+        <td><input type="date" name="socioemocional[{{$i}}][data_inicial]" style="width:100%"></td>
+        <td><input type="checkbox" name="socioemocional[{{$i}}][sim_inicial]" value="1"></td>
+        <td><input type="checkbox" name="socioemocional[{{$i}}][nao_inicial]" value="1"></td>
+        <td><input type="date" name="socioemocional[{{$i}}][data_final]" style="width:100%"></td>
+        <td><input type="checkbox" name="socioemocional[{{$i}}][sim_final]" value="1"></td>
+        <td><input type="checkbox" name="socioemocional[{{$i}}][nao_final]" value="1"></td>
+        <td><input type="text" name="socioemocional[{{$i}}][observacoes]" style="width:100%"></td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
+</div>
 
 
     <!-- OBSERVAÇÕES FINAIS -->
@@ -570,59 +498,111 @@
 
     <!-- Importação das bibliotecas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('.pdf-button').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;
-            // Seleciona o conteúdo principal do formulário para o PDF
-            const element = document.querySelector('.container, .menu, main, body');
-            html2canvas(element, {
-                scale: 0.9,
-                useCORS: true
-            }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgWidth = 210;
-                const pageHeight = 297;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let y = 0;
-                while (y < imgHeight) {
-                    pdf.addImage(imgData, 'PNG', 0, y * -1, imgWidth, imgHeight);
-                    y += pageHeight;
-                    if (y < imgHeight) pdf.addPage();
-                }
-                // Pegando o nome do aluno do input ou campo correspondente
-                let nomeAluno = '';
-                // Busca input que contenha o nome do aluno (readonly) na info-section
-                const nomeInput = document.querySelector('.info-section label:nth-child(3) input');
-                if (nomeInput && nomeInput.value && nomeInput.value.trim() !== '' && nomeInput.value !== '-') {
-                    nomeAluno = nomeInput.value;
-                }
-                if (!nomeAluno) nomeAluno = 'aluno';
-                nomeAluno = nomeAluno
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                    .replace(/[^a-zA-Z0-9 ]/g, '')
-                    .replace(/\s+/g, '_')
-                    .replace(/^_+|_+$/g, '')
-                    .toLowerCase();
-                const hoje = new Date();
-                const dia = String(hoje.getDate()).padStart(2, '0');
-                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                const ano = hoje.getFullYear();
-                const dataAtual = `${dia}-${mes}-${ano}`;
-                nomeAluno = nomeAluno
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                    .replace(/[^a-zA-Z0-9 ]/g, '')
-                    .replace(/\s+/g, '_')
-                    .replace(/^_+|_+$/g, '')
-                    .toLowerCase();
-const nomeArquivo = `Rotina_monitoramento_${nomeAluno}_${dataAtual}.pdf`;
-                pdf.save(nomeArquivo);
-            }).catch(error => console.error('Erro ao gerar PDF:', error));
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.pdf-button').addEventListener('click', function() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        let y = 15;
+
+        // Função para extrair dados da tabela pelo seletor do eixo
+        function extractTableData(selector) {
+            const body = [];
+            document.querySelectorAll(selector + ' tbody tr').forEach(tr => {
+                const row = [];
+                tr.querySelectorAll('td').forEach(td => {
+                    let input = td.querySelector('input');
+                    if (input) {
+                        if (input.type === 'checkbox') {
+                            row.push(input.checked ? 'X' : '');
+                        } else {
+                            row.push(input.value);
+                        }
+                    } else {
+                        row.push(td.textContent.trim());
+                    }
+                });
+                body.push(row);
+            });
+            return body;
+        }
+
+        // Cabeçalho comum
+        const head = [[
+            'Código', 'Descrição', 'Data Inicial', 'Sim', 'Não', 'Data Final', 'Sim', 'Não', 'Observações'
+        ]];
+
+        // Eixos e títulos
+        const eixos = [
+            {titulo: 'Eixo Comunicação/Linguagem', cor: [255, 241, 130], selector: '.result-table:eq(0)'},
+            {titulo: 'Eixo Comportamento', cor: [161, 217, 246], selector: '.result-table:eq(1)'},
+            {titulo: 'Eixo Interação Socioemocional', cor: [215, 234, 217], selector: '.result-table:eq(2)'}
+        ];
+
+        // Como o querySelectorAll não suporta :eq, usaremos o índice manualmente
+        const tables = document.querySelectorAll('.result-table');
+        const nomesEixos = ['Eixo Comunicação/Linguagem', 'Eixo Comportamento', 'Eixo Interação Socioemocional'];
+        const coresEixos = [[255,241,130],[161,217,246],[215,234,217]];
+
+        tables.forEach((table, idx) => {
+            if(idx>0) doc.addPage();
+            doc.setFontSize(14);
+            doc.setTextColor(40);
+            doc.text(nomesEixos[idx], 105, y, {align:'center'});
+            // Extrai dados
+            const body = [];
+            table.querySelectorAll('tbody tr').forEach(tr => {
+                const row = [];
+                tr.querySelectorAll('td').forEach(td => {
+                    let input = td.querySelector('input');
+                    if (input) {
+                        if (input.type === 'checkbox') {
+                            row.push(input.checked ? 'X' : '');
+                        } else {
+                            row.push(input.value);
+                        }
+                    } else {
+                        row.push(td.textContent.trim());
+                    }
+                });
+                body.push(row);
+            });
+            doc.autoTable({
+                head: head,
+                body: body,
+                startY: y+5,
+                theme: 'grid',
+                headStyles: { fillColor: coresEixos[idx], textColor: [0,0,0], halign: 'center' },
+                styles: { fontSize: 10, cellPadding: 2 },
+                margin: { left: 10, right: 10 },
+            });
         });
+
+        // Nome do aluno para o arquivo
+        let nomeAluno = '';
+        const nomeInput = document.querySelector('.info-section label:nth-child(3) input');
+        if (nomeInput && nomeInput.value && nomeInput.value.trim() !== '' && nomeInput.value !== '-') {
+            nomeAluno = nomeInput.value;
+        }
+        if (!nomeAluno) nomeAluno = 'aluno';
+        nomeAluno = nomeAluno
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9 ]/g, '')
+            .replace(/\s+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .toLowerCase();
+        const hoje = new Date();
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const ano = hoje.getFullYear();
+        const dataAtual = `${dia}-${mes}-${ano}`;
+        const nomeArquivo = `Rotina_monitoramento_${nomeAluno}_${dataAtual}.pdf`;
+        doc.save(nomeArquivo);
     });
-    </script>
+});
+</script>
+
 
         
         <a href="{{ route('index') }}" class="btn btn-primary">Salvar</a>

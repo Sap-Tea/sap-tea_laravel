@@ -42,30 +42,37 @@ class PerfilEstudanteController extends Controller
         $professor_nome = $professor_logado ? $professor_logado->func_nome : null;
 
         $comunicacao_resultados = \App\Models\ResultEixoComLin::with('proposta')->where('fk_result_alu_id_ecomling', $aluno_id)->get();
+        $comunicacao_resultados = $comunicacao_resultados->sortBy(function($item) {
+            return optional($item->proposta)->cod_pro_com_lin;
+        })->values();
+
         $comportamento_resultados = \App\Models\ResultEixoComportamento::with('proposta')->where('fk_result_alu_id_comportamento', $aluno_id)->get();
+        $comportamento_resultados = $comportamento_resultados->sortBy(function($item) {
+            return optional($item->proposta)->cod_pro_comportamento;
+        })->values();
+
         $socioemocional_resultados = \App\Models\ResultEixoIntSocio::with('proposta')->where('fk_result_alu_id_int_socio', $aluno_id)->get();
+        $socioemocional_resultados = $socioemocional_resultados->sortBy(function($item) {
+            return optional($item->proposta)->cod_pro_int_soc;
+        })->values();
 
         // Buscar atividades do eixo comunicação/linguagem do aluno via JOIN
         $comunicacao_atividades = \DB::table('atividade_com_lin as acom')
             ->join('result_eixo_com_lin as res', 'acom.id_ati_com_lin', '=', 'res.fk_id_pro_com_lin')
-            ->where('res.fk_result_alu_id_ecomling', $aluno_id)
             ->orderBy('acom.cod_ati_com_lin')
             ->select('acom.cod_ati_com_lin', 'acom.desc_ati_com_lin')
             ->get();
 
-        // Buscar atividades do eixo comportamento do aluno via JOIN
-        $comportamento_atividades = \DB::table('atividade_comportamento as aco')
-            ->join('result_eixo_comportamento as res', 'aco.id_ati_comportamento', '=', 'res.fk_id_pro_comportamento')
-            ->where('res.fk_result_alu_id_comportamento', $aluno_id)
-            ->orderBy('aco.cod_ati_comportamento')
-            ->select('aco.cod_ati_comportamento', 'aco.desc_ati_comportamento')
+        $comportamento_atividades = \DB::table('atividade_comportamento as acom')
+            ->join('result_eixo_comportamento as res', 'acom.id_ati_comportamento', '=', 'res.fk_id_pro_comportamento')
+            ->orderBy('acom.cod_ati_comportamento')
+            ->select('acom.cod_ati_comportamento', 'acom.desc_ati_comportamento')
             ->get();
-        // Buscar atividades do eixo interação socioemocional via JOIN
-        $socioemocional_atividades = \DB::table('atividade_int_soc as ais')
-            ->join('result_eixo_int_socio as res', 'ais.id_ati_int_soc', '=', 'res.fk_id_pro_int_socio')
-            ->where('res.fk_result_alu_id_int_socio', $aluno_id)
-            ->orderBy('ais.cod_ati_int_soc')
-            ->select('ais.cod_ati_int_soc', 'ais.desc_ati_int_soc')
+
+        $socioemocional_atividades = \DB::table('atividade_int_soc as acom')
+            ->join('result_eixo_int_socio as res', 'acom.id_ati_int_soc', '=', 'res.fk_id_pro_int_socio')
+            ->orderBy('acom.cod_ati_int_soc')
+            ->select('acom.cod_ati_int_soc', 'acom.desc_ati_int_soc')
             ->get();
 
         // Buscar propostas e indexar por id
