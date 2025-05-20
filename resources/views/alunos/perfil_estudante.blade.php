@@ -157,6 +157,21 @@
 </head>
 
 <body>
+@if(session('updateCount'))
+    <div class="custom-toast toast-success show" style="position: fixed; top: 24px; right: 24px; z-index: 9999; background: #28a745; color: #fff; padding: 16px 32px; border-radius: 8px; font-size: 1.15rem; box-shadow: 0 2px 12px rgba(40,167,69,0.15); display: flex; align-items: center; gap: 12px;">
+        <i class='fas fa-check-circle'></i> Perfil atualizado com sucesso! Total de atualizações: {{ session('updateCount') }}
+    </div>
+    <script>
+        setTimeout(function(){
+            document.querySelector('.custom-toast').classList.remove('show');
+            setTimeout(function(){
+                var toast = document.querySelector('.custom-toast');
+                if (toast) toast.remove();
+            }, 500);
+        }, 2200);
+    </script>
+@endif
+
     <div class="container">
         <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" autocomplete="off">
     <script>

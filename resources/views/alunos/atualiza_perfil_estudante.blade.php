@@ -7,789 +7,892 @@
     
     <!-- Importando CSS no Laravel -->
     <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
-    <style>
-    body {
-        min-height: 100vh;
-        background: #fff;
-        margin: 0;
-        padding: 0;
-        font-family: 'Segoe UI', Arial, sans-serif;
-    }
-    .logo-top-left {
-        position: fixed;
-        top: 25mm;
-        left: 20mm;
-        width: 60mm;
-        opacity: 0.25;
-        z-index: 1;
-        filter: drop-shadow(0 2px 8px #0002) grayscale(1);
-        pointer-events: none;
-    }
-    .logo-bottom-right {
-        position: fixed;
-        bottom: 20mm;
-        right: 20mm;
-        width: 60mm;
-        opacity: 0.25;
-        z-index: 1;
-        filter: drop-shadow(0 2px 8px #0002) grayscale(1);
-        pointer-events: none;
-    }
-    .container {
-        position: relative;
-        background: #fff;
-        z-index: 1;
-        padding: 36px 28px 36px 28px;
-        border-radius: 8px;
-        margin: 0 auto 0 auto;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-        max-width: 190mm;
-        min-height: 277mm;
-        width: 100%;
-        box-sizing: border-box;
-        opacity: 1;
-    }
-    .vertical-watermark {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
-    .watermark-top, .watermark-bottom {
-        width: 60mm;
-        opacity: 0.18;
-        filter: grayscale(1);
-    }
-    .watermark-center {
-        width: 30mm;
-        opacity: 0.08;
-        filter: grayscale(1);
-    }
-    .form-content {
-        position: relative;
-        z-index: 2;
-    }
-    .watermark-bg {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 0;
-        pointer-events: none;
-        background: url('{{ asset('img/logo_sap.png') }}') no-repeat center center;
-        background-size: 30vw auto;
-        opacity: 0.08;
-    }
-    h2 {
-        text-align: center;
-        color: #204080;
-        font-weight: 600;
-        margin-bottom: 32px;
-        letter-spacing: 0.02em;
-    }
-    @media print {
-        html, body {
-            width: 210mm;
-            height: 297mm;
-            background: #fff !important;
-        }
-        .container {
-            box-shadow: none;
-            margin: 0;
-            padding: 20mm 10mm 20mm 10mm;
-            border-radius: 0;
-            min-height: 277mm;
-            max-width: 190mm;
-            width: 100%;
-            page-break-after: always;
-            background-size: 65% auto;
-            background-position: center;
-        }
-        .logo-top-left, .logo-bottom-right {
-            opacity: 0.18 !important;
-            filter: grayscale(1) !important;
-        }
-    }
-    @page {
-        size: A4;
-        margin: 0;
-    }
     
-    }
-    .container {
-        position: relative;
-        z-index: 100;
-        background: #fff;
-        padding: 48px 36px 48px 36px;
-        border-radius: 14px;
-        margin: 80px auto 80px auto;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-        max-width: 980px;
-        min-height: 900px;
-    }
-    h2 {
-        text-align: center;
-        color: #204080;
-        font-weight: 600;
-        margin-bottom: 32px;
-        letter-spacing: 0.02em;
-    }
-    @media (max-width: 700px) {
+    <style>
         .container {
-            padding: 18px 3vw 18px 3vw;
-            margin: 20vw 0 10vw 0;
+            position: relative;
         }
-        .logo-top-left, .logo-bottom-right {
-            width: 70px;
-            top: 12px !important;
-            left: 12px !important;
-            right: 12px !important;
-            bottom: 12px !important;
+
+        /* Estilos para a tabela de profissionais */
+        .profissionais-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
         }
-        .logo-center {
-            width: 160px;
+
+        .profissional-row {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 10px;
         }
-    }
-    @media print {
-        body {
-            background: #fff !important;
+
+        .profissional-row:nth-child(even) {
+            background-color: #ffffff;
         }
-        .logo-top-left, .logo-bottom-right, .logo-center {
-            opacity: 0.18 !important;
-            filter: grayscale(1) !important;
+
+        .profissional-row label {
+            color: #333;
+            font-weight: bold;
         }
-        .container {
-            box-shadow: none;
-            margin: 0;
-            padding: 22px 8px 22px 8px;
-            border-radius: 0;
+
+        .profissional-row input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
         }
-    }
-</style>
+
+        .profissional-field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .profissional-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .profissional-field input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* Estilos para a paginação em abas */
+        .step-tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            position: relative;
+            z-index: 2; /* Acima de tudo */
+        }
+        
+        .step-tab {
+            padding: 10px 15px;
+            background-color: #e0e0e0;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            min-width: 100px;
+            margin-right: 5px;
+        }
+        
+        .step-tab.active {
+            background-color: #d35400;
+            color: white;
+        }
+        
+        /* Estilos para os conteúdos das etapas */
+        .step-content {
+            display: none;
+            position: relative;
+            z-index: 1; /* Na frente das imagens */
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        /* Botões de navegação */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 2; /* Acima de tudo */
+        }
+        
+        .prev-btn, .next-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .prev-btn {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        
+        .next-btn {
+            background-color: #d35400;
+            color: white;
+        }
+        
+        .prev-btn:hover, .next-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* Barra de progresso */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 2; /* Acima de tudo */
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #d35400;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
-    <div class="vertical-watermark">
-        <img src="{{ asset('img/logogando.png') }}" alt="Logo Topo" class="watermark-top">
-        <img src="{{ asset('img/logo_sap.png') }}" alt="Marca d'água Central" class="watermark-center">
-        <img src="{{ asset('img/logo_baixo.png') }}" alt="Logo Rodapé" class="watermark-bottom">
-    </div>
-    <div class="form-content" style="position:relative;z-index:2;">
-        <h2>I - Perfil do Estudante</h2>
+    <div class="container">
+        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => isset($aluno) ? $aluno->alu_id : '']) }}" id="perfilForm" autocomplete="off">
+    @method('POST')
+    <script>
+        // Sempre posiciona na primeira aba ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove active de todas as abas e conteúdos
+            document.querySelectorAll('.step-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.step-content').forEach(content => content.classList.remove('active'));
+            // Ativa a primeira aba
+            const firstTab = document.querySelector('.step-tab[data-step="1"]');
+            const firstContent = document.querySelector('.step-content[data-step="1"]');
+            if (firstTab) firstTab.classList.add('active');
+            if (firstContent) firstContent.classList.add('active');
 
-    <!-- Verifica se há dados do aluno selecionado -->
-    @if(isset($dados) && count($dados) > 0)
-        <!-- Seleciona o primeiro aluno da lista ($dados[0]) -->
-        @php $aluno = $dados[0]; @endphp
-
-        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}" id="perfilFormAtualiza" autocomplete="off">
-            @csrf
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Paginacao Multi-etapas
-                    const steps = document.querySelectorAll('.step-content');
-                    const tabs = document.querySelectorAll('.step-tab');
+        // Bloqueia o envio do formulário por Enter, exceto na última etapa
+            const form = document.getElementById('perfilForm');
+            form.addEventListener('keydown', function(e) {
+                // Enter (13) só é permitido se o finishBtn estiver visível
+                if (e.key === 'Enter') {
                     const finishBtn = document.getElementById('finishBtn');
-                    const prevBtn = document.getElementById('prevBtn');
-                    const nextBtn = document.getElementById('nextBtn');
-                    let currentStep = 1;
-                    const totalSteps = steps.length;
-                    function updateProgressBar() {
-                        const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
-                        const progressBar = document.getElementById('progressBar');
-                        if (progressBar) progressBar.style.width = percentage + '%';
+                    if (!finishBtn || finishBtn.style.display === 'none') {
+                        e.preventDefault();
+                        return false;
                     }
-                    function showStep(stepNumber) {
-                        steps.forEach(step => step.classList.remove('active'));
-                        tabs.forEach(tab => tab.classList.remove('active'));
-                        document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
-                        document.querySelector(`.step-tab[data-step="${stepNumber}"]`).classList.add('active');
-                        if (stepNumber === 1) {
-                            prevBtn.style.display = 'none';
-                            nextBtn.style.display = 'block';
-                        } else if (stepNumber === totalSteps) {
-                            prevBtn.style.display = 'block';
-                            nextBtn.style.display = 'none';
-                            finishBtn.style.display = 'block';
-                        } else {
-                            prevBtn.style.display = 'block';
-                            nextBtn.style.display = 'block';
-                            finishBtn.style.display = 'none';
-                        }
-                        updateProgressBar();
-                        sessionStorage.setItem('currentStepAtualiza', stepNumber);
-                    }
-                    if (prevBtn) prevBtn.addEventListener('click', function() { if (currentStep > 1) { currentStep--; showStep(currentStep); } });
-                    if (nextBtn) nextBtn.addEventListener('click', function() { if (currentStep < totalSteps) { currentStep++; showStep(currentStep); } });
-                    if (finishBtn) {
-                        finishBtn.disabled = false;
-                        finishBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const nomeAluno = document.querySelector('input[name="nome_aluno"]').value;
-                            const dataAtual = new Date();
-                            const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
-                            const mensagem = `Deseja realmente atualizar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
-                            if (!confirm(mensagem)) return;
-                            this.disabled = true;
-                            this.innerHTML = '<i class="fas fa-check"></i> Perfil atualizado!';
-                            this.style.setProperty('background-color', '#ff9800', 'important');
-                            this.style.setProperty('color', '#fff', 'important');
-                            this.style.setProperty('border-color', '#ff9800', 'important');
-                            this.style.setProperty('cursor', 'not-allowed', 'important');
-                            document.getElementById('perfilFormAtualiza').submit();
-                        });
-                    }
-                    const form = document.getElementById('perfilFormAtualiza');
-                    if (form) {
-                        form.addEventListener('keydown', function(e) {
-                            if (e.key === 'Enter') {
-                                // Só permite Enter se for na última etapa
-                                const totalSteps = document.querySelectorAll('.step-content').length;
-                                if (currentStep !== totalSteps) {
-                                    e.preventDefault();
-                                    return false;
-                                }
-                            }
-                        });
-                        form.addEventListener('submit', function(e) {
-                            // Só permite submit se estiver na última etapa e botão finalizar estiver desabilitado (foi clicado)
-                            const finishBtn = document.getElementById('finishBtn');
-                            const totalSteps = document.querySelectorAll('.step-content').length;
-                            if (!finishBtn || !finishBtn.disabled || currentStep !== totalSteps) {
-                                e.preventDefault();
-                                return false;
-                            }
-                        });
-                    }
-                    tabs.forEach(tab => {
-                        tab.addEventListener('click', function() {
-                            currentStep = parseInt(this.getAttribute('data-step'));
-                            showStep(currentStep);
-                        });
-                    });
-                    const savedStep = sessionStorage.getItem('currentStepAtualiza');
-                    showStep(savedStep ? parseInt(savedStep) : 1);
-                });
-            </script>
+                }
+            });
+            // Impede submit padrão
+            form.addEventListener('submit', function(e) {
+                const finishBtn = document.getElementById('finishBtn');
+                if (!finishBtn || finishBtn.style.display === 'none') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+            @csrf
+            <input type="hidden" name="aluno_id" value="{{ isset($aluno) ? $aluno->alu_id : '' }}">
+
+<!-- Exemplo de preenchimento automático para campos do aluno -->
+<div class="form-group">
+    <label for="alu_nome">Nome do Aluno</label>
+    <input type="text" name="alu_nome" id="alu_nome" class="form-control" value="{{ isset($aluno) ? $aluno->alu_nome : '' }}" required>
+</div>
+<div class="form-group">
+    <label for="alu_dtnasc">Data de Nascimento</label>
+    <input type="date" name="alu_dtnasc" id="alu_dtnasc" class="form-control" value="{{ isset($aluno) ? $aluno->alu_dtnasc : '' }}">
+</div>
+<!-- Repita para outros campos do perfil, usando os dados disponíveis em $dados, $results, etc. -->
+            
+            <h2>Perfil do Estudante</h2>
+            
             <!-- Barra de progresso -->
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
+            
             <!-- Abas de etapas -->
             <div class="step-tabs">
-                <button type="button" class="step-tab" data-step="1">Dados Pessoais</button>
-                <button type="button" class="step-tab" data-step="2">Perfil do Estudante</button>
-                <button type="button" class="step-tab" data-step="3">Personalidade</button>
-                <button type="button" class="step-tab" data-step="4">Preferências</button>
-                <button type="button" class="step-tab" data-step="5">Informações da Família</button>
-                <button type="button" class="step-tab" data-step="6">Profissionais</button>
+                <button class="step-tab" data-step="1">Dados Pessoais</button>
+                <button class="step-tab" data-step="2">Perfil do Estudante</button>
+                <button class="step-tab" data-step="3">Personalidade</button>
+                <button class="step-tab" data-step="4">Preferências</button>
+                <button class="step-tab" data-step="5">Informações da Família</button>
+                <button class="step-tab" data-step="6">Profissionais</button>
             </div>
-            <!-- Conteúdo das etapas (você pode dividir os campos do formulário conforme as etapas) -->
-            <div class="step-content active" data-step="1">
-    <!-- Etapa 1: Dados Pessoais -->
-            <!-- Dados do aluno selecionado -->
-            <input type="hidden" name="aluno_id" value="{{ $aluno->alu_id }}">
             
-            <div class="form-group">
-                <label>Nome do Aluno:</label>
-                <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
-            </div>
-
-            <div class="row">
+            <!-- Etapa 1: Dados Pessoais -->
+            <div class="step-content active" data-step="1">
+                <h2>I - Perfil do Estudante</h2>
+                
                 <div class="form-group">
-                    <label>Ano/Série:</label>
-                    <input type="text" value="{{ $aluno->desc_modalidade . '-' . $aluno->desc_serie_modalidade }}" readonly>
+                    <label>Nome do Aluno:</label>
+                    <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
                 </div>
-
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label>Ano/Série:</label>
+                        <input type="text" value="{{ $aluno->desc_modalidade . ' - ' . $aluno->serie_desc }}" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Data de Nascimento:</label>
+                        <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Idade do aluno:</label>
+                        <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly>
+                    </div>
+                </div>
+                
                 <div class="form-group">
-                    <label>Data de Nascimento:</label>
-                    <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly>
+                    <label>Nome do Professor:</label>
+                    <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
                 </div>
-
-                <div class="form-group">
-                    <label>Idade do Aluno:</label>
-                    <input type="text" name="alu_idade" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} anos" readonly>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Nome do Professor:</label>
-                <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
-            </div>
-</div>
-<div class="step-content" data-step="2">
-    <!-- Etapa 2: Perfil do Estudante -->
-@if(isset($results) && count($results) > 0)
-    @php $perfil = $results[0]; @endphp
-
+                
                 <div class="form-group">
                     <label>Possui diagnóstico/laudo?</label>
                     <select name="diag_laudo">
-                        <option value="1" @if($perfil->diag_laudo == 1) selected @endif>Sim</option>
-                        <option value="0" @if($perfil->diag_laudo == 0) selected @endif>Não</option>
-                    </select>
+    <option value="1" {{ (isset($results[0]->diag_laudo) && $results[0]->diag_laudo == 1) ? 'selected' : '' }}>Sim</option>
+    <option value="0" {{ (isset($results[0]->diag_laudo) && $results[0]->diag_laudo == 0) ? 'selected' : '' }}>Não</option>
+</select>
                 </div>
-
-                <!-- Outros campos adicionais -->
-                <!-- Exemplo: CID, Médico, Data do Laudo -->
+                
                 <div class="row">
                     <div class="form-group">
                         <label>CID:</label>
-                        <input type="text" name="cid" value="{{ $perfil->cid }}">
+                        <input type="text" name="cid" value="{{ isset($results[0]->cid) ? $results[0]->cid : '' }}">
                     </div>
                     <div class="form-group">
                         <label>Médico:</label>
-                        <input type="text" name="nome_medico" value="{{ $perfil->nome_medico }}">
+                        <input type="text" name="nome_medico" value="{{ isset($results[0]->nome_medico) ? $results[0]->nome_medico : '' }}">
                     </div>
                     <div class="form-group">
                         <label>Data do Laudo:</label>
-                        <input type="date" name="data_laudo" value="{{ $perfil->data_laudo }}">
+                        <input type="date" name="data_laudo" value="{{ isset($results[0]->data_laudo) ? $results[0]->data_laudo : '' }}">
                     </div>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Nível suporte</label>
                     <select name="nivel_suporte">
-                        <option value="1" @if($perfil->nivel_suporte == 1) selected @endif>Nível 1 - Exige pouco apoio </option>
-                        <option value="2" @if($perfil->nivel_suporte == 2) selected @endif>Nível 2 - Exige apoio substancial</option>
-                        <option value="3" @if($perfil->nivel_suporte == 3) selected @endif>Nível 3 - Exige apoio muito substancial</option>
-                    </select>
+    <option value="1" {{ (isset($results[0]->nivel_suporte) && $results[0]->nivel_suporte == 1) ? 'selected' : '' }}>Nível 1 - Exige pouco apoio </option>
+    <option value="2" {{ (isset($results[0]->nivel_suporte) && $results[0]->nivel_suporte == 2) ? 'selected' : '' }}>Nível 2 - Exige apoio substancial</option>
+    <option value="3" {{ (isset($results[0]->nivel_suporte) && $results[0]->nivel_suporte == 3) ? 'selected' : '' }}>Nível 3 - Exige apoio muito substancial</option>
+</select>
                 </div>
-
+                
                 <div class="form-group">
-                <label>Faz uso de medicamento?</label>
+                    <label>Faz uso de medicamento?</label>
                     <select name="uso_medicamento">
-                        <option value="1" @if($perfil->uso_medicamento == 1) selected @endif>Sim</option>
-                        <option value="0" @if($perfil->uso_medicamento == 0) selected @endif>Não</option>
-                    </select>
+    <option value="1" {{ (isset($results[0]->uso_medicamento) && $results[0]->uso_medicamento == 1) ? 'selected' : '' }}>Sim</option>
+    <option value="0" {{ (isset($results[0]->uso_medicamento) && $results[0]->uso_medicamento == 0) ? 'selected' : '' }}>Não</option>
+</select>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Quais?</label>
-                    <input type="text" name="quais_medicamento" value="{{$perfil->quais_medicamento }}">
+                    <input type="text" name="quais_medicamento" value="{{ isset($results[0]->quais_medicamento) ? $results[0]->quais_medicamento : '' }}">
                 </div>
-
+            </div>
+            
+            <!-- Etapa 2: Mais Dados Pessoais -->
+            <div class="step-content" data-step="2">
+                <h2>I - Perfil do Estudante (Continuação)</h2>
+                
                 <div class="row">
                     <div class="form-group">
                         <label>Necessita de profissional de apoio em sala?</label>
                         <select name="nec_pro_apoio">
-                        <option value="1" @if($perfil->nec_pro_apoio == 1) selected @endif>Sim</option>
-                        <option value="0" @if($perfil->nec_pro_apoio == 0) selected @endif>Não</option>
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
                         </select>
                     </div>
-
-                    <div class="row">
                     <div class="form-group">
-                        <label>O estudante conta com o profissional de apoio?</label>
-                        <select name="prof_apoio">
-                                <option value="1" @if($perfil->prof_apoio == 1) selected @endif>Sim</option>
-                                <option value="0" @if($perfil->prof_apoio == 0) selected @endif>Não</option>
+                        <label>O estudante conta com profissional de apoio?</label>
+                        <select name="loc_01">
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
                         </select>
                     </div>
                 </div>
-                </div>   
-
+                
                 <div class="form-group">
-                 <label>Em quais momentos da rotina esse profissional se faz necessário?</label>
+                    <label>Em quais momentos da rotina esse profissional se faz necessário?</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" name="locomocao" @if($perfil->loc_01) checked @endif><label for="locomocao">Locomoção</label>
-                        <input type="checkbox" name="higiene" @if($perfil->hig_02) checked @endif><label for="higiene">Higiene</label>
-                        <input type="checkbox" name="alimentacao" @if($perfil->ali_03) checked @endif><label for="alimentacao">Alimentação</label>
-                        <input type="checkbox" name="comunicacao" @if($perfil->com_04) checked @endif><label for="comunicacao">Comunicação</label>
-                        <input type="checkbox" name="outros" @if($perfil->out_05) checked @endif><label for="outros">Outros momentos</label>
+                        <input type="checkbox" name="locomocao"><label for="locomocao">Locomoção</label>
+                        <input type="checkbox" name="higiene"><label for="higiene">Higiene</label>
+                        <input type="checkbox" name="alimentacao"><label for="alimentacao">Alimentação</label>
+                        <input type="checkbox" name="comunicacao"><label for="comunicacao">Comunicação</label>
+                        <input type="checkbox" name="outros"><label for="outros">Outros momentos</label>
+                    </div>
+                    <input type="text" name="out_momentos" placeholder="Quais?">
                 </div>
-                    <input type="text" name="out_momentos" placeholder="Quais?" value="{{$perfil->out_momentos }}">
-                </div>
-
+                
                 <div class="form-group">
                     <label>O estudante conta com Atendimento Educacional Especializado?</label>
                     <select name="at_especializado">
-                        <option value="1" @if($perfil->at_especializado == 1) selected @endif>Sim</option>
-                        <option value="0" @if($perfil->at_especializado == 0) selected @endif>Não</option>
+                        <option value="1">Sim</option>
+                        <option value="0">Não</option>
                     </select>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Nome do profissional do AEE:</label>
-                    <input type="text" name="nome_prof_AEE" value="{{$perfil->nome_prof_AEE }}">
+                    <input type="text" name="nome_prof_AEE">
                 </div>
-</div>
-<div class="step-content" data-step="3">
-    <!-- Etapa 3: Personalidade -->
-                <h2> II - Personalidade</h2>
-
+                
+                <h2>II - Personalidade</h2>
+                
                 <div class="form-group">
                     <label>Principais características:</label>
-                    <textarea rows="3" name="caracteristicas">{{$perfil->carac_principal }}</textarea>
+                    <textarea rows="3" name="caracteristicas"></textarea>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Principais áreas de interesse (brinquedos, jogos, temas, etc.):</label>
-                    <textarea name="areas_interesse">{{$perfil->inter_princ_carac}}</textarea>
-
+                    <textarea rows="3" name="areas_interesse"></textarea>
                 </div>
-
+            </div>
+            
+            <!-- Etapa 3: Personalidade e Comunicação -->
+            <div class="step-content" data-step="3">
+                <h2>II - Personalidade (Continuação)</h2>
+                
                 <div class="form-group">
-                    <label>Gosta de fazer no tempo livre?</label>
-                    <textarea name="atividades_livre">{{$perfil->livre_gosta_fazer }}</textarea>
+                    <label>Gosta de fazer no tempo livre:</label>
+                    <textarea rows="3" name="atividades_livre"></textarea>
                 </div>
-
+                
                 <div class="form-group">
-                    <label>Deixa o estudante muito feliz?</label>
-                    <textarea name="feliz">{{$perfil->feliz_est }}</textarea>
+                    <label>Deixa o estudante muito feliz:</label>
+                    <textarea rows="3" name="feliz"></textarea>
                 </div>
-
+                
                 <div class="form-group">
-                    <label>Deixa o estudante muito triste ou desconfortável?</label>
-                    <textarea name="triste">{{$perfil->trist_est }}</textarea>
+                    <label>Deixa o estudante muito triste ou desconfortável:</label>
+                    <textarea rows="3" name="triste"></textarea>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Objeto de apego? Qual?</label>
-                    <textarea name="objeto_apego">{{$perfil->obj_apego }}</textarea>
+                    <textarea rows="3" name="objeto_apego"></textarea>
                 </div>
-</div>
-<div class="step-content" data-step="4">
-    <!-- Etapa 4: Comunicação -->
-<h2 class="comunicacao-section">III - Comunicação</h2>
-
+                
+                <h2 class="comunicacao-section">III - Comunicação</h2>
+                
                 <div class="form-group">
-                   <label>Precisa de comunicação alternativa para expressar-se?</label>
-                   <select name="precisa_comunicacao">
-                     <option value="1" @if($perfil->precisa_comunicacao == 1) selected @endif>Sim</option>
-                     <option value="0" @if($perfil->precisa_comunicacao == 0) selected @endif>Não</option>
-                 </select>
-                </div>
-
-                <div class="form-group">
-                 <label>Entende instruções dadas de forma verbal?</label>
-                  <select name="entende_instrucao">
-                     <option value="1" @if($perfil->entende_instrucao == 1) selected @endif>Sim</option>
-                    <option value="0" @if($perfil->entende_instrucao == 0) selected @endif>Não</option>
-                  </select>
-            </div>
-
-                <div class="form-group">
-                    <label>Caso não,Como você recomenda dar instruções?</label>
-                    <textarea name="recomenda_instrucao">{{$perfil->recomenda_instrucao }}</textarea>
-                </div>
-</div>
-<div class="step-content" data-step="5">
-    <!-- Etapa 5: Preferências, sensibilidade e dificuldades -->
-<h2>IV - Preferencias, sensibilidade e dificuldades</h2>
-
-                <div class="form-group">
-                    <label>Apresenta sensibilidade:</label>
-                        <div class="checkbox-group">
-                            <input type="checkbox" name="s_auditiva" @if($perfil->auditivo_04) checked @endif><label for="s_auditiva">Auditiva</label>
-                            <input type="checkbox" name="s_visual" @if($perfil->visual_04) checked @endif><label for="s_visual">Visual</label>
-                            <input type="checkbox" name="s_tatil" @if($perfil->tatil_04) checked @endif><label for="s_tatil">Tátil</label>
-                            <input type="checkbox" name="s_outros" @if($perfil->outros_04) checked @endif><label for="s_outros">Outros estímulos</label>
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Caso sim,Como manejar em sala de aula?</label>
-                    <textarea name="manejo_sensibilidade">{{$perfil->maneja_04 }}</textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Apresenta seletividade alimentar?</label>
-                    <select name="seletividade_alimentar">
-                        <option value="1" @if($perfil->asa_04 == 1) selected @endif>Sim</option>
-                        <option value="0" @if($perfil->asa_04 == 0) selected @endif>Não</option>
+                    <label>Precisa de comunicação alternativa para expressar-se?</label>
+                    <select name="precisa_comunicacao">
+                        <option value="1">Sim</option>
+                        <option value="0">Não</option>
                     </select>
                 </div>
-
+                
+                <div class="form-group">
+                    <label>Entende instruções dadas de forma verbal?</label>
+                    <select name="entende_instrucao">
+                        <option value="1">Sim</option>
+                        <option value="0">Não</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Caso não, como você recomenda dar instruções?</label>
+                    <textarea rows="3" name="recomenda_instrucao"></textarea>
+                </div>
+            </div>
+            
+            <!-- Etapa 4: Preferências -->
+            <div class="step-content" data-step="4">
+                <h2>IV - Preferências, sensibilidade e dificuldades</h2>
+                
+                <div class="form-group">
+                    <label>Apresenta sensibilidade:</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="s_auditiva"><label for="s_auditiva">Auditiva</label>
+                        <input type="checkbox" name="s_visual"><label for="s_visual">Visual</label>
+                        <input type="checkbox" name="s_tatil"><label for="s_tatil">Tátil</label>
+                        <input type="checkbox" name="s_outros"><label for="s_outros">Outros estímulos</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Caso sim, como manejar em sala de aula</label>
+                    <textarea rows="3" name="manejo_sensibilidade"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Apresenta seletividade alimentar?</label>
+                    <select name="seletividade_alimentar">
+                        <option value="1">Sim</option>
+                        <option value="0">Não</option>
+                    </select>
+                </div>
+                
                 <div class="form-group">
                     <label>Alimentos preferidos:</label>
-                    <textarea rows="3" name="alimentos_preferidos">{{$perfil->alimentos_pref_04 }}</textarea>
+                    <textarea rows="3" name="alimentos_preferidos"></textarea>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Alimentos que evita:</label>
-                    <textarea name="alimentos_evita">{{$perfil->alimento_evita_04 }}</textarea>
+                    <textarea rows="3" name="alimentos_evita"></textarea>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Com quem tem mais afinidade na escola (professores, colegas)? Identifique</label>
-                    <textarea rows="3" name="afinidade_escola">{{$perfil->contato_pc_04 }}</textarea>
+                    <textarea rows="3" name="afinidade_escola"></textarea>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Como reage no contato com novas pessoas ou situações</label>
-                    <textarea rows="3" name="reacao_contato">{{$perfil->reage_contato }}</textarea>
+                    <textarea rows="3" name="reacao_contato"></textarea>
                 </div>
-
+            </div>
+            
+            <!-- Etapa 5: Preferências (continuação) e Família -->
+            <div class="step-content" data-step="5">
+                <h2>IV - Preferências (Continuação)</h2>
+                
                 <div class="form-group">
-                    <label>O que ajuda a sua interação na escola ?
-                    </label>
-                    <textarea rows="3" name="interacao_escola1" >{{$perfil->interacao_escola_04 }}</textarea>
+                    <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?</label>
+                    <textarea rows="3" name="interacao_escola"></textarea>
                 </div>
-
-                <div class="form-group">
-                    <label> o que dificulta a sua interação na escola?
-                    </label>
-                    <textarea rows="3" name="interacao_escola2" >{{$perfil->interacao_escola_04 }}</textarea>
-                </div>
-
+                
                 <div class="form-group">
                     <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
-                    <textarea rows="3" name="interesse_atividade">{{$perfil->interesse_atividade_04 }}</textarea>
+                    <textarea rows="3" name="interesse_atividade"></textarea>
                 </div>
-
+                
                 <div class="form-group">
-    <label>Como o(a) estudante aprende melhor?</label>
-    <div class="checkbox-group">
-        <input type="checkbox" name="r_visual" @if($perfil->aprende_visual_04) checked @endif><label for="r_visual">Recurso visual</label>
-        <input type="checkbox" name="r_auditivo" @if($perfil->recurso_auditivo_04) checked @endif><label for="r_auditivo">Recurso auditivo</label>
-        <input type="checkbox" name="m_concreto" @if($perfil->material_concreto_04) checked @endif><label for="m_concreto">Material concreto</label>
-        <input type="checkbox" name="o_outro" @if($perfil->outro_identificar_04) checked @endif><label for="o_outro">Outro - identificar</label>
-    </div>
-
-    <div class="form-group">
-        <label></label>
-        <textarea rows="3" name="outro_identificar">{{$perfil->descricao_outro_identificar_04 }}</textarea>
-    </div>
-</div>
-
+                    <label>Como o(a) estudante aprende melhor?</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="r_visual"><label for="r_visual">Recurso visual</label>
+                        <input type="checkbox" name="r_auditivo"><label for="r_auditivo">Recurso auditivo</label>
+                        <input type="checkbox" name="m_concreto"><label for="m_concreto">Material concreto</label>
+                        <input type="checkbox" name="o_outro"><label for="o_outro">Outro - identificar</label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label></label>
+                        <textarea rows="3" name="outro_identificar"></textarea>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
-                    <textarea rows="3" name="atividades_grupo">{{$perfil->realiza_tarefa_04 }}</textarea>
+                    <textarea rows="3" name="atividades_grupo"></textarea>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Quais estratégias são utilizadas e se mostram eficazes?</label>
-                    <textarea rows="3" name="estrategias_eficazes">{{$perfil->mostram_eficazes_04 }}</textarea>
+                    <textarea rows="3" name="estrategias_eficazes"></textarea>
                 </div>
-
+                
                 <div class="form-group">
-                    <label>O que desperta seu interesse para realizar uma tarefa/atividades?</label>
-                    <textarea rows="3" name="interesse_tarefa">{{$perfil->prefere_ts_04 }}</textarea>
+                    <label>O que desperta seu interesse para realizar uma tarefa/atividade</label>
+                    <textarea rows="3" name="interesse_tarefa"></textarea>
                 </div>
-</div>
-<div class="step-content" data-step="6">
-    <!-- Etapa 6: Informações da família / Profissionais -->
-<h2 class="comunicacao-section">V - Informações da família</h2>
-
+                
+                <h2 class="comunicacao-section">V - Informações da família</h2>
+                
                 <div class="form-group">
                     <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
-                    <textarea rows="3" name="expectativas_familia">{{$perfil->expectativa_05 }}</textarea>
+                    <textarea rows="3" name="expectativas_familia"></textarea>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Existe alguma estratégia utilizada no contexto familiar que pode ser reaplicada na escola?</label>
-                    <textarea rows="3" name="estrategias_familia">{{$perfil->estrategia_05 }}</textarea>
+                    <textarea rows="3" name="estrategias_familia"></textarea>
                 </div>
-
+                
                 <div class="form-group">
-                    <label>Caso o estudante tenha uma crise ou situação de estresse elevado, o que fazer?</label>
-                    <textarea rows="3" name="crise_estresse">{{$perfil->crise_esta_05 }}</textarea>
+                    <label>Como a família lida com situações de crise ou estresse do estudante?</label>
+                    <textarea rows="3" name="crise_estresse"></textarea>
                 </div>
- <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ccc;
-        }
-        th {
-            background-color: #f0f0f0;
-            font-weight: bold;
-        }
-        tr:nth-child(odd) {
-            background-color: #e0f7fa;
-        }
-        tr:nth-child(even) {
-            background-color: #fff9c4;
-        }
-        tr:hover {
-            background-color: #d1c4e9;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body>
+            </div>
 
-    <h2>Cadastro de Profissionais</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome do Profissional</th>
-                <th>Especialidade/Área</th>
-                <th>Observações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-            <tr>
-                <td><input type="text" placeholder="Nome do Profissional"></td>
-                <td><input type="text" placeholder="Especialidade/Área"></td>
-                <td><input type="text" placeholder="Observações"></td>
-            </tr>
-        </tbody>
-    </table>
-              
-            @endif
-
-            <!-- Botões -->
-            <div class="button-group">
-                <button type="submit" class="btn btn-primary">Confirma Alteração</button>
-                <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
-                <button type="button" class="pdf-button">Gerar PDF</button>
+            <!-- Etapa 6: Cadastro de Profissionais -->
+            <div class="step-content" data-step="6">
+                <h2>Cadastro de Profissionais</h2>
+                <div class="profissionais-container">
+                    <div class="profissional-row">
+                        <div class="profissional-field">
+                            <label>Nome do Profissional</label>
+                            <input type="text" placeholder="Nome do Profissional">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Especialidade/Área</label>
+                            <input type="text" placeholder="Especialidade/Área">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Observações</label>
+                            <input type="text" placeholder="Observações">
+                        </div>
+                    </div>
+                    <div class="profissional-row">
+                        <div class="profissional-field">
+                            <label>Nome do Profissional</label>
+                            <input type="text" placeholder="Nome do Profissional">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Especialidade/Área</label>
+                            <input type="text" placeholder="Especialidade/Área">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Observações</label>
+                            <input type="text" placeholder="Observações">
+                        </div>
+                    </div>
+                    <div class="profissional-row">
+                        <div class="profissional-field">
+                            <label>Nome do Profissional</label>
+                            <input type="text" placeholder="Nome do Profissional">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Especialidade/Área</label>
+                            <input type="text" placeholder="Especialidade/Área">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Observações</label>
+                            <input type="text" placeholder="Observações">
+                        </div>
+                    </div>
+                    <div class="profissional-row">
+                        <div class="profissional-field">
+                            <label>Nome do Profissional</label>
+                            <input type="text" placeholder="Nome do Profissional">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Especialidade/Área</label>
+                            <input type="text" placeholder="Especialidade/Área">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Observações</label>
+                            <input type="text" placeholder="Observações">
+                        </div>
+                    </div>
+                    <div class="profissional-row">
+                        <div class="profissional-field">
+                            <label>Nome do Profissional</label>
+                            <input type="text" placeholder="Nome do Profissional">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Especialidade/Área</label>
+                            <input type="text" placeholder="Especialidade/Área">
+                        </div>
+                        <div class="profissional-field">
+                            <label>Observações</label>
+                            <input type="text" placeholder="Observações">
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
-    @else
-        <!-- Caso nenhum aluno esteja selecionado -->
-        <p>Nenhum aluno foi selecionado. Por favor, selecione um aluno para visualizar os dados.</p>
-    @endif
-</div>
+    </div>
 
-<!-- Importação das bibliotecas (deixe antes do script) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Navegação entre etapas -->
+    <div class="step-navigation">
+        <div class="navigation-group">
+            <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
+    <i class="fas fa-arrow-left"></i> Anterior
+        </div>
+    </div>
 
-<script>
-// Geração de PDF multipágina A4 com marca d'água e nome personalizado
-if(document.querySelector('.pdf-button')){
-    document.querySelector('.pdf-button').addEventListener('click', function() {
-        const container = document.querySelector('.container');
-        html2canvas(container, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: null,
-        }).then(function(canvas) {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF("p", "mm", "a4");
-            const imgWidth = 210;
-            const pageHeight = 297;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let y = 0;
-            while (y < imgHeight) {
-                pdf.addImage(imgData, "PNG", 0, y * -1, imgWidth, imgHeight);
-                y += pageHeight;
-                if (y < imgHeight) pdf.addPage();
+    <style>
+        .btn { padding: 10px 22px; border-radius: 6px; border: none; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+        .btn-primary { background: #204080; color: #fff; }
+        .btn-primary:hover { background: #163060; }
+        .btn-secondary { background: #eee; color: #204080; }
+        .btn-secondary:hover { background: #ccc; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-danger:hover { background: #b52a37; }
+        .step-navigation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            background-color: #f8f9fa;
+            gap: 20px;
+        }
+        .navigation-group, .action-group {
+            display: flex;
+            gap: 10px;
+        }
+        .prev-btn, .next-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: #6c757d;
+            color: white;
+        }
+        .prev-btn:hover, .next-btn:hover {
+            background-color: #5a6268;
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .prev-btn i, .next-btn i {
+            margin: 0 5px;
+        }
+        .finish-btn, .btn-danger {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .finish-btn {
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .finish-btn:disabled {
+            background-color: #ff9800 !important;
+            color: #fff !important;
+            cursor: not-allowed;
+        }
+        .finish-btn:hover {
+            background-color: #45a049;
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .finish-btn i {
+            margin: 0 5px;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .btn-danger i {
+            margin: 0 5px;
+        }
+    </style>
+    
+    <!-- Adicionar Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <script>
+    // Script para paginação
+    // Função para inicializar o formulário
+    function initializeForm() {
+        // Garante que todos os botões de navegação são type="button"
+        document.querySelectorAll('.prev-btn, .next-btn, .finish-btn, .cancel-btn').forEach(btn => {
+            btn.setAttribute('type', 'button');
+        });
+        const steps = document.querySelectorAll('.step-content');
+        const tabs = document.querySelectorAll('.step-tab');
+        const finishBtn = document.getElementById('finishBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentStep = 1;
+        const totalSteps = steps.length;
+        
+        // Atualiza a barra de progresso
+        function updateProgressBar() {
+            const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
             }
-            // Nome do aluno diretamente da variável PHP (ajuste conforme necessário)
-            const nomeAluno = "Alice Figueiredo";
-            // Remove acentos e caracteres especiais, troca espaços por _
-            const nomeFormatado = nomeAluno
-                .normalize('NFD').replace(/[̀-ͯ]/g, '')
-                .replace(/[^a-zA-Z0-9]/g, '_')
-                .replace(/_+/g, '_')
-                .replace(/^_+|_+$/g, '');
-            // Data no formato DD-MM-AAAA
-            const hoje = new Date();
-            const dia = String(hoje.getDate()).padStart(2, '0');
-            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-            const ano = hoje.getFullYear();
-            const dataAtual = `${dia}-${mes}-${ano}`;
-            // Nome do arquivo
-            const nomeArquivo = `Perfil_${nomeFormatado}_${dataAtual}.pdf`;
-            pdf.save(nomeArquivo);
-        }).catch(error => console.error("Erro ao gerar PDF:", error));
-    });
+        }
+        
+        // Mostra a etapa atual
+        function showStep(stepNumber) {
+            steps.forEach(step => step.classList.remove('active'));
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
+            document.querySelector(`.step-tab[data-step="${stepNumber}"]`).classList.add('active');
+            
+            // Atualiza a visibilidade dos botões
+            if (stepNumber === 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'block';
+            } else if (stepNumber === totalSteps) {
+                prevBtn.style.display = 'block';
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'block';
+            } else {
+                prevBtn.style.display = 'block';
+                nextBtn.style.display = 'block';
+                finishBtn.style.display = 'none';
+            }
+            
+            // Atualiza a barra de progresso
+            updateProgressBar();
+            
+            // Salvar o estado atual no armazenamento de sessão
+            sessionStorage.setItem('currentStep', stepNumber);
+        }
+        
+        // Eventos para os botões de navegação
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                if (currentStep > 1) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            });
+        }
+        
+        // Evento para o botão Finalizar
+        if (finishBtn) {
+            finishBtn.disabled = false;
+            finishBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    const nomeAluno = document.querySelector('input[name="nome_aluno"]').value;
+    const dataAtual = new Date();
+    const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+    const mensagem = `Deseja realmente salvar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
+
+    if (!confirm(mensagem)) {
+        return;
+    }
+
+    // Exibe mensagem de sucesso (toast)
+    showToast('Perfil atualizado com sucesso!', 'success');
+
+    // Desabilita o botão de finalizar para evitar múltiplos envios
+    this.disabled = true;
+    this.innerHTML = '<i class="fas fa-check"></i> Cadastro de perfil já efetuado!';
+    this.style.setProperty('background-color', '#ff9800', 'important');
+    this.style.setProperty('color', '#fff', 'important');
+    this.style.setProperty('border-color', '#ff9800', 'important');
+    this.style.setProperty('cursor', 'not-allowed', 'important');
+
+    // Aguarda 1 segundo para o usuário ver a mensagem, então envia o formulário
+    setTimeout(function() {
+        document.getElementById('perfilForm').submit();
+    }, 1000);
+});
+
+// Função para exibir toast de sucesso
+function showToast(message, type) {
+    let toast = document.createElement('div');
+    toast.className = 'custom-toast ' + (type === 'success' ? 'toast-success' : '');
+    toast.innerHTML = `<i class='fas fa-check-circle'></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.classList.add('show'); }, 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 500);
+    }, 2200);
 }
-</script>        const pdf = new jsPDF("p", "mm", "a4");
-        const imgWidth = 210;
-        const pageHeight = 297;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        // Adiciona as imagens como marca d'água
-        // Logo superior esquerda
-        pdf.addImage("{{ asset('img/logogando.png') }}", "PNG", 10, 10, 50, 50, undefined, 'FAST');
-        // Logo inferior direita
-        pdf.addImage("{{ asset('img/logo_baixo.png') }}", "PNG", 160, 240, 50, 50, undefined, 'FAST');
-        // Logo central
-        pdf.addImage("{{ asset('img/logo_sap.png') }}", "PNG", 85, 120, 40, 40, undefined, 'FAST');
-
-        let y = 0;
-        while (y < imgHeight) {
-            pdf.addImage(imgData, "PNG", 0, y * -1, imgWidth, imgHeight);
-            y += pageHeight;
-            if (y < imgHeight) pdf.addPage();
+// Estilo para o toast
+const toastStyle = document.createElement('style');
+toastStyle.innerHTML = `
+.custom-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: #28a745;
+    color: #fff;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-size: 1.15rem;
+    box-shadow: 0 2px 12px rgba(40,167,69,0.15);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.4s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.custom-toast.toast-success { background: #28a745; }
+.custom-toast.show { opacity: 1; transform: translateY(0); }
+.custom-toast i { font-size: 1.3em; }
+`;
+document.head.appendChild(toastStyle);
         }
 
-        // Pegando o nome do aluno diretamente da variável PHP
-        const nomeAluno = "{{ $aluno->alu_nome }}";
-        // Remove acentos e caracteres especiais, troca espaços por _
-        const nomeFormatado = nomeAluno
-            .normalize('NFD').replace(/[̀-ͯ]/g, '')
-            .replace(/[^a-zA-Z0-9]/g, '_')
-            .replace(/_+/g, '_')
-            .replace(/^_+|_+$/g, '');
+        // Impede submit por Enter ou submit automático em todo o form (só permite via botão finalizar)
+        const form = document.getElementById('perfilForm');
+        if (form) {
+            form.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            form.addEventListener('submit', function(e) {
+                // Só permite submit se o botão finalizar estiver desabilitado (foi clicado e confirmado)
+                const finishBtn = document.getElementById('finishBtn');
+                if (!finishBtn || !finishBtn.disabled) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
+        
+        // Evento para o botão Cancelar
+        const cancelBtn = document.querySelector('.cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Desabilita todos os botões para evitar múltiplos cliques
+                const allButtons = document.querySelectorAll('button');
+                allButtons.forEach(button => {
+                    button.disabled = true;
+                });
+                
+                // Redireciona para a página inicial
+                window.location.href = '{{ route('index') }}';
+            });
+        }
+        
+        // Eventos para as abas
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                currentStep = parseInt(this.getAttribute('data-step'));
+                showStep(currentStep);
+            });
+        });
+        
+        // Carrega o estado salvo
+        const savedStep = sessionStorage.getItem('currentStep');
+        showStep(savedStep ? parseInt(savedStep) : 1);
+    }
 
-        // Data no formato DD-MM-AAAA
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const ano = hoje.getFullYear();
-        const dataAtual = `${dia}-${mes}-${ano}`;
-
-        // Nome do arquivo
-        const nomeArquivo = `Perfil_${nomeFormatado}_${dataAtual}.pdf`;
-
-        pdf.save(nomeArquivo);
-    }).catch(error => console.error("Erro ao gerar PDF:", error));
-});
-</script>
+    // Inicializa o formulário quando o DOM estiver pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeForm);
+    } else {
+        initializeForm();
+    }
+    </script>
+    
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

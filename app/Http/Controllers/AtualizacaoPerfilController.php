@@ -28,6 +28,8 @@ class AtualizacaoPerfilController extends Controller
         try {
             // Atualização das tabelas relacionadas ao estudante
             $this->atualizarPerfilEstudante($request, $id);
+            $perfil = \App\Models\PerfilEstudante::where('fk_id_aluno', $id)->first();
+            $updateCount = $perfil && isset($perfil->update_count) ? $perfil->update_count : 1;
             $this->atualizarPersonalidade($request, $id);
             $this->atualizarComunicacao($request, $id);
             $this->atualizarPreferencia($request, $id);
@@ -36,9 +38,10 @@ class AtualizacaoPerfilController extends Controller
             // Confirma a transação
             DB::commit();
 
-            // Redireciona para a rota perfil.estudante com mensagem de sucesso
-            return redirect()->route('perfil.estudante', ['id' => $id])
-                             ->with('success', 'Perfil atualizado com sucesso!');
+            // Redireciona para a rota perfil.estudante com mensagem de sucesso e contador
+            return redirect()->route('alunos.perfil_estudante', ['id' => $id])
+                             ->with('success', 'Perfil atualizado com sucesso!')
+                             ->with('updateCount', $updateCount);
         } catch (\Exception $e) {
             // Reverte a transação em caso de erro
             DB::rollBack();
@@ -54,6 +57,9 @@ class AtualizacaoPerfilController extends Controller
     private function atualizarPerfilEstudante($request, $id)
     {
         $perfil = PerfilEstudante::where('fk_id_aluno', $id)->firstOrFail();
+        // Incrementa o contador de atualizações
+        $perfil->update_count = ($perfil->update_count ?? 0) + 1;
+        $perfil->save();
 
         $perfil->update([
             'diag_laudo' => $request->diag_laudo,

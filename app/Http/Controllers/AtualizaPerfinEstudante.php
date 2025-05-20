@@ -47,8 +47,10 @@ $query = "SELECT alu.alu_id, alu.alu_nome, alu.alu_dtnasc,
     ", [$id]);
     
 
+    // Busca o aluno pelo id
+    $aluno = \App\Models\Aluno::find($id);
     // Redireciona para a view com os dados
-    return view('alunos.atualiza_perfil_estudante', compact('dados', 'results'));
+    return view('alunos.atualiza_perfil_estudante', compact('aluno', 'dados', 'results'));
 }
 
     
