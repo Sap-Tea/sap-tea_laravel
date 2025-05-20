@@ -15,4 +15,8 @@ class ResultEixoComLin extends Model
         'date_cadastro',
         'tipo_fase_com_lin',
     ];
+    public function proposta()
+    {
+        return $this->belongsTo(PropostaComLin::class, 'fk_hab_pro_com_lin', 'id_pro_com_lin');
+    }
 }

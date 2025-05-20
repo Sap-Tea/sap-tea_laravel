@@ -113,26 +113,33 @@ class ProcessaResultadosController extends Controller
     {
         $resultados = [];
         // Comunicação/Linguagem
-        // Novo fluxo para comunicação/linguagem
         $eixoComunicacao = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $alunoId)
             ->orderByDesc('data_insert_com_lin')
             ->first();
         $resultados['comunicacao_linguagem'] = [];
         if ($eixoComunicacao) {
+            $indicesMarcados = [];
             for ($i = 1; $i <= 32; $i++) {
                 $campo = 'ecm' . str_pad($i, 2, '0', STR_PAD_LEFT);
                 if (isset($eixoComunicacao->$campo) && $eixoComunicacao->$campo == 1) {
-                    $propostas = \App\Models\HabProComLin::where('fk_id_hab_com_lin', $i)->get();
-                    foreach ($propostas as $proposta) {
-                        $registro = \App\Models\ResultEixoComLin::create([
-                            'fk_hab_pro_com_lin' => $i,
-                            'fk_id_pro_com_lin' => $proposta->fk_id_pro_com_lin,
-                            'fk_result_alu_id_ecomling' => $alunoId,
-                            'date_cadastro' => now(),
-                            'tipo_fase_com_lin' => $eixoComunicacao->fase_inv_com_lin
-                        ]);
-                        $resultados['comunicacao_linguagem'][] = $registro->toArray();
-                    }
+                    $indicesMarcados[] = $i;
+                }
+            }
+            if (count($indicesMarcados)) {
+                $propostas = \App\Models\HabProComLin::whereIn('fk_id_hab_com_lin', $indicesMarcados)->get();
+                $registros = [];
+                foreach ($propostas as $proposta) {
+                    $registros[] = [
+                        'fk_hab_pro_com_lin' => $proposta->fk_id_hab_com_lin,
+                        'fk_id_pro_com_lin' => $proposta->fk_id_pro_com_lin,
+                        'fk_result_alu_id_ecomling' => $alunoId,
+                        'date_cadastro' => now(),
+                        'tipo_fase_com_lin' => $eixoComunicacao->fase_inv_com_lin
+                    ];
+                }
+                if (count($registros)) {
+                    \App\Models\ResultEixoComLin::insert($registros);
+                    $resultados['comunicacao_linguagem'] = $registros;
                 }
             }
         }
@@ -142,20 +149,28 @@ class ProcessaResultadosController extends Controller
             ->first();
         $resultados['comportamento'] = [];
         if ($eixoComportamento) {
+            $indicesMarcados = [];
             for ($i = 1; $i <= 17; $i++) {
                 $campo = 'ecp' . str_pad($i, 2, '0', STR_PAD_LEFT);
                 if (isset($eixoComportamento->$campo) && $eixoComportamento->$campo == 1) {
-                    $propostas = \App\Models\HabProComportamento::where('fk_id_hab_comportamento', $i)->get();
-                    foreach ($propostas as $proposta) {
-                        $registro = \App\Models\ResultEixoComportamento::create([
-                            'fk_hab_pro_comportamento' => $i,
-                            'fk_id_pro_comportamento' => $proposta->fk_id_pro_comportamento,
-                            'fk_result_alu_id_comportamento' => $alunoId,
-                            'date_cadastro' => now(),
-                            'tipo_fase_comportamento' => $eixoComportamento->fase_inv_comportamento
-                        ]);
-                        $resultados['comportamento'][] = $registro->toArray();
-                    }
+                    $indicesMarcados[] = $i;
+                }
+            }
+            if (count($indicesMarcados)) {
+                $propostas = \App\Models\HabProComportamento::whereIn('fk_id_hab_comportamento', $indicesMarcados)->get();
+                $registros = [];
+                foreach ($propostas as $proposta) {
+                    $registros[] = [
+                        'fk_hab_pro_comportamento' => $proposta->fk_id_hab_comportamento,
+                        'fk_id_pro_comportamento' => $proposta->fk_id_pro_comportamento,
+                        'fk_result_alu_id_comportamento' => $alunoId,
+                        'date_cadastro' => now(),
+                        'tipo_fase_comportamento' => $eixoComportamento->fase_inv_comportamento
+                    ];
+                }
+                if (count($registros)) {
+                    \App\Models\ResultEixoComportamento::insert($registros);
+                    $resultados['comportamento'] = $registros;
                 }
             }
         }
@@ -165,20 +180,28 @@ class ProcessaResultadosController extends Controller
             ->first();
         $resultados['interacao_socioemocional'] = [];
         if ($eixoIntSocio) {
+            $indicesMarcados = [];
             for ($i = 1; $i <= 18; $i++) {
                 $campo = 'eis' . str_pad($i, 2, '0', STR_PAD_LEFT);
                 if (isset($eixoIntSocio->$campo) && $eixoIntSocio->$campo == 1) {
-                    $propostas = \App\Models\HabProIntSoc::where('fk_id_hab_int_soc', $i)->get();
-                    foreach ($propostas as $proposta) {
-                        $registro = \App\Models\ResultEixoIntSocio::create([
-                            'fk_hab_pro_int_socio' => $i,
-                            'fk_id_pro_int_socio' => $proposta->fk_id_pro_int_soc,
-                            'fk_result_alu_id_int_socio' => $alunoId,
-                            'date_cadastro' => now(),
-                            'tipo_fase_int_socio' => $eixoIntSocio->fase_inv_int_socio
-                        ]);
-                        $resultados['interacao_socioemocional'][] = $registro->toArray();
-                    }
+                    $indicesMarcados[] = $i;
+                }
+            }
+            if (count($indicesMarcados)) {
+                $propostas = \App\Models\HabProIntSoc::whereIn('fk_id_hab_int_soc', $indicesMarcados)->get();
+                $registros = [];
+                foreach ($propostas as $proposta) {
+                    $registros[] = [
+                        'fk_hab_pro_int_socio' => $proposta->fk_id_hab_int_soc,
+                        'fk_id_pro_int_socio' => $proposta->fk_id_pro_int_soc,
+                        'fk_result_alu_id_int_socio' => $alunoId,
+                        'date_cadastro' => now(),
+                        'tipo_fase_int_socio' => $eixoIntSocio->fase_inv_int_socio
+                    ];
+                }
+                if (count($registros)) {
+                    \App\Models\ResultEixoIntSocio::insert($registros);
+                    $resultados['interacao_socioemocional'] = $registros;
                 }
             }
         }

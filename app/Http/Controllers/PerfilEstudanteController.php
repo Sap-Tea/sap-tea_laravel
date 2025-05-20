@@ -40,9 +40,32 @@ class PerfilEstudanteController extends Controller
         $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
         $professor_nome = $professor_logado ? $professor_logado->func_nome : null;
 
-        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_id_pro_com_lin', $aluno_id)->get();
-        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $aluno_id)->get();
-        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $aluno_id)->get();
+        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_result_alu_id_ecomling', $aluno_id)->paginate(20);
+        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $aluno_id)->paginate(20);
+        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $aluno_id)->paginate(20);
+
+        // Buscar atividades do eixo comunicação/linguagem do aluno via JOIN
+        $comunicacao_atividades = \DB::table('atividade_com_lin as acom')
+            ->join('result_eixo_com_lin as res', 'acom.id_ati_com_lin', '=', 'res.fk_id_pro_com_lin')
+            ->where('res.fk_result_alu_id_ecomling', $aluno_id)
+            ->orderBy('acom.cod_ati_com_lin')
+            ->select('acom.cod_ati_com_lin', 'acom.desc_ati_com_lin')
+            ->get();
+
+        // Buscar atividades do eixo comportamento do aluno via JOIN
+        $comportamento_atividades = \DB::table('atividade_comportamento as aco')
+            ->join('result_eixo_comportamento as res', 'aco.id_ati_comportamento', '=', 'res.fk_id_pro_comportamento')
+            ->where('res.fk_result_alu_id_comportamento', $aluno_id)
+            ->orderBy('aco.cod_ati_comportamento')
+            ->select('aco.cod_ati_comportamento', 'aco.desc_ati_comportamento')
+            ->get();
+        // Buscar atividades do eixo interação socioemocional via JOIN
+        $socioemocional_atividades = \DB::table('atividade_int_soc as ais')
+            ->join('result_eixo_int_socio as res', 'ais.id_ati_int_soc', '=', 'res.fk_id_pro_int_socio')
+            ->where('res.fk_result_alu_id_int_socio', $aluno_id)
+            ->orderBy('ais.cod_ati_int_soc')
+            ->select('ais.cod_ati_int_soc', 'ais.desc_ati_int_soc')
+            ->get();
 
         // Buscar propostas e indexar por id
         $comunicacao_propostas = \App\Models\PropostaComLin::all()->keyBy('id_pro_com_lin');
@@ -54,8 +77,10 @@ class PerfilEstudanteController extends Controller
             'data_inicial_com_lin',
             'professor_nome',
             'comunicacao_resultados',
+            'comunicacao_atividades',
             'comportamento_resultados',
             'socioemocional_resultados',
+            'socioemocional_atividades',
             'comunicacao_propostas',
             'comportamento_propostas',
             'socioemocional_propostas'
@@ -190,9 +215,31 @@ public function index_inventario(Request $request)
         $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
 
         // Buscar resultados dos três eixos
-        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_id_pro_com_lin', $id)->get();
-        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $id)->get();
-        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $id)->get();
+        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_id_pro_com_lin', $id)->paginate(20);
+        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $id)->paginate(20);
+        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $id)->paginate(20);
+
+        // Buscar atividades do eixo comunicação/linguagem do aluno via JOIN
+        $comunicacao_atividades = \DB::table('atividade_com_lin as acom')
+            ->join('result_eixo_com_lin as res', 'acom.id_ati_com_lin', '=', 'res.fk_id_pro_com_lin')
+            ->where('res.fk_result_alu_id_ecomling', $id)
+            ->orderBy('acom.cod_ati_com_lin')
+            ->select('acom.cod_ati_com_lin', 'acom.desc_ati_com_lin')
+            ->get();
+        // Buscar atividades do eixo comportamento do aluno via JOIN
+        $comportamento_atividades = \DB::table('atividade_comportamento as aco')
+            ->join('result_eixo_comportamento as res', 'aco.id_ati_comportamento', '=', 'res.fk_id_pro_comportamento')
+            ->where('res.fk_result_alu_id_comportamento', $id)
+            ->orderBy('aco.cod_ati_comportamento')
+            ->select('aco.cod_ati_comportamento', 'aco.desc_ati_comportamento')
+            ->get();
+        // Buscar atividades do eixo interação socioemocional via JOIN
+        $socioemocional_atividades = \DB::table('atividade_int_soc as ais')
+            ->join('result_eixo_int_socio as res', 'ais.id_ati_int_soc', '=', 'res.fk_id_pro_int_socio')
+            ->where('res.fk_result_alu_id_int_socio', $id)
+            ->orderBy('ais.cod_ati_int_soc')
+            ->select('ais.cod_ati_int_soc', 'ais.desc_ati_int_soc')
+            ->get();
 
         // Buscar propostas e indexar por id
         $comunicacao_propostas = \App\Models\PropostaComLin::all()->keyBy('id_pro_com_lin');
@@ -204,6 +251,9 @@ public function index_inventario(Request $request)
             'professor_nome' => $professor->func_nome,
             'data_inicial_com_lin' => $data_inicial_com_lin,
             'comunicacao_resultados' => $comunicacao_resultados,
+            'comunicacao_atividades' => $comunicacao_atividades,
+            'comportamento_atividades' => $comportamento_atividades,
+            'socioemocional_atividades' => $socioemocional_atividades,
             'comportamento_resultados' => $comportamento_resultados,
             'socioemocional_resultados' => $socioemocional_resultados,
             'comunicacao_propostas' => $comunicacao_propostas,

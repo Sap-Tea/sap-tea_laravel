@@ -306,9 +306,32 @@
     </div>
 
     <!-- TABELA DE ATIVIDADES -->
+    {{-- ATIVIDADES DO EIXO COMUNICAÇÃO/LINGUAGEM --}}
+    <div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+      <div class="table-title" style="font-size:18px; color:#b28600;">Atividades do Eixo Comunicação/Linguagem</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($comunicacao_atividades as $atividade)
+          <tr>
+            <td>{{ $atividade->cod_ati_com_lin }}</td>
+            <td>{{ $atividade->desc_ati_com_lin }}</td>
+          </tr>
+          @empty
+          <tr><td colspan="2">Nenhuma atividade encontrada para este aluno.</td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+
     {{-- EIXO COMUNICAÇÃO/LINGUAGEM (DINÂMICO) --}}
     <div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-      <div class="table-title" style="font-size:18px; color:#b28600;">Eixo Comunicação/Linguagem</div>
+      <div class="table-title" style="font-size:18px; color:#b28600;">Eixo Comunicação/Linguagem (Resultados)</div>
       <table>
         <thead>
           <tr>
@@ -324,24 +347,45 @@
           </tr>
         </thead>
         <tbody>
-          @foreach(collect($comunicacao_resultados)->sortBy(fn($r) => optional($comunicacao_propostas[$r->fk_hab_pro_com_lin] ?? null)->cod_pro_com_lin) as $i => $resultado)
-    @php
-        $proposta = $comunicacao_propostas[$resultado->fk_hab_pro_com_lin] ?? null;
-    @endphp
-    @if($proposta)
-        <tr>
-            <td>{{ $proposta->cod_pro_com_lin }}</td>
-            <td>{{ $proposta->desc_pro_com_lin }}</td>
-              <td><input type="date" name="linguagem[{{$i}}][data_inicial]" value=""></td>
-              <td><input type="checkbox" name="linguagem[{{$i}}][sim_inicial]" value="1"></td>
-              <td><input type="checkbox" name="linguagem[{{$i}}][nao_inicial]" value="1"></td>
-              <td><input type="date" name="linguagem[{{$i}}][data_final]" value=""></td>
-              <td><input type="checkbox" name="linguagem[{{$i}}][sim_final]" value="1"></td>
-              <td><input type="checkbox" name="linguagem[{{$i}}][nao_final]" value="1"></td>
-              <td><input type="text" name="linguagem[{{$i}}][observacoes]" value=""></td>
+          @foreach($comunicacao_resultados as $i => $resultado)
+            @php
+                $proposta = $resultado->proposta;
+            @endphp
+            <tr>
+                <td>{{ $proposta->cod_pro_com_lin ?? '-' }}</td>
+                <td>{{ $proposta->desc_pro_com_lin ?? 'Proposta não encontrada' }}</td>
+                <td><input type="date" name="linguagem[{{$i}}][data_inicial]" value=""></td>
+                <td><input type="checkbox" name="linguagem[{{$i}}][sim_inicial]" value="1"></td>
+                <td><input type="checkbox" name="linguagem[{{$i}}][nao_inicial]" value="1"></td>
+                <td><input type="date" name="linguagem[{{$i}}][data_final]" value=""></td>
+                <td><input type="checkbox" name="linguagem[{{$i}}][sim_final]" value="1"></td>
+                <td><input type="checkbox" name="linguagem[{{$i}}][nao_final]" value="1"></td>
+                <td><input type="text" name="linguagem[{{$i}}][observacoes]" value=""></td>
             </tr>
-    @endif
-@endforeach
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+
+    {{-- ATIVIDADES DO EIXO COMPORTAMENTO --}}
+    <div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+      <div class="table-title" style="font-size:18px; color:#176ca7;">Atividades do Eixo Comportamento</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($comportamento_atividades as $atividade)
+          <tr>
+            <td>{{ $atividade->cod_ati_comportamento }}</td>
+            <td>{{ $atividade->desc_ati_comportamento }}</td>
+          </tr>
+          @empty
+          <tr><td colspan="2">Nenhuma atividade encontrada para este aluno.</td></tr>
+          @endforelse
         </tbody>
       </table>
     </div>
@@ -382,6 +426,29 @@
             </tr>
     @endif
 @endforeach
+        </tbody>
+      </table>
+    </div>
+
+    {{-- ATIVIDADES DO EIXO INTERAÇÃO SOCIOEMOCIONAL --}}
+    <div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+      <div class="table-title" style="font-size:18px; color:#267a3e;">Atividades do Eixo Interação Socioemocional</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($socioemocional_atividades as $atividade)
+          <tr>
+            <td>{{ $atividade->cod_ati_int_soc }}</td>
+            <td>{{ $atividade->desc_ati_int_soc }}</td>
+          </tr>
+          @empty
+          <tr><td colspan="2">Nenhuma atividade encontrada para este aluno.</td></tr>
+          @endforelse
         </tbody>
       </table>
     </div>
