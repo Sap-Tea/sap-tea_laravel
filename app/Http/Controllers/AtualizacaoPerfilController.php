@@ -19,10 +19,10 @@ class AtualizacaoPerfilController extends Controller
     {
         // Validação básica dos campos essenciais
         $request->validate([
-    'diag_laudo' => 'nullable|numeric',
-    'nivel_suporte' => 'nullable',
-    'precisa_comunicacao' => 'nullable|numeric'
-]);
+            'diag_laudo' => 'required|numeric',
+            'nivel_suporte' => 'required|numeric',
+            'precisa_comunicacao' => 'required|numeric'
+        ]);
 
         DB::beginTransaction();
         try {
