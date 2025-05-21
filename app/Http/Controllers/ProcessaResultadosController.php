@@ -15,6 +15,89 @@ use Carbon\Carbon;
 
 class ProcessaResultadosController extends Controller
 {
+    // Função para exibir o monitoramento do aluno (ajuste o nome conforme o seu controller)
+    public function monitoramentoAluno(Request $request)
+    {
+        // Consulta agrupada Comunicação/Linguagem
+        $comunicacao_linguagem_agrupado = \DB::select("
+            SELECT 
+                r.fk_id_pro_com_lin,
+                r.fk_result_alu_id_ecomling,
+                r.tipo_fase_com_lin,
+                a.cod_ati_com_lin,
+                a.desc_ati_com_lin,
+                COUNT(*) AS total
+            FROM 
+                result_eixo_com_lin r
+            JOIN 
+                atividade_com_lin a ON r.fk_id_pro_com_lin = a.id_ati_com_lin
+            GROUP BY
+                r.fk_id_pro_com_lin,
+                r.fk_result_alu_id_ecomling,
+                r.tipo_fase_com_lin,
+                a.cod_ati_com_lin,
+                a.desc_ati_com_lin
+            ORDER BY
+                r.fk_result_alu_id_ecomling
+        ");
+        // Consulta agrupada Comportamento
+        $comportamento_agrupado = \DB::select("
+            SELECT 
+                r.fk_id_pro_comportamento,
+                r.fk_result_alu_id_comportamento,
+                r.tipo_fase_comportamento,
+                a.cod_ati_comportamento,
+                a.desc_ati_comportamento,
+                COUNT(*) AS total
+            FROM 
+                result_eixo_comportamento r
+            JOIN 
+                atividade_comportamento a ON r.fk_id_pro_comportamento = a.id_ati_comportamento
+            GROUP BY
+                r.fk_id_pro_comportamento,
+                r.fk_result_alu_id_comportamento,
+                r.tipo_fase_comportamento,
+                a.cod_ati_comportamento,
+                a.desc_ati_comportamento
+            ORDER BY
+                r.fk_result_alu_id_comportamento
+        ");
+        // Consulta agrupada Interação Socioemocional
+        $socioemocional_agrupado = \DB::select("
+            SELECT 
+                r.fk_id_pro_int_socio,
+                r.fk_result_alu_id_int_socio,
+                r.tipo_fase_int_socio,
+                a.cod_ati_int_socio,
+                a.desc_ati_int_socio,
+                COUNT(*) AS total
+            FROM 
+                result_eixo_int_socio r
+            JOIN 
+                atividade_int_socio a ON r.fk_id_pro_int_socio = a.id_ati_int_socio
+            GROUP BY
+                r.fk_id_pro_int_socio,
+                r.fk_result_alu_id_int_socio,
+                r.tipo_fase_int_socio,
+                a.cod_ati_int_socio,
+                a.desc_ati_int_socio
+            ORDER BY
+                r.fk_result_alu_id_int_socio
+        ");
+
+        // Garante arrays vazios se não houver dados
+        $comunicacao_linguagem_agrupado = $comunicacao_linguagem_agrupado ?: [];
+        $comportamento_agrupado = $comportamento_agrupado ?: [];
+        $socioemocional_agrupado = $socioemocional_agrupado ?: [];
+
+        // Retorna para a view
+        return view('rotina_monitoramento.monitoramento_aluno', compact(
+            'comunicacao_linguagem_agrupado',
+            'comportamento_agrupado',
+            'socioemocional_agrupado'
+        ));
+    }
+
     // Chama todos os processamentos de eixo para o aluno informado
     public function debugEixoComLin($alunoId)
     {
