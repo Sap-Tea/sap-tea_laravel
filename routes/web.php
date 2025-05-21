@@ -70,7 +70,6 @@ Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
     Route::get('/generate-template-pdf', [GenerateTemplatePDFController::class, 'generateTemplate'])->name('generate.template.pdf');
     // Rota para processar resultados dos três eixos
     Route::post('/sondagem/processa-resultados/{alunoId}', [\App\Http\Controllers\ProcessaResultadosController::class, 'processaTodosEixos'])->name('processa_resultados');
-    Route::get('/sondagem/eixos-estudante', [PerfilEstudanteController::class, 'index_inventario'])->name('eixos.alunos');
     Route::get('/sondagem/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
     Route::post('/sondagem/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
     Route::get('/sondagem/visualizar-inventario/{id}', [AlunoController::class, 'visualiza_aluno_inventario'])->name('visualizar.inventario');
