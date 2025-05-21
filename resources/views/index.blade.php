@@ -68,7 +68,7 @@
                     <li><a href="#" class="disabled">.4 Final</a></li>
                 </ul>
             </li>
-            <li><a href="{{ route('perfil.estudante') }}" target="_blank"><i class="fa-solid fa-graduation-cap"></i> Perfil do Estudante</a></li>
+            <li><a href="{{ route('perfil.estudante') }}"><i class="fa-solid fa-graduation-cap"></i> Perfil do Estudante</a></li>
         </ul>
 
         <h3>Foccus - Cadastros</h3>

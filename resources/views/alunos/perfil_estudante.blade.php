@@ -206,7 +206,7 @@
                 <div class="row">
                     <div class="form-group">
                         <label>Ano/Série:</label>
-                        <input type="text" value="{{$aluno->desc_modalidade.'-'.  $aluno->desc_serie_modalidade}}" readonly>
+                        <input type="text" value="{{$aluno->desc_modalidade.' - '. $aluno->serie_desc}}" readonly>
                     </div>
                     
                     <div class="form-group">
@@ -564,6 +564,10 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group mt-4" style="display: flex; justify-content: center; gap: 18px;">
+    <button type="submit" class="btn btn-primary" style="width: 170px;">Cadastrar Perfil</button>
+    <a href="{{ url('/sondagem/perfil-estudante') }}" class="btn btn-danger" style="width: 90px; min-width: unset; max-width: 100px; display: inline-block; text-align: center;">Cancelar</a>
+</div>
         </form>
     </div>
 
@@ -580,9 +584,6 @@
         <div class="action-group">
             <button type="button" class="finish-btn" id="finishBtn" style="display: none;">
                 <i class="fas fa-check"></i> Finalizar
-            </button>
-            <button type="button" class="btn btn-danger cancel-btn">
-                <i class="fas fa-times"></i> Cancelar
             </button>
         </div>
     </div>

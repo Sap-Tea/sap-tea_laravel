@@ -97,16 +97,19 @@ class PerfilEstudanteController extends Controller
 
     public function index()
 {
-    // Busca apenas alunos matriculados, ordenados por nome
-    $alunos = Aluno::whereHas('matriculas')
-                   ->orderBy('alu_nome', 'asc')
-                   ->get();
+    // Busca apenas alunos das turmas do professor logado
+    $professor = auth('funcionario')->user();
+    $funcId = $professor->func_id;
+    $alunos = \App\Models\Aluno::porProfessor($funcId)
+        ->orderBy('alu_nome', 'asc')
+        ->get();
 
     return view('alunos.imprime_aluno', [
         'alunos' => $alunos,
         'titulo' => 'Alunos Matriculados',
         'rota_inventario' => 'perfil_estudante.index_inventario',
         'flag_teste' => true,
+        'professor_nome' => $professor->func_nome ?? '',
     ]);
 }
 

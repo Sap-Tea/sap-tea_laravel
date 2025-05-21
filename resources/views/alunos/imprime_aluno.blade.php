@@ -4,6 +4,12 @@
 <div class="container mt-4">
     <h2>Relação dos Alunos</h2>
 
+    @if(isset($professor_nome))
+        <div class="alert alert-info" style="font-size:1.2em;">
+            <strong>Professor Responsável:</strong> {{ $professor_nome }}
+        </div>
+    @endif
+
     <!-- Formulário de Pesquisa -->
     <form id = "pesquisaForm" method="POST" action="{{ route('inserir_perfil') }}">
         <div class="input-group mb-3">
@@ -58,10 +64,10 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <!-- Botão cadastra perfil -->
                     <td>
                         @if($aluno->flag_perfil === "*")
-                            <button class="btn btn-primary btn-sm" disabled>Cadastra Perfil</button>
+                            <button class="btn btn-warning btn-sm text-white" style="background-color: #ff9800; border-color: #ff9800; cursor: not-allowed; width: 150px; height: 38px; display: inline-block;" disabled>Perfil já cadastrado</button>
                         @else
                             <a href="{{ route('alunos.index', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary btn-sm">Cadastra Perfil</a>
+                               class="btn btn-primary btn-sm" style="width: 150px; height: 38px; display: inline-block;">Cadastra Perfil</a>
                         @endif
                     </td>
 
@@ -69,11 +75,11 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <td>
                         @if($aluno->flag_perfil === null)
                             <button class="btn btn-warning btn-sm text-white" 
-                                    style="background-color: #e67e22; border-color: #d35400;"
+                                    style="background-color: #e67e22; border-color: #d35400; width: 150px; height: 38px; display: inline-block;"
                                     disabled>Visualiza Perfil</button>
                         @else
                             <a href="{{ route('visualizar.perfil', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary btn-sm">Visualiza Perfil</a>
+                               class="btn btn-primary btn-sm" style="width: 150px; height: 38px; display: inline-block;">Visualiza Perfil</a>
                         @endif
                     </td>
                 </tr>
