@@ -38,7 +38,7 @@ class ProcessaResultadosController extends Controller
                 a.cod_ati_com_lin,
                 a.desc_ati_com_lin
             ORDER BY
-                r.fk_result_alu_id_ecomling
+                COUNT(*) DESC
         ");
         // Consulta agrupada Comportamento
         $comportamento_agrupado = \DB::select("
@@ -60,7 +60,7 @@ class ProcessaResultadosController extends Controller
                 a.cod_ati_comportamento,
                 a.desc_ati_comportamento
             ORDER BY
-                r.fk_result_alu_id_comportamento
+                COUNT(*) DESC
         ");
         // Consulta agrupada Interação Socioemocional
         $socioemocional_agrupado = \DB::select("
@@ -82,7 +82,7 @@ class ProcessaResultadosController extends Controller
                 a.cod_ati_int_socio,
                 a.desc_ati_int_socio
             ORDER BY
-                r.fk_result_alu_id_int_socio
+                COUNT(*) DESC
         ");
 
         // Garante arrays vazios se não houver dados
@@ -90,11 +90,96 @@ class ProcessaResultadosController extends Controller
         $comportamento_agrupado = $comportamento_agrupado ?: [];
         $socioemocional_agrupado = $socioemocional_agrupado ?: [];
 
+        // --- NOVO: calcular e passar as variáveis *_atividades_ordenadas ---
+        // Comunicação
+        $comunicacao_frequencias = [];
+        foreach ($comunicacao_linguagem_agrupado as $item) {
+            $cod = $item->cod_ati_com_lin;
+            $desc = $item->desc_ati_com_lin;
+            $total = $item->total;
+            if (!isset($comunicacao_frequencias[$cod])) {
+                $comunicacao_frequencias[$cod] = [
+                    'codigo' => $cod,
+                    'descricao' => $desc,
+                    'total' => 0
+                ];
+            }
+            $comunicacao_frequencias[$cod]['total'] += $total;
+        }
+        // Ordena por total desc
+        usort($comunicacao_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
+        // Gera lista repetida conforme frequência
+        $comunicacao_atividades_ordenadas = [];
+        foreach ($comunicacao_frequencias as $item) {
+            for ($i = 0; $i < $item['total']; $i++) {
+                $obj = new \stdClass();
+                $obj->cod_ati_com_lin = $item['codigo'];
+                $obj->desc_ati_com_lin = $item['descricao'];
+                $comunicacao_atividades_ordenadas[] = $obj;
+            }
+        }
+
+        // Comportamento
+        $comportamento_frequencias = [];
+        foreach ($comportamento_agrupado as $item) {
+            $cod = $item->cod_ati_comportamento;
+            $desc = $item->desc_ati_comportamento;
+            $total = $item->total;
+            if (!isset($comportamento_frequencias[$cod])) {
+                $comportamento_frequencias[$cod] = [
+                    'codigo' => $cod,
+                    'descricao' => $desc,
+                    'total' => 0
+                ];
+            }
+            $comportamento_frequencias[$cod]['total'] += $total;
+        }
+        usort($comportamento_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
+        $comportamento_atividades_ordenadas = [];
+        foreach ($comportamento_frequencias as $item) {
+            for ($i = 0; $i < $item['total']; $i++) {
+                $obj = new \stdClass();
+                $obj->cod_ati_comportamento = $item['codigo'];
+                $obj->desc_ati_comportamento = $item['descricao'];
+                $comportamento_atividades_ordenadas[] = $obj;
+            }
+        }
+
+        // Socioemocional
+        $socioemocional_frequencias = [];
+        foreach ($socioemocional_agrupado as $item) {
+            $cod = $item->cod_ati_int_socio;
+            $desc = $item->desc_ati_int_socio;
+            $total = $item->total;
+            if (!isset($socioemocional_frequencias[$cod])) {
+                $socioemocional_frequencias[$cod] = [
+                    'codigo' => $cod,
+                    'descricao' => $desc,
+                    'total' => 0
+                ];
+            }
+            $socioemocional_frequencias[$cod]['total'] += $total;
+        }
+        usort($socioemocional_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
+        $socioemocional_atividades_ordenadas = [];
+        foreach ($socioemocional_frequencias as $item) {
+            for ($i = 0; $i < $item['total']; $i++) {
+                $obj = new \stdClass();
+                $obj->cod_ati_int_socio = $item['codigo'];
+                $obj->desc_ati_int_socio = $item['descricao'];
+                $socioemocional_atividades_ordenadas[] = $obj;
+            }
+        }
+        // --- FIM NOVO ---
+
         // Retorna para a view
         return view('rotina_monitoramento.monitoramento_aluno', compact(
             'comunicacao_linguagem_agrupado',
             'comportamento_agrupado',
-            'socioemocional_agrupado'
+            'socioemocional_agrupado',
+            'comunicacao_atividades_ordenadas',
+            'comportamento_atividades_ordenadas',
+            'socioemocional_atividades_ordenadas'
         ));
     }
 

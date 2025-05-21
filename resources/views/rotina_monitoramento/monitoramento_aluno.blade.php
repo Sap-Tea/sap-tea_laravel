@@ -380,19 +380,23 @@
       </tr>
     </thead>
     <tbody>
-      @foreach($comunicacao_atividades as $i => $atividade)
+      @php $idx = 0; @endphp
+@foreach($comunicacao_linguagem_agrupado as $linha)
+    @for($q=0; $q<$linha->total; $q++)
       <tr>
-        <td>{{ $atividade->cod_ati_com_lin }}</td>
-        <td>{{ $atividade->desc_ati_com_lin }}</td>
-        <td><input type="date" name="linguagem[{{$i}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="linguagem[{{$i}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="linguagem[{{$i}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="linguagem[{{$i}}][data_final]" style="width:100%"></td>
-        <td><input type="checkbox" name="linguagem[{{$i}}][sim_final]" value="1"></td>
-        <td><input type="checkbox" name="linguagem[{{$i}}][nao_final]" value="1"></td>
-        <td><input type="text" name="linguagem[{{$i}}][observacoes]" style="width:100%"></td>
+        <td>{{ $linha->cod_ati_com_lin }}</td>
+        <td>{{ $linha->desc_ati_com_lin }}</td>
+        <td><input type="date" name="linguagem[{{$idx}}][data_inicial]" style="width:100%"></td>
+        <td><input type="checkbox" name="linguagem[{{$idx}}][sim_inicial]" value="1"></td>
+        <td><input type="checkbox" name="linguagem[{{$idx}}][nao_inicial]" value="1"></td>
+        <td><input type="date" name="linguagem[{{$idx}}][data_final]" style="width:100%"></td>
+        <td><input type="checkbox" name="linguagem[{{$idx}}][sim_final]" value="1"></td>
+        <td><input type="checkbox" name="linguagem[{{$idx}}][nao_final]" value="1"></td>
+        <td><input type="text" name="linguagem[{{$idx}}][observacoes]" style="width:100%"></td>
       </tr>
-      @endforeach
+    @php $idx++; @endphp
+    @endfor
+@endforeach
     </tbody>
   </table>
 </div>
@@ -417,19 +421,23 @@
       </tr>
     </thead>
     <tbody>
-      @foreach($comportamento_atividades as $i => $atividade)
+      @php $idx = 0; @endphp
+@foreach($comportamento_agrupado as $linha)
+    @for($q=0; $q<$linha->total; $q++)
       <tr>
-        <td>{{ $atividade->cod_ati_comportamento }}</td>
-        <td>{{ $atividade->desc_ati_comportamento }}</td>
-        <td><input type="date" name="comportamento[{{$i}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="comportamento[{{$i}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="comportamento[{{$i}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="comportamento[{{$i}}][data_final]" style="width:100%"></td>
-        <td><input type="checkbox" name="comportamento[{{$i}}][sim_final]" value="1"></td>
-        <td><input type="checkbox" name="comportamento[{{$i}}][nao_final]" value="1"></td>
-        <td><input type="text" name="comportamento[{{$i}}][observacoes]" style="width:100%"></td>
+        <td>{{ $linha->cod_ati_comportamento }}</td>
+        <td>{{ $linha->desc_ati_comportamento }}</td>
+        <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
+        <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
+        <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
+        <td><input type="date" name="comportamento[{{$idx}}][data_final]" style="width:100%"></td>
+        <td><input type="checkbox" name="comportamento[{{$idx}}][sim_final]" value="1"></td>
+        <td><input type="checkbox" name="comportamento[{{$idx}}][nao_final]" value="1"></td>
+        <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
       </tr>
-      @endforeach
+    @php $idx++; @endphp
+    @endfor
+@endforeach
     </tbody>
   </table>
 </div>
@@ -454,6 +462,7 @@
     if (!isset($comunicacao_linguagem_agrupado)) $comunicacao_linguagem_agrupado = [];
     if (!isset($comportamento_agrupado)) $comportamento_agrupado = [];
     if (!isset($socioemocional_agrupado)) $socioemocional_agrupado = [];
+
 @endphp
 @foreach($comunicacao_linguagem_agrupado as $linha)
       <tr>
@@ -516,8 +525,8 @@
     <tbody>
       @foreach($socioemocional_agrupado as $linha)
       <tr>
-        <td>{{ $linha->cod_ati_int_socio }}</td>
-        <td>{{ $linha->desc_ati_int_socio }}</td>
+        <td>{{ $linha->cod_ati_int_soc }}</td>
+        <td>{{ $linha->desc_ati_int_soc }}</td>
         <td>{{ $linha->fk_result_alu_id_int_socio }}</td>
         <td>{{ $linha->tipo_fase_int_socio }}</td>
         <td>{{ $linha->total }}</td>
@@ -551,19 +560,23 @@
       </tr>
     </thead>
     <tbody>
-      @foreach($socioemocional_atividades as $i => $atividade)
+      @php $idx = 0; @endphp
+@foreach($socioemocional_agrupado as $linha)
+    @for($q=0; $q<$linha->total; $q++)
       <tr>
-        <td>{{ $atividade->cod_ati_int_soc }}</td>
-        <td>{{ $atividade->desc_ati_int_soc }}</td>
-        <td><input type="date" name="socioemocional[{{$i}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="socioemocional[{{$i}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="socioemocional[{{$i}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="socioemocional[{{$i}}][data_final]" style="width:100%"></td>
-        <td><input type="checkbox" name="socioemocional[{{$i}}][sim_final]" value="1"></td>
-        <td><input type="checkbox" name="socioemocional[{{$i}}][nao_final]" value="1"></td>
-        <td><input type="text" name="socioemocional[{{$i}}][observacoes]" style="width:100%"></td>
+        <td>{{ $linha->cod_ati_int_soc }}</td>
+        <td>{{ $linha->desc_ati_int_soc }}</td>
+        <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
+        <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
+        <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
+        <td><input type="date" name="socioemocional[{{$idx}}][data_final]" style="width:100%"></td>
+        <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_final]" value="1"></td>
+        <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_final]" value="1"></td>
+        <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
       </tr>
-      @endforeach
+    @php $idx++; @endphp
+    @endfor
+@endforeach
     </tbody>
   </table>
 </div>

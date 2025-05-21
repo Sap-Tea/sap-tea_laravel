@@ -61,11 +61,13 @@ class PerfilEstudanteController extends Controller
     ->join('result_eixo_com_lin as res', 'res.fk_id_pro_com_lin', '=', 'acom.id_ati_com_lin')
     ->where('res.fk_result_alu_id_ecomling', $aluno_id)
     ->select('acom.id_ati_com_lin', 'acom.cod_ati_com_lin', 'acom.desc_ati_com_lin')
-    ->get()
-    ->unique(function ($item) {
-        return $item->id_ati_com_lin . '|' . $item->cod_ati_com_lin;
-    })
-    ->values();
+    ->get();
+
+        // Frequência e ordenação para comunicação
+        $comunicacao_frequencias = $comunicacao_atividades->groupBy('cod_ati_com_lin')->map->count();
+        $comunicacao_atividades_ordenadas = $comunicacao_atividades->sortByDesc(function($item) use ($comunicacao_frequencias) {
+            return $comunicacao_frequencias[$item->cod_ati_com_lin];
+        })->values();
 
         $comunicacao_atividades_assoc = [];
         foreach ($comunicacao_atividades as $a) {
@@ -79,11 +81,13 @@ class PerfilEstudanteController extends Controller
     ->join('result_eixo_comportamento as res', 'res.fk_id_pro_comportamento', '=', 'acom.id_ati_comportamento')
     ->where('res.fk_result_alu_id_comportamento', $aluno_id)
     ->select('acom.id_ati_comportamento', 'acom.cod_ati_comportamento', 'acom.desc_ati_comportamento')
-    ->get()
-    ->unique(function ($item) {
-        return $item->id_ati_comportamento . '|' . $item->cod_ati_comportamento;
-    })
-    ->values();
+    ->get();
+
+        // Frequência e ordenação para comportamento
+        $comportamento_frequencias = $comportamento_atividades->groupBy('cod_ati_comportamento')->map->count();
+        $comportamento_atividades_ordenadas = $comportamento_atividades->sortByDesc(function($item) use ($comportamento_frequencias) {
+            return $comportamento_frequencias[$item->cod_ati_comportamento];
+        })->values();
 
         $comportamento_atividades_assoc = [];
         foreach ($comportamento_atividades as $a) {
@@ -97,11 +101,13 @@ class PerfilEstudanteController extends Controller
     ->join('result_eixo_int_socio as res', 'res.fk_id_pro_int_socio', '=', 'acom.id_ati_int_soc')
     ->where('res.fk_result_alu_id_int_socio', $aluno_id)
     ->select('acom.cod_ati_int_soc', 'acom.desc_ati_int_soc')
-    ->get()
-    ->unique(function ($item) {
-        return $item->cod_ati_int_soc . '|' . $item->desc_ati_int_soc;
-    })
-    ->values();
+    ->get();
+
+        // Frequência e ordenação para socioemocional
+        $socioemocional_frequencias = $socioemocional_atividades->groupBy('cod_ati_int_soc')->map->count();
+        $socioemocional_atividades_ordenadas = $socioemocional_atividades->sortByDesc(function($item) use ($socioemocional_frequencias) {
+            return $socioemocional_frequencias[$item->cod_ati_int_soc];
+        })->values();
 
         // Buscar propostas e indexar por id
         $comunicacao_propostas = \App\Models\PropostaComLin::all()->keyBy('id_pro_com_lin');
@@ -152,10 +158,13 @@ class PerfilEstudanteController extends Controller
             'data_inicial_com_lin',
             'professor_nome',
             'comunicacao_atividades',
+            'comunicacao_atividades_ordenadas',
             'comunicacao_atividades_assoc',
             'comportamento_atividades',
+            'comportamento_atividades_ordenadas',
             'comportamento_atividades_assoc',
             'socioemocional_atividades',
+            'socioemocional_atividades_ordenadas',
             'socioemocional_atividades_assoc',
             'debug_atividades_agrupadas'
         ));
@@ -300,23 +309,61 @@ public function index_inventario(Request $request)
         $comunicacao_atividades = \DB::table('atividade_com_lin as acom')
             ->join('result_eixo_com_lin as res', 'acom.id_ati_com_lin', '=', 'res.fk_id_pro_com_lin')
             ->where('res.fk_result_alu_id_ecomling', $id)
-            ->orderBy('acom.cod_ati_com_lin')
             ->select('acom.cod_ati_com_lin', 'acom.desc_ati_com_lin')
             ->get();
+        $comunicacao_frequencias = $comunicacao_atividades->groupBy('cod_ati_com_lin')->map->count();
+        $comunicacao_atividades_ordenadas = collect();
+        foreach ($comunicacao_atividades as $item) {
+            $freq = $comunicacao_frequencias[$item->cod_ati_com_lin];
+            for ($i = 0; $i < $freq; $i++) {
+                $obj = new \stdClass();
+                $obj->cod_ati_com_lin = $item->cod_ati_com_lin;
+                $obj->desc_ati_com_lin = $item->desc_ati_com_lin;
+                $comunicacao_atividades_ordenadas->push($obj);
+            }
+            // Para não repetir além do necessário, zera a frequência
+            $comunicacao_frequencias[$item->cod_ati_com_lin] = 0;
+        }
+        // Ordena por código, pode ajustar se quiser por frequência
+        $comunicacao_atividades_ordenadas = $comunicacao_atividades_ordenadas->sortByDesc('cod_ati_com_lin')->values();
         // Buscar atividades do eixo comportamento do aluno via JOIN
         $comportamento_atividades = \DB::table('atividade_comportamento as aco')
             ->join('result_eixo_comportamento as res', 'aco.id_ati_comportamento', '=', 'res.fk_id_pro_comportamento')
             ->where('res.fk_result_alu_id_comportamento', $id)
-            ->orderBy('aco.cod_ati_comportamento')
             ->select('aco.cod_ati_comportamento', 'aco.desc_ati_comportamento')
             ->get();
+        $comportamento_frequencias = $comportamento_atividades->groupBy('cod_ati_comportamento')->map->count();
+        $comportamento_atividades_ordenadas = collect();
+        foreach ($comportamento_atividades as $item) {
+            $freq = $comportamento_frequencias[$item->cod_ati_comportamento];
+            for ($i = 0; $i < $freq; $i++) {
+                $obj = new \stdClass();
+                $obj->cod_ati_comportamento = $item->cod_ati_comportamento;
+                $obj->desc_ati_comportamento = $item->desc_ati_comportamento;
+                $comportamento_atividades_ordenadas->push($obj);
+            }
+            $comportamento_frequencias[$item->cod_ati_comportamento] = 0;
+        }
+        $comportamento_atividades_ordenadas = $comportamento_atividades_ordenadas->sortByDesc('cod_ati_comportamento')->values();
         // Buscar atividades do eixo interação socioemocional via JOIN
         $socioemocional_atividades = \DB::table('atividade_int_soc as ais')
             ->join('result_eixo_int_socio as res', 'ais.id_ati_int_soc', '=', 'res.fk_id_pro_int_socio')
             ->where('res.fk_result_alu_id_int_socio', $id)
-            ->orderBy('ais.cod_ati_int_soc')
             ->select('ais.cod_ati_int_soc', 'ais.desc_ati_int_soc')
             ->get();
+        $socioemocional_frequencias = $socioemocional_atividades->groupBy('cod_ati_int_soc')->map->count();
+        $socioemocional_atividades_ordenadas = collect();
+        foreach ($socioemocional_atividades as $item) {
+            $freq = $socioemocional_frequencias[$item->cod_ati_int_soc];
+            for ($i = 0; $i < $freq; $i++) {
+                $obj = new \stdClass();
+                $obj->cod_ati_int_soc = $item->cod_ati_int_soc;
+                $obj->desc_ati_int_soc = $item->desc_ati_int_soc;
+                $socioemocional_atividades_ordenadas->push($obj);
+            }
+            $socioemocional_frequencias[$item->cod_ati_int_soc] = 0;
+        }
+        $socioemocional_atividades_ordenadas = $socioemocional_atividades_ordenadas->sortByDesc('cod_ati_int_socio')->values();
 
         // Buscar propostas e indexar por id
         $comunicacao_propostas = \App\Models\PropostaComLin::all()->keyBy('id_pro_com_lin');
@@ -361,14 +408,68 @@ public function index_inventario(Request $request)
                 ->orderByRaw('cod_ati_int_soc DESC, qtd DESC')
                 ->get(),
         ];
-        return view('rotina_monitoramento.monitoramento_aluno', [
+        // --- Agrupamento Comunicação/Linguagem ---
+$comunicacao_linguagem_agrupado = \DB::select("
+    SELECT 
+        r.fk_id_pro_com_lin,
+        r.fk_result_alu_id_ecomling,
+        r.tipo_fase_com_lin,
+        a.cod_ati_com_lin,
+        a.desc_ati_com_lin,
+        COUNT(*) AS total
+    FROM result_eixo_com_lin r
+    JOIN atividade_com_lin a ON r.fk_id_pro_com_lin = a.id_ati_com_lin
+    WHERE r.fk_result_alu_id_ecomling = ?
+    GROUP BY r.fk_id_pro_com_lin, r.fk_result_alu_id_ecomling, r.tipo_fase_com_lin, a.cod_ati_com_lin, a.desc_ati_com_lin
+    ORDER BY total DESC
+", [$id]);
+
+// --- Agrupamento Comportamento ---
+$comportamento_agrupado = \DB::select("
+    SELECT 
+        r.fk_id_pro_comportamento,
+        r.fk_result_alu_id_comportamento,
+        r.tipo_fase_comportamento,
+        a.cod_ati_comportamento,
+        a.desc_ati_comportamento,
+        COUNT(*) AS total
+    FROM result_eixo_comportamento r
+    JOIN atividade_comportamento a ON r.fk_id_pro_comportamento = a.id_ati_comportamento
+    WHERE r.fk_result_alu_id_comportamento = ?
+    GROUP BY r.fk_id_pro_comportamento, r.fk_result_alu_id_comportamento, r.tipo_fase_comportamento, a.cod_ati_comportamento, a.desc_ati_comportamento
+    ORDER BY total DESC
+", [$id]);
+
+// --- Agrupamento Socioemocional ---
+$socioemocional_agrupado = \DB::select("
+    SELECT 
+        r.fk_id_pro_int_socio,
+        r.fk_result_alu_id_int_socio,
+        r.tipo_fase_int_socio,
+        a.cod_ati_int_soc,
+        a.desc_ati_int_soc,
+        COUNT(*) AS total
+    FROM result_eixo_int_socio r
+    JOIN atividade_int_soc a ON r.fk_id_pro_int_socio = a.id_ati_int_soc
+    WHERE r.fk_result_alu_id_int_socio = ?
+    GROUP BY r.fk_id_pro_int_socio, r.fk_result_alu_id_int_socio, r.tipo_fase_int_socio, a.cod_ati_int_soc, a.desc_ati_int_soc
+    ORDER BY total DESC
+", [$id]);
+
+return view('rotina_monitoramento.monitoramento_aluno', [
             'alunoDetalhado' => $alunoDetalhado,
             'professor_nome' => $professor->func_nome,
             'data_inicial_com_lin' => $data_inicial_com_lin,
             'comunicacao_resultados' => $comunicacao_resultados,
+    'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
+    'comportamento_agrupado' => $comportamento_agrupado,
+    'socioemocional_agrupado' => $socioemocional_agrupado,
             'comunicacao_atividades' => $comunicacao_atividades,
             'comportamento_atividades' => $comportamento_atividades,
             'socioemocional_atividades' => $socioemocional_atividades,
+            'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
+            'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
+            'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
             'comportamento_resultados' => $comportamento_resultados,
             'socioemocional_resultados' => $socioemocional_resultados,
             'comunicacao_propostas' => $comunicacao_propostas,
