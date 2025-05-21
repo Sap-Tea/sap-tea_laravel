@@ -121,7 +121,7 @@ class ProcessaResultadosController extends Controller
             $indicesMarcados = [];
             for ($i = 1; $i <= 32; $i++) {
                 $campo = 'ecm' . str_pad($i, 2, '0', STR_PAD_LEFT);
-                if (isset($eixoComunicacao->$campo) && $eixoComunicacao->$campo == 1) {
+                if (isset($eixoComunicacao->$campo) && intval($eixoComunicacao->$campo) === 0) {
                     $indicesMarcados[] = $i;
                 }
             }
@@ -152,7 +152,7 @@ class ProcessaResultadosController extends Controller
             $indicesMarcados = [];
             for ($i = 1; $i <= 17; $i++) {
                 $campo = 'ecp' . str_pad($i, 2, '0', STR_PAD_LEFT);
-                if (isset($eixoComportamento->$campo) && $eixoComportamento->$campo == 1) {
+                if (isset($eixoComportamento->$campo) && intval($eixoComportamento->$campo) === 0) {
                     $indicesMarcados[] = $i;
                 }
             }
@@ -183,7 +183,7 @@ class ProcessaResultadosController extends Controller
             $indicesMarcados = [];
             for ($i = 1; $i <= 18; $i++) {
                 $campo = 'eis' . str_pad($i, 2, '0', STR_PAD_LEFT);
-                if (isset($eixoIntSocio->$campo) && $eixoIntSocio->$campo == 1) {
+                if (isset($eixoIntSocio->$campo) && intval($eixoIntSocio->$campo) === 0) {
                     $indicesMarcados[] = $i;
                 }
             }
