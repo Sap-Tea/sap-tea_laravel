@@ -96,24 +96,62 @@ class PerfilEstudanteController extends Controller
     }
 
     public function index()
-    {
-        $professor = auth('funcionario')->user();
-        $funcId = $professor->func_id;
+{
+    // Busca apenas alunos matriculados, ordenados por nome
+    $alunos = Aluno::whereHas('matriculas')
+                   ->orderBy('alu_nome', 'asc')
+                   ->get();
 
-        // Filtra alunos apenas das turmas do professor logado
-        $alunos = Aluno::porProfessor($funcId)
-            ->orderBy('alu_nome', 'asc')
-            ->get();
+    return view('alunos.imprime_aluno', [
+        'alunos' => $alunos,
+        'titulo' => 'Alunos Matriculados',
+        'rota_inventario' => 'perfil_estudante.index_inventario',
+        'flag_teste' => true,
+    ]);
+}
 
-        $professor_nome = $professor->func_nome;
-        return view('alunos.imprime_aluno', [
+public function index_inventario(Request $request)
+{
+    $professor = auth('funcionario')->user();
+    $funcId = $professor->func_id;
+
+    $alunos = \App\Models\Aluno::porProfessor($funcId)
+        ->orderBy('alu_nome', 'asc')
+        ->get();
+
+    // Teste: se vier do menu de rotina, mostre botões diferentes
+    $contexto = $request->get('contexto');
+    if ($contexto === 'rotina') {
+        return view('alunos.imprime_aluno_eixo', [
             'alunos' => $alunos,
-            'titulo' => 'Alunos Matriculados',
-            'rota_inventario' => 'perfil_estudante.index_inventario',
-            'flag_teste' => true,
-            'professor_nome' => $professor_nome,
+            'titulo' => 'Rotina de Monitoramento',
+            'botoes' => [
+                [
+                    'label' => 'Cadastrar Rotina',
+                    'rota'  => 'rotina.monitoramento.cadastrar',
+                    'classe' => 'btn-success'
+                ],
+                [
+                    'label' => 'Visualizar Rotina',
+                    'rota'  => 'rotina.monitoramento.visualizar',
+                    'classe' => 'btn-info'
+                ]
+            ],
+            'professor_nome' => $professor->func_nome,
         ]);
     }
+
+    // Default: inventário
+    return view('alunos.imprime_aluno_eixo', [
+        'alunos' => $alunos,
+        'titulo' => 'Alunos do Professor',
+        'rota_acao' => 'alunos.inventario',
+        'rota_pdf' => 'visualizar.inventario',
+        'exibeBotaoInventario' => true,
+        'exibeBotaoPdf' => true,
+        'professor_nome' => $professor->func_nome,
+    ]);
+}
 
  
         public function mostrar($id)

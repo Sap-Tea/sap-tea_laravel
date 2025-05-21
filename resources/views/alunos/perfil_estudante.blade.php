@@ -173,31 +173,7 @@
 @endif
 
     <div class="container">
-        <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" autocomplete="off">
-    <script>
-        // Bloqueia o envio do formulário por Enter, exceto na última etapa
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('perfilForm');
-            form.addEventListener('keydown', function(e) {
-                // Enter (13) só é permitido se o finishBtn estiver visível
-                if (e.key === 'Enter') {
-                    const finishBtn = document.getElementById('finishBtn');
-                    if (!finishBtn || finishBtn.style.display === 'none') {
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-            });
-            // Impede submit padrão
-            form.addEventListener('submit', function(e) {
-                const finishBtn = document.getElementById('finishBtn');
-                if (!finishBtn || finishBtn.style.display === 'none') {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-        });
-    </script>
+        <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm">
             @csrf
             <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
             
@@ -230,7 +206,7 @@
                 <div class="row">
                     <div class="form-group">
                         <label>Ano/Série:</label>
-                        <input type="text" value="{{ $aluno->desc_modalidade . ' - ' . $aluno->serie_desc }}" readonly>
+                        <input type="text" value="{{$aluno->desc_modalidade.'-'.  $aluno->desc_serie_modalidade}}" readonly>
                     </div>
                     
                     <div class="form-group">
@@ -595,16 +571,16 @@
     <div class="step-navigation">
         <div class="navigation-group">
             <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
-    <i class="fas fa-arrow-left"></i> Anterior
-</button>
-<button type="button" class="next-btn" id="nextBtn" style="display: none;">
-    <i class="fas fa-arrow-right"></i> Próximo
-</button>
+                <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+            <button type="button" class="next-btn" id="nextBtn" style="display: none;">
+                <i class="fas fa-arrow-right"></i> Próximo
+            </button>
         </div>
         <div class="action-group">
             <button type="button" class="finish-btn" id="finishBtn" style="display: none;">
-    <i class="fas fa-check"></i> Finalizar
-</button>
+                <i class="fas fa-check"></i> Finalizar
+            </button>
             <button type="button" class="btn btn-danger cancel-btn">
                 <i class="fas fa-times"></i> Cancelar
             </button>
@@ -657,11 +633,6 @@
             color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .finish-btn:disabled {
-            background-color: #ff9800 !important;
-            color: #fff !important;
-            cursor: not-allowed;
-        }
         .finish-btn:hover {
             background-color: #45a049;
             opacity: 0.9;
@@ -690,10 +661,6 @@
     // Script para paginação
     // Função para inicializar o formulário
     function initializeForm() {
-        // Garante que todos os botões de navegação são type="button"
-        document.querySelectorAll('.prev-btn, .next-btn, .finish-btn, .cancel-btn').forEach(btn => {
-            btn.setAttribute('type', 'button');
-        });
         const steps = document.querySelectorAll('.step-content');
         const tabs = document.querySelectorAll('.step-tab');
         const finishBtn = document.getElementById('finishBtn');
@@ -761,49 +728,20 @@
         
         // Evento para o botão Finalizar
         if (finishBtn) {
-            finishBtn.disabled = false;
             finishBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-
-                // Busca nome do aluno e data atual formatada
-                const nomeAluno = document.querySelector('input[name="nome_aluno"]').value;
-                const dataAtual = new Date();
-                const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
-                const mensagem = `Deseja realmente salvar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
-
-                if (!confirm(mensagem)) {
+                
+                // Mensagem de confirmação
+                if (!confirm('Tem certeza que deseja finalizar e salvar os dados?')) {
                     return;
                 }
-
+                
                 // Desabilita o botão de finalizar para evitar múltiplos envios
                 this.disabled = true;
-                this.innerHTML = '<i class="fas fa-check"></i> Cadastro de perfil já efetuado!';
-                this.style.setProperty('background-color', '#ff9800', 'important');
-                this.style.setProperty('color', '#fff', 'important');
-                this.style.setProperty('border-color', '#ff9800', 'important');
-                this.style.setProperty('cursor', 'not-allowed', 'important');
-
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+                
                 // Envia o formulário
                 document.getElementById('perfilForm').submit();
-            });
-        }
-
-        // Impede submit por Enter ou submit automático em todo o form (só permite via botão finalizar)
-        const form = document.getElementById('perfilForm');
-        if (form) {
-            form.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-            form.addEventListener('submit', function(e) {
-                // Só permite submit se o botão finalizar estiver desabilitado (foi clicado e confirmado)
-                const finishBtn = document.getElementById('finishBtn');
-                if (!finishBtn || !finishBtn.disabled) {
-                    e.preventDefault();
-                    return false;
-                }
             });
         }
         

@@ -157,6 +157,7 @@
 </head>
 
 <body>
+<<<<<<< HEAD
     <div class="container">
         <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => isset($aluno) ? $aluno->alu_id : '']) }}" id="perfilForm" autocomplete="off">
     @method('PUT')
@@ -191,6 +192,27 @@
                 <button class="step-tab" data-step="5">Informações da Família</button>
                 <button class="step-tab" data-step="6">Profissionais</button>
             </div>
+=======
+<div class="container">
+    <div class="vertical-watermark">
+        <img src="{{ asset('img/logogando.png') }}" alt="Logo Topo" class="watermark-top">
+        <img src="{{ asset('img/logo_sap.png') }}" alt="Marca d'água Central" class="watermark-center">
+        <img src="{{ asset('img/logo_baixo.png') }}" alt="Logo Rodapé" class="watermark-bottom">
+    </div>
+    <div class="form-content" style="position:relative;z-index:2;">
+        <h2>I - Perfil do Estudante</h2>
+
+    <!-- Verifica se há dados do aluno selecionado -->
+    @if(isset($dados) && count($dados) > 0)
+        <!-- Seleciona o primeiro aluno da lista ($dados[0]) -->
+        @php $aluno = $dados[0]; @endphp
+
+        <form method="POST" action="{{ route('atualiza.perfil.estudante', ['id' => $aluno->alu_id]) }}">
+            @csrf
+
+            <!-- Dados do aluno selecionado -->
+            <input type="hidden" name="aluno_id" value="{{ $aluno->alu_id }}">
+>>>>>>> parent of fd8d95c (paginacao)
             
             <!-- Etapa 1: Dados Pessoais -->
             <div class="step-content active" data-step="1">
@@ -222,7 +244,26 @@
                     <label>Nome do Professor:</label>
                     <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+                <div class="form-group">
+                    <label>Idade do Aluno:</label>
+                    <input type="text" name="alu_idade" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} anos" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nome do Professor:</label>
+                <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
+            </div>
+
+            <!-- Dados adicionais do perfil -->
+            @if(isset($results) && count($results) > 0)
+                @php $perfil = $results[0]; @endphp
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Possui diagnóstico/laudo?</label>
                     <select name="diag_laudo">
@@ -245,7 +286,12 @@
                         <input type="date" name="data_laudo" value="{{ isset($results[0]->data_laudo) ? $results[0]->data_laudo : '' }}">
                     </div>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Nível suporte</label>
                     <select name="nivel_suporte">
@@ -262,7 +308,12 @@
     <option value="0" {{ (isset($results[0]->uso_medicamento) && $results[0]->uso_medicamento == 0) ? 'selected' : '' }}>Não</option>
 </select>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Quais?</label>
                     <input type="text" name="quais_medicamento" value="{{ isset($results[0]->quais_medicamento) ? $results[0]->quais_medicamento : '' }}">
@@ -306,7 +357,14 @@
                     </div>
                     <input type="text" name="out_momentos" placeholder="Quais?" value="{{ isset($results[0]->out_momentos) ? $results[0]->out_momentos : '' }}">
                 </div>
+<<<<<<< HEAD
                 
+=======
+                    <input type="text" name="out_momentos" placeholder="Quais?" value="{{$perfil->out_momentos }}">
+                </div>
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>O estudante conta com Atendimento Educacional Especializado?</label>
                     <select name="at_especializado">
@@ -314,14 +372,25 @@
     <option value="0" {{ (isset($results[0]->at_especializado) && $results[0]->at_especializado == 0) ? 'selected' : '' }}>Não</option>
 </select>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Nome do profissional do AEE:</label>
                     <input type="text" name="nome_prof_AEE" value="{{ isset($results[0]->nome_prof_AEE) ? $results[0]->nome_prof_AEE : '' }}">
                 </div>
+<<<<<<< HEAD
                 
                 <h2>II - Personalidade</h2>
                 
+=======
+
+                <h2> II - Personalidade</h2>
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Principais características:</label>
                     <textarea rows="3" name="caracteristicas">{{ isset($results[0]->caracteristicas) ? $results[0]->caracteristicas : '' }}</textarea>
@@ -356,9 +425,15 @@
                     <label>Objeto de apego? Qual?</label>
                     <textarea rows="3" name="objeto_apego">{{ isset($results[0]->obj_apego) ? $results[0]->obj_apego : '' }}</textarea>
                 </div>
+<<<<<<< HEAD
                 
                 <h2 class="comunicacao-section">III - Comunicação</h2>
                 
+=======
+
+                <h2 class="comunicacao-section">III - Comunicação</h2>
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Precisa de comunicação alternativa para expressar-se?</label>
                     <select name="precisa_comunicacao">
@@ -366,7 +441,12 @@
     <option value="0" {{ (isset($results[0]->precisa_comunicacao) && $results[0]->precisa_comunicacao == 0) ? 'selected' : '' }}>Não</option>
 </select>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Entende instruções dadas de forma verbal?</label>
                     <select name="entende_instrucao">
@@ -380,11 +460,22 @@
                     <textarea rows="3" name="recomenda_instrucao">{{ isset($results[0]->recomenda_instrucao) ? $results[0]->recomenda_instrucao : '' }}</textarea>
                 </div>
             </div>
+<<<<<<< HEAD
             
             <!-- Etapa 4: Preferências -->
             <div class="step-content" data-step="4">
                 <h2>IV - Preferências, sensibilidade e dificuldades</h2>
                 
+=======
+
+                <div class="form-group">
+                    <label>Caso não,Como você recomenda dar instruções?</label>
+                    <textarea name="recomenda_instrucao">{{$perfil->recomenda_instrucao }}</textarea>
+                </div>
+
+                <h2>IV - Preferencias, sensibilidade e dificuldades</h2>
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Apresenta sensibilidade:</label>
                     <div class="checkbox-group">
@@ -398,7 +489,12 @@
 <input type="checkbox" name="s_outros" value="1" {{ (isset($results[0]->outros_04) && $results[0]->outros_04 == 1) ? 'checked' : '' }}><label for="s_outros">Outros estímulos</label>
                     </div>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Caso sim, como manejar em sala de aula</label>
                     <textarea rows="3" name="manejo_sensibilidade">{{ isset($results[0]->maneja_04) ? $results[0]->maneja_04 : '' }}</textarea>
@@ -411,7 +507,12 @@
     <option value="0" {{ (isset($results[0]->asa_04) && $results[0]->asa_04 == 0) ? 'selected' : '' }}>Não</option>
 </select>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Alimentos preferidos:</label>
                     <textarea rows="3" name="alimentos_preferidos">{{ isset($results[0]->alimentos_pref_04) ? $results[0]->alimentos_pref_04 : '' }}</textarea>
@@ -441,13 +542,26 @@
                     <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?</label>
                     <textarea rows="3" name="interacao_escola">{{ isset($results[0]->interacao_escola_05) ? $results[0]->interacao_escola_05 : '' }}</textarea>
                 </div>
+<<<<<<< HEAD
                 
+=======
+
+                <div class="form-group">
+                    <label> o que dificulta a sua interação na escola?
+                    </label>
+                    <textarea rows="3" name="interacao_escola2" >{{$perfil->interacao_escola_04 }}</textarea>
+                </div>
+
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
                     <textarea rows="3" name="interesse_atividade">{{ isset($results[0]->interesse_atividade_05) ? $results[0]->interesse_atividade_05 : '' }}</textarea>
                 </div>
                 
                 <div class="form-group">
+<<<<<<< HEAD
                     <label>Como o(a) estudante aprende melhor?</label>
                     <div class="checkbox-group">
                         <input type="checkbox" name="r_visual" {{ (isset($results[0]->recurso_visual_05) && $results[0]->recurso_visual_05 == 1) ? 'checked' : '' }}><label for="r_visual">Recurso visual</label>
@@ -462,6 +576,23 @@
                     </div>
                 </div>
                 
+=======
+    <label>Como o(a) estudante aprende melhor?</label>
+    <div class="checkbox-group">
+        <input type="checkbox" name="r_visual" @if($perfil->aprende_visual_04) checked @endif><label for="r_visual">Recurso visual</label>
+        <input type="checkbox" name="r_auditivo" @if($perfil->recurso_auditivo_04) checked @endif><label for="r_auditivo">Recurso auditivo</label>
+        <input type="checkbox" name="m_concreto" @if($perfil->material_concreto_04) checked @endif><label for="m_concreto">Material concreto</label>
+        <input type="checkbox" name="o_outro" @if($perfil->outro_identificar_04) checked @endif><label for="o_outro">Outro - identificar</label>
+    </div>
+
+    <div class="form-group">
+        <label></label>
+        <textarea rows="3" name="outro_identificar">{{$perfil->descricao_outro_identificar_04 }}</textarea>
+    </div>
+</div>
+
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
                     <textarea rows="3" name="atividades_grupo">{{ isset($results[0]->atividades_grupo_05) ? $results[0]->atividades_grupo_05 : '' }}</textarea>
@@ -476,9 +607,17 @@
                     <label>O que desperta seu interesse para realizar uma tarefa/atividade</label>
                     <textarea rows="3" name="interesse_tarefa">{{ isset($results[0]->interesse_tarefa_05) ? $results[0]->interesse_tarefa_05 : '' }}</textarea>
                 </div>
+<<<<<<< HEAD
                 
                 <h2 class="comunicacao-section">V - Informações da família</h2>
                 
+=======
+
+
+                
+                <h2 class="comunicacao-section">V - Informações da família</h2>
+
+>>>>>>> parent of fd8d95c (paginacao)
                 <div class="form-group">
                     <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
                     <textarea rows="3" name="expectativas_familia">{{ isset($results[0]->expectativas_familia_05) ? $results[0]->expectativas_familia_05 : '' }}</textarea>

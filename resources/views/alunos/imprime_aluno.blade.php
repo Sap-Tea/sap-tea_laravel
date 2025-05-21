@@ -4,12 +4,6 @@
 <div class="container mt-4">
     <h2>Relação dos Alunos</h2>
 
-    @isset($professor_nome)
-        <div class="alert alert-info mb-3">
-            <strong>Professor Responsável:</strong> {{ $professor_nome }}
-        </div>
-    @endisset
-
     <!-- Formulário de Pesquisa -->
     <form id = "pesquisaForm" method="POST" action="{{ route('inserir_perfil') }}">
         <div class="input-group mb-3">
@@ -64,10 +58,10 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <!-- Botão cadastra perfil -->
                     <td>
                         @if($aluno->flag_perfil === "*")
-                            <button class="btn btn-orange-disabled" disabled>Perfil já cadastrado</button>
+                            <button class="btn btn-primary btn-sm" disabled>Cadastra Perfil</button>
                         @else
                             <a href="{{ route('alunos.index', ['id' => $aluno->alu_id]) }}" 
-                               class="btn btn-primary">Cadastra Perfil</a>
+                               class="btn btn-primary btn-sm">Cadastra Perfil</a>
                         @endif
                     </td>
 
@@ -102,13 +96,4 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
     <!-- Botão Voltar -->
     <a href="{{ route('index') }}" class="btn btn-secondary mt-3">Voltar -> Menu</a>
 </div>
-<style>
-.btn-orange-disabled[disabled], .btn-orange-disabled.disabled {
-    background-color: #ff9800 !important;
-    color: #fff !important;
-    border-color: #ff9800 !important;
-    cursor: not-allowed !important;
-    opacity: 1 !important;
-}
-</style>
 @endsection
