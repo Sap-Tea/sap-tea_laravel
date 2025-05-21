@@ -293,13 +293,18 @@
                 <div class="form-group">
                     <label>Em quais momentos da rotina esse profissional se faz necessário?</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" name="locomocao" {{ (isset($results[0]->locomocao) && $results[0]->locomocao == 1) ? 'checked' : '' }}><label for="locomocao">Locomoção</label>
-                        <input type="checkbox" name="higiene" {{ (isset($results[0]->higiene) && $results[0]->higiene == 1) ? 'checked' : '' }}><label for="higiene">Higiene</label>
-                        <input type="checkbox" name="alimentacao" {{ (isset($results[0]->alimentacao) && $results[0]->alimentacao == 1) ? 'checked' : '' }}><label for="alimentacao">Alimentação</label>
-                        <input type="checkbox" name="comunicacao" {{ (isset($results[0]->comunicacao) && $results[0]->comunicacao == 1) ? 'checked' : '' }}><label for="comunicacao">Comunicação</label>
-                        <input type="checkbox" name="outros" {{ (isset($results[0]->outros) && $results[0]->outros == 1) ? 'checked' : '' }}><label for="outros">Outros momentos</label>
+                        <input type="hidden" name="locomocao" value="0">
+<input type="checkbox" name="locomocao" value="1" {{ (isset($results[0]->locomocao) && $results[0]->locomocao == 1) ? 'checked' : '' }}><label for="locomocao">Locomoção</label>
+                        <input type="hidden" name="higiene" value="0">
+<input type="checkbox" name="higiene" value="1" {{ (isset($results[0]->higiene) && $results[0]->higiene == 1) ? 'checked' : '' }}><label for="higiene">Higiene</label>
+                        <input type="hidden" name="alimentacao" value="0">
+<input type="checkbox" name="alimentacao" value="1" {{ (isset($results[0]->alimentacao) && $results[0]->alimentacao == 1) ? 'checked' : '' }}><label for="alimentacao">Alimentação</label>
+                        <input type="hidden" name="comunicacao" value="0">
+<input type="checkbox" name="comunicacao" value="1" {{ (isset($results[0]->comunicacao) && $results[0]->comunicacao == 1) ? 'checked' : '' }}><label for="comunicacao">Comunicação</label>
+                        <input type="hidden" name="outros" value="0">
+<input type="checkbox" name="outros" value="1" {{ (isset($results[0]->outros) && $results[0]->outros == 1) ? 'checked' : '' }}><label for="outros">Outros momentos</label>
                     </div>
-                    <input type="text" name="out_momentos" placeholder="Quais?">
+                    <input type="text" name="out_momentos" placeholder="Quais?" value="{{ isset($results[0]->out_momentos) ? $results[0]->out_momentos : '' }}">
                 </div>
                 
                 <div class="form-group">
@@ -383,10 +388,14 @@
                 <div class="form-group">
                     <label>Apresenta sensibilidade:</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" name="s_auditiva" {{ (isset($results[0]->auditivo_04) && $results[0]->auditivo_04 == 1) ? 'checked' : '' }}><label for="s_auditiva">Auditiva</label>
-                        <input type="checkbox" name="s_visual" {{ (isset($results[0]->visual_04) && $results[0]->visual_04 == 1) ? 'checked' : '' }}><label for="s_visual">Visual</label>
-                        <input type="checkbox" name="s_tatil" {{ (isset($results[0]->tatil_04) && $results[0]->tatil_04 == 1) ? 'checked' : '' }}><label for="s_tatil">Tátil</label>
-                        <input type="checkbox" name="s_outros" {{ (isset($results[0]->outros_04) && $results[0]->outros_04 == 1) ? 'checked' : '' }}><label for="s_outros">Outros estímulos</label>
+                        <input type="hidden" name="s_auditiva" value="0">
+<input type="checkbox" name="s_auditiva" value="1" {{ (isset($results[0]->auditivo_04) && $results[0]->auditivo_04 == 1) ? 'checked' : '' }}><label for="s_auditiva">Auditiva</label>
+                        <input type="hidden" name="s_visual" value="0">
+<input type="checkbox" name="s_visual" value="1" {{ (isset($results[0]->visual_04) && $results[0]->visual_04 == 1) ? 'checked' : '' }}><label for="s_visual">Visual</label>
+                        <input type="hidden" name="s_tatil" value="0">
+<input type="checkbox" name="s_tatil" value="1" {{ (isset($results[0]->tatil_04) && $results[0]->tatil_04 == 1) ? 'checked' : '' }}><label for="s_tatil">Tátil</label>
+                        <input type="hidden" name="s_outros" value="0">
+<input type="checkbox" name="s_outros" value="1" {{ (isset($results[0]->outros_04) && $results[0]->outros_04 == 1) ? 'checked' : '' }}><label for="s_outros">Outros estímulos</label>
                     </div>
                 </div>
                 
@@ -735,28 +744,30 @@
         }
         // Evento para o botão Finalizar
         if (finishBtn) {
-            finishBtn.disabled = false;
-            finishBtn.onclick = function(e) {
-                e.preventDefault();
-                // Busca nome do aluno e data atual formatada
-                const nomeAluno = document.querySelector('input[name="nome_aluno"]')?.value || '';
-                const dataAtual = new Date();
-                const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
-                const mensagem = `Deseja realmente salvar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
-                if (!confirm(mensagem)) {
-                    return;
-                }
-                // Desabilita o botão de finalizar para evitar múltiplos envios
-                this.disabled = true;
-                this.innerHTML = '<i class="fas fa-check"></i> Cadastro de perfil já efetuado!';
-                this.style.setProperty('background-color', '#ff9800', 'important');
-                this.style.setProperty('color', '#fff', 'important');
-                this.style.setProperty('border-color', '#ff9800', 'important');
-                this.style.setProperty('cursor', 'not-allowed', 'important');
-                // Envia o formulário
-                document.getElementById('perfilForm').submit();
-            };
+    finishBtn.disabled = false;
+    finishBtn.onclick = function(e) {
+        e.preventDefault();
+        // Busca nome do aluno e data atual formatada
+        const nomeAluno = document.querySelector('input[name="nome_aluno"]')?.value || '';
+        const dataAtual = new Date();
+        const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+        const mensagem = `Deseja realmente salvar o perfil do aluno: "${nomeAluno}" na data: ${dataFormatada}?`;
+        if (window.confirm(mensagem)) {
+            // Desabilita o botão de finalizar para evitar múltiplos envios
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-check"></i> Cadastro de perfil já efetuado!';
+            this.style.setProperty('background-color', '#ff9800', 'important');
+            this.style.setProperty('color', '#fff', 'important');
+            this.style.setProperty('border-color', '#ff9800', 'important');
+            this.style.setProperty('cursor', 'not-allowed', 'important');
+            // Envia o formulário
+            document.getElementById('perfilForm').submit();
+        } else {
+            // Se cancelar, não faz nada
+            return;
         }
+    };
+}
         // Impede submit por Enter ou submit automático em todo o form (só permite via botão finalizar)
         const form = document.getElementById('perfilForm');
         if (form) {
