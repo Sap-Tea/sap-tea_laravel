@@ -340,10 +340,7 @@
         <strong>Período de Aplicação (Inicial):</strong>
         <input type="text" name="periodo_inicial" value="{{ $data_inicial_com_lin ? \Carbon\Carbon::parse($data_inicial_com_lin)->format('d/m/Y') : '' }}" readonly />
       </span>
-      <span class="period">
-        <strong>Período de Aplicação (Final):</strong>
-        <input type="text" name="periodo_final" value="{{ $data_inicial_com_lin ? \Carbon\Carbon::parse($data_inicial_com_lin)->addDays(60)->format('d/m/Y') : '' }}" readonly />
-      </span>
+
     </div>
 
     @if($data_inicial_com_lin)
@@ -357,7 +354,7 @@
       <p><strong>Caro educador,</strong></p>
       <p>Por favor, registre as atividades nas datas mencionadas e realize a devida anotação no quadro.  
       Se necessário, utilize este espaço para marcar a aplicação e observações pertinentes.  
-      Após finalizar o processo, você deverá registrar no Suporte TEG Digital o cenário atual do aluno.</p>
+      Após finalizar o processo, você deverá registrar no Suporte TEA Digital o cenário atual do aluno.</p>
       <p><em>Observação: Em caso de dúvidas, consulte o suporte técnico ou administrativo para orientação.</em></p>
     </div>
 
@@ -368,15 +365,15 @@
   <table class="result-table" style="background: #fff;">
     <thead>
       <tr style="background: #ffe066;">
-        <th style="width: 8%;">Código</th>
-        <th style="width: 28%;">Descrição</th>
-        <th style="width: 12%;">Data Inicial</th>
+        <th style="width: 8%;" rowspan="2">Código</th>
+        <th style="width: 28%;" rowspan="2">Descrição</th>
+        <th style="width: 12%;" rowspan="2">Data de aplicação</th>
+        <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
+        <th style="width: 20%;" rowspan="2">Observações</th>
+      </tr>
+      <tr style="background: #ffe066;">
         <th style="width: 5%;">Sim</th>
         <th style="width: 5%;">Não</th>
-        <th style="width: 12%;">Data Final</th>
-        <th style="width: 5%;">Sim</th>
-        <th style="width: 5%;">Não</th>
-        <th style="width: 20%;">Observações</th>
       </tr>
     </thead>
     <tbody>
@@ -389,9 +386,6 @@
         <td><input type="date" name="linguagem[{{$idx}}][data_inicial]" style="width:100%"></td>
         <td><input type="checkbox" name="linguagem[{{$idx}}][sim_inicial]" value="1"></td>
         <td><input type="checkbox" name="linguagem[{{$idx}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="linguagem[{{$idx}}][data_final]" style="width:100%"></td>
-        <td><input type="checkbox" name="linguagem[{{$idx}}][sim_final]" value="1"></td>
-        <td><input type="checkbox" name="linguagem[{{$idx}}][nao_final]" value="1"></td>
         <td><input type="text" name="linguagem[{{$idx}}][observacoes]" style="width:100%"></td>
       </tr>
     @php $idx++; @endphp
@@ -408,16 +402,16 @@
   <div class="table-title" style="font-size:20px; color:#176ca7; text-align:center; margin-bottom:15px;">Eixo Comportamento</div>
   <table class="result-table" style="background: #fff;">
     <thead>
-      <tr style="background: #90caf9;">
-        <th style="width: 8%;">Código</th>
-        <th style="width: 28%;">Descrição</th>
-        <th style="width: 12%;">Data Inicial</th>
+    <tr style="background: #ffe066;">
+        <th style="width: 8%;" rowspan="2">Código</th>
+        <th style="width: 28%;" rowspan="2">Descrição</th>
+        <th style="width: 12%;" rowspan="2">Data de aplicação</th>
+        <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
+        <th style="width: 20%;" rowspan="2">Observações</th>
+      </tr>
+      <tr style="background: #ffe066;">
         <th style="width: 5%;">Sim</th>
         <th style="width: 5%;">Não</th>
-        <th style="width: 12%;">Data Final</th>
-        <th style="width: 5%;">Sim</th>
-        <th style="width: 5%;">Não</th>
-        <th style="width: 20%;">Observações</th>
       </tr>
     </thead>
     <tbody>
@@ -430,9 +424,7 @@
         <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
         <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
         <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="comportamento[{{$idx}}][data_final]" style="width:100%"></td>
-        <td><input type="checkbox" name="comportamento[{{$idx}}][sim_final]" value="1"></td>
-        <td><input type="checkbox" name="comportamento[{{$idx}}][nao_final]" value="1"></td>
+     
         <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
       </tr>
     @php $idx++; @endphp
@@ -547,16 +539,16 @@
   <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
   <table class="result-table" style="background: #fff;">
     <thead>
-      <tr style="background: #b2dfdb;">
-        <th style="width: 8%;">Código</th>
-        <th style="width: 28%;">Descrição</th>
-        <th style="width: 12%;">Data Inicial</th>
+    <tr style="background: #ffe066;">
+        <th style="width: 8%;" rowspan="2">Código</th>
+        <th style="width: 28%;" rowspan="2">Descrição</th>
+        <th style="width: 12%;" rowspan="2">Data de aplicação</th>
+        <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
+        <th style="width: 20%;" rowspan="2">Observações</th>
+      </tr>
+      <tr style="background: #ffe066;">
         <th style="width: 5%;">Sim</th>
         <th style="width: 5%;">Não</th>
-        <th style="width: 12%;">Data Final</th>
-        <th style="width: 5%;">Sim</th>
-        <th style="width: 5%;">Não</th>
-        <th style="width: 20%;">Observações</th>
       </tr>
     </thead>
     <tbody>
@@ -569,9 +561,6 @@
         <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
         <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
         <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
-        <td><input type="date" name="socioemocional[{{$idx}}][data_final]" style="width:100%"></td>
-        <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_final]" value="1"></td>
-        <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_final]" value="1"></td>
         <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
       </tr>
     @php $idx++; @endphp
