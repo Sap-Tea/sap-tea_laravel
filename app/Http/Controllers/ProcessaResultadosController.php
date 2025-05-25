@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\EixoComunicacaoLinguagem;
 use App\Models\EixoComportamento;
@@ -19,7 +21,7 @@ class ProcessaResultadosController extends Controller
     public function monitoramentoAluno(Request $request)
     {
         // Consulta agrupada Comunicação/Linguagem
-        $comunicacao_linguagem_agrupado = \DB::select("
+        $comunicacao_linguagem_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_com_lin,
                 r.fk_result_alu_id_ecomling,
@@ -41,7 +43,7 @@ class ProcessaResultadosController extends Controller
                 COUNT(*) DESC
         ");
         // Consulta agrupada Comportamento
-        $comportamento_agrupado = \DB::select("
+        $comportamento_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_comportamento,
                 r.fk_result_alu_id_comportamento,
@@ -63,7 +65,7 @@ class ProcessaResultadosController extends Controller
                 COUNT(*) DESC
         ");
         // Consulta agrupada Interação Socioemocional
-        $socioemocional_agrupado = \DB::select("
+        $socioemocional_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_int_socio,
                 r.fk_result_alu_id_int_socio,
@@ -405,7 +407,7 @@ class ProcessaResultadosController extends Controller
         }
         // Otimização: insert em lote com transação
         $resultadosInseridos = [];
-        \DB::transaction(function () use (&$habilidades, &$resultadosInseridos) {
+        DB::transaction(function () use (&$habilidades, &$resultadosInseridos) {
             if (count($habilidades) > 0) {
                 \App\Models\ResultEixoComLin::insert($habilidades);
                 // Para exibir o JSON igual antes, buscamos os registros inseridos (opcional: pode-se retornar só os dados enviados)

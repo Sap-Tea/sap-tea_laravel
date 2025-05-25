@@ -1,7 +1,12 @@
 /* Barra Horizontal */
 .horizontal-bar {
-    width: calc(100% - 270px);
-    margin: 20px 20px;
+    width: 100%;
+    margin: 0;
+    left: 0;
+    top: 0;
+    border-radius: 0;
+    position: fixed;
+    z-index: 1000;
     background: linear-gradient(135deg, #6e7fc2, #3a4c7a); /* Gradiente suave */
     padding: 16px 20px;
     color: white;
@@ -9,12 +14,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: fixed;
-    top: 10px;
-    left: 260px;
-    z-index: 1000;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -151,6 +151,17 @@ body {
 .submenu_eixos li .disabled:hover,
 .submenu_sondagem li .disabled:hover {
     background-color: #f9f9f9; /* Não permite interação */
+}
+
+/* Forçar sidebar sempre visível e alinhada */
+.sidebar {
+    display: block !important;
+    z-index: 9999 !important;
+    left: 0 !important;
+    top: 60px !important;
+}
+.content-area {
+    margin-left: 250px !important;
 }
 
 /* Formulário */

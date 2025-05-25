@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do Estudante</title>
-    
-    <!-- Importando CSS no Laravel -->
-    <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
-    
-    <style>
+@extends('index')
+
+@section('title', 'Perfil do Estudante')
+
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
+<style>
         .container {
             position: relative;
         }
@@ -154,9 +150,9 @@
             transition: width 0.3s;
         }
     </style>
-</head>
+@endsection
 
-<body>
+@section('content')
 @if(session('updateCount'))
     <div class="custom-toast toast-success show" style="position: fixed; top: 24px; right: 24px; z-index: 9999; background: #28a745; color: #fff; padding: 16px 32px; border-radius: 8px; font-size: 1.15rem; box-shadow: 0 2px 12px rgba(40,167,69,0.15); display: flex; align-items: center; gap: 12px;">
         <i class='fas fa-check-circle'></i> Perfil atualizado com sucesso! Total de atualizações: {{ session('updateCount') }}
@@ -568,7 +564,47 @@
     <button type="submit" class="btn btn-primary" style="width: 170px;">Cadastrar Perfil</button>
     <a href="{{ url('/sondagem/perfil-estudante') }}" class="btn btn-danger" style="width: 90px; min-width: unset; max-width: 100px; display: inline-block; text-align: center;">Cancelar</a>
 </div>
-        </form>
+\DB::transaction(function () use (&$habilidades, &$resultadosInseridos) {
+    if (count($habilidades) > 0) {
+        \App\Models\ResultEixoComLin::insert($habilidades);
+        $resultadosInseridos = $habilidades;
+        // ADICIONE ESTA CHAMADA:
+        foreach ($habilidades as $hab) {
+            $this->atualizarResultadoAgrupado(
+                1, // eixo comunicação/linguagem
+                $hab['fk_result_alu_id_ecomling'],
+                $hab['fk_id_pro_com_lin'],
+                $hab['tipo_fase_com_lin']
+            );
+        }
+    }
+});\DB::transaction(function () use (&$habilidadesComp, &$resultadosInseridosComp) {
+    if (count($habilidadesComp) > 0) {
+        \App\Models\ResultEixoComportamento::insert($habilidadesComp);
+        $resultadosInseridosComp = $habilidadesComp;
+        foreach ($habilidadesComp as $hab) {
+            $this->atualizarResultadoAgrupado(
+                2,
+                $hab['fk_result_alu_id_comportamento'],
+                $hab['fk_id_pro_comportamento'],
+                $hab['tipo_fase_comportamento']
+            );
+        }
+    }
+});\DB::transaction(function () use (&$habilidadesIntSocio, &$resultadosInseridosIntSocio) {
+    if (count($habilidadesIntSocio) > 0) {
+        \App\Models\ResultEixoIntSocio::insert($habilidadesIntSocio);
+        $resultadosInseridosIntSocio = $habilidadesIntSocio;
+        foreach ($habilidadesIntSocio as $hab) {
+            $this->atualizarResultadoAgrupado(
+                3,
+                $hab['fk_result_alu_id_int_socio'],
+                $hab['fk_id_pro_int_socio'],
+                $hab['tipo_fase_int_socio']
+            );
+        }
+    }
+});        </form>
     </div>
 
     <!-- Navegação entre etapas -->
@@ -786,5 +822,4 @@
     </script>
     
 
-</body>
-</html>
+@endsection

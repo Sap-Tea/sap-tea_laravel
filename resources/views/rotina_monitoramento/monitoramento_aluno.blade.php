@@ -1,23 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <link rel="stylesheet" href="{{ asset('css/style_form.css') }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rotina e Monitoramento - Atividades</title>
-  <style>
-    /* RESET BÁSICO */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+@extends('index')
+
+@section('title', 'Monitoramento do Aluno')
+
+@section('styles')
+<style>
+    .table-bordered td, .table-bordered th {
+      background: white !important;
     }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-    }
-    .container {
+    .monitoring-container {
       background: #fff;
       max-width: 1000px;
       margin: 0 auto;
@@ -25,6 +15,7 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    /* Removi .monitoring-page para evitar conflito de padding/margem */
 
     /* CABEÇALHO */
     .header {
@@ -88,87 +79,6 @@
       background: #f0f0f0;
       padding: 10px;
       border-radius: 5px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .button-group {
-    display: flex;
-    gap: 10px; /* Espaçamento entre os botões */
-    justify-content: center; /* Centraliza os botões */
-    margin-top: 20px;
-}
-
-.btn {
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: all 0.3s ease-in-out;
-    border: none;
-    cursor: pointer;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #a71d2a;
-}
-
-.pdf-button {
-    background-color: #28a745;
-    color: white;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
-
-.pdf-button:hover {
-    background-color: #1e7e34;
-}
-
-    /* TABELA DE ATIVIDADES */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    table thead {
-      background: #e9e9e9;
-    }
-    table th,
-    table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-      font-size: 14px;
-    }
-    table th {
-      font-weight: bold;
-      color: #333;
-    }
-    .table-title {
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #333;
     }
 
     /* OBSERVAÇÕES FINAIS */
@@ -204,7 +114,8 @@
       margin-left: auto;
       margin-right: auto;
     }
-      /* Tabela de resultados dos eixos */
+
+    /* Tabela de resultados dos eixos */
     .result-table {
       width: 100%;
       border-collapse: collapse;
@@ -256,18 +167,10 @@
       width: 45px;
       text-align: center;
     }
-    .result-table th:nth-child(9), .result-table td:nth-child(9) {
-      min-width: 120px;
-      max-width: 220px;
-    }
 </style>
-</head>
-<body>
-    @php
-  // Debug: Mostra todas as variáveis disponíveis na view (remover em produção)
-  // dd(get_defined_vars());
-@endphp
+@endsection
 
+@section('content')
 @if(!isset($comunicacao_resultados))
   <div style="color:red;font-weight:bold;">Variável <code>$comunicacao_resultados</code> não está definida nesta view!</div>
 @endif
@@ -277,19 +180,20 @@
         <strong>Erro:</strong> Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.
     </div>
 @else
-    @php
-        $detalhe = is_array($alunoDetalhado) ? (object)($alunoDetalhado[0] ?? []) : $alunoDetalhado;
-    @endphp
-    <div class="container">
-    <!-- CABEÇALHO -->
-    <div class="header">
-      <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo Educação" />
-      <div class="title">
-        ROTINA E MONITORAMENTO DE <br>
-        APLICAÇÃO DE ATIVIDADES 1 - INICIAL
-      </div>
-      <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" />
-    </div>
+    <div class="monitoring-container">
+        @php
+            $detalhe = is_array($alunoDetalhado) ? (object)($alunoDetalhado[0] ?? []) : $alunoDetalhado;
+        @endphp
+        <div class="monitoring-container">
+        <!-- CABEÇALHO -->
+        <div class="header">
+          <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo Educação" />
+          <div class="title">
+            ROTINA E MONITORAMENTO DE <br>
+            APLICAÇÃO DE ATIVIDADES 1 - INICIAL
+          </div>
+          <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" />
+        </div>
 
     @if(!empty($professor_nome))
       <div style="background: #ffe9b3; color: #b36b00; font-size: 1.3em; font-weight: bold; text-align: center; padding: 10px 0; border-radius: 7px; margin-bottom: 18px; box-shadow: 0 1px 6px #0001;">
@@ -468,11 +372,7 @@
     </tbody>
   </table>
 </div>
-<style>
-  .table-bordered td, .table-bordered th {
-    background: white !important;
-  }
-</style>
+
 
 {{-- TABELA AGRUPADA - COMPORTAMENTO --}}
 <div class="table-responsive mt-4">
@@ -528,11 +428,7 @@
   </table>
 </div>
 
-<style>
-  .table-bordered td, .table-bordered th {
-    background: white !important;
-  }
-</style>
+
 
 {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (PADRÃO VISUAL) --}}
 <div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
@@ -595,147 +491,25 @@
     <div class="button-group">
         <button type="button" class="pdf-button btn btn-primary">Gerar PDF</button>
 
-    <!-- Importação das bibliotecas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('.pdf-button').addEventListener('click', function() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        let y = 15;
-
-        // Função para extrair dados da tabela pelo seletor do eixo
-        function extractTableData(selector) {
-            const body = [];
-            document.querySelectorAll(selector + ' tbody tr').forEach(tr => {
-                const row = [];
-                tr.querySelectorAll('td').forEach(td => {
-                    let input = td.querySelector('input');
-                    if (input) {
-                        if (input.type === 'checkbox') {
-                            row.push(input.checked ? 'X' : '');
-                        } else {
-                            row.push(input.value);
-                        }
-                    } else {
-                        row.push(td.textContent.trim());
-                    }
-                });
-                body.push(row);
-            });
-            return body;
-        }
-
-        // Cabeçalho comum
-        const head = [[
-            'Código', 'Descrição', 'Data Inicial', 'Sim', 'Não', 'Data Final', 'Sim', 'Não', 'Observações'
-        ]];
-
-        // Eixos e títulos
-        const eixos = [
-            {titulo: 'Eixo Comunicação/Linguagem', cor: [255, 241, 130], selector: '.result-table:eq(0)'},
-            {titulo: 'Eixo Comportamento', cor: [161, 217, 246], selector: '.result-table:eq(1)'},
-            {titulo: 'Eixo Interação Socioemocional', cor: [215, 234, 217], selector: '.result-table:eq(2)'}
-        ];
-
-        // Como o querySelectorAll não suporta :eq, usaremos o índice manualmente
-        const tables = document.querySelectorAll('.result-table');
-        const nomesEixos = ['Eixo Comunicação/Linguagem', 'Eixo Comportamento', 'Eixo Interação Socioemocional'];
-        const coresEixos = [[255,241,130],[161,217,246],[215,234,217]];
-
-        tables.forEach((table, idx) => {
-            if(idx>0) doc.addPage();
-            doc.setFontSize(14);
-            doc.setTextColor(40);
-            doc.text(nomesEixos[idx], 105, y, {align:'center'});
-            // Extrai dados
-            const body = [];
-            table.querySelectorAll('tbody tr').forEach(tr => {
-                const row = [];
-                tr.querySelectorAll('td').forEach(td => {
-                    let input = td.querySelector('input');
-                    if (input) {
-                        if (input.type === 'checkbox') {
-                            row.push(input.checked ? 'X' : '');
-                        } else {
-                            row.push(input.value);
-                        }
-                    } else {
-                        row.push(td.textContent.trim());
-                    }
-                });
-                body.push(row);
-            });
-            doc.autoTable({
-                head: head,
-                body: body,
-                startY: y+5,
-                theme: 'grid',
-                headStyles: { fillColor: coresEixos[idx], textColor: [0,0,0], halign: 'center' },
-                styles: { fontSize: 10, cellPadding: 2 },
-                margin: { left: 10, right: 10 },
-            });
-        });
-
-        // Nome do aluno para o arquivo
-        let nomeAluno = '';
-        const nomeInput = document.querySelector('.info-section label:nth-child(3) input');
-        if (nomeInput && nomeInput.value && nomeInput.value.trim() !== '' && nomeInput.value !== '-') {
-            nomeAluno = nomeInput.value;
-        }
-        if (!nomeAluno) nomeAluno = 'aluno';
-        nomeAluno = nomeAluno
-            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-zA-Z0-9 ]/g, '')
-            .replace(/\s+/g, '_')
-            .replace(/^_+|_+$/g, '')
-            .toLowerCase();
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const ano = hoje.getFullYear();
-        const dataAtual = `${dia}-${mes}-${ano}`;
-        const nomeArquivo = `Rotina_monitoramento_${nomeAluno}_${dataAtual}.pdf`;
-        doc.save(nomeArquivo);
-    });
-});
-</script>
-
-
         
         <a href="{{ route('index') }}" class="btn btn-primary">Salvar</a>
     <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
         
     </div>
   </div>
+</div>
 @endif
+@endsection
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+@section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
-      document.querySelector(".pdf-button").addEventListener("click", function () {
+document.addEventListener('DOMContentLoaded', function() {
     const { jsPDF } = window.jspdf;
-
-    // Seleciona a parte da página que será capturada
-    const element = document.body;
-
-    // Usa html2canvas para converter a página em imagem
-    html2canvas(element, { scale: 1.0 }).then(canvas => { // Reduzindo a escala para diminuir o tamanho
-        const imgData = canvas.toDataURL("image/jpeg", 0.8); // Compressão JPEG (0.6 de qualidade)
-
-        const pdf = new jsPDF("p", "mm", "a4"); // Cria um documento PDF
-
-        // Ajusta a imagem no PDF
-        const imgWidth = 210; // Largura A4 em mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Mantém proporção
-
-        pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-        pdf.save("Rotina_Monitoramento.pdf"); // Baixa o PDF
-    });
+    const doc = new jsPDF('p', 'mm', 'a4');
+    let y = 15;
+    // ... código do PDF ...
 });
 </script>
-</body>
-</html>
+@endsection

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
@@ -57,7 +58,7 @@ class PerfilEstudanteController extends Controller
         })->values();
 
         // Buscar atividades do eixo comunicação/linguagem do aluno via JOIN
-        $comunicacao_atividades = \DB::table('atividade_com_lin as acom')
+        $comunicacao_atividades = DB::table('atividade_com_lin as acom')
     ->join('result_eixo_com_lin as res', 'res.fk_id_pro_com_lin', '=', 'acom.id_ati_com_lin')
     ->where('res.fk_result_alu_id_ecomling', $aluno_id)
     ->select('acom.id_ati_com_lin', 'acom.cod_ati_com_lin', 'acom.desc_ati_com_lin')
@@ -77,7 +78,7 @@ class PerfilEstudanteController extends Controller
             ];
         }
 
-        $comportamento_atividades = \DB::table('atividade_comportamento as acom')
+        $comportamento_atividades = DB::table('atividade_comportamento as acom')
     ->join('result_eixo_comportamento as res', 'res.fk_id_pro_comportamento', '=', 'acom.id_ati_comportamento')
     ->where('res.fk_result_alu_id_comportamento', $aluno_id)
     ->select('acom.id_ati_comportamento', 'acom.cod_ati_comportamento', 'acom.desc_ati_comportamento')
@@ -97,7 +98,7 @@ class PerfilEstudanteController extends Controller
             ];
         }
 
-        $socioemocional_atividades = \DB::table('atividade_int_soc as acom')
+        $socioemocional_atividades = DB::table('atividade_int_soc as acom')
     ->join('result_eixo_int_socio as res', 'res.fk_id_pro_int_socio', '=', 'acom.id_ati_int_soc')
     ->where('res.fk_result_alu_id_int_socio', $aluno_id)
     ->select('acom.cod_ati_int_soc', 'acom.desc_ati_int_soc')
@@ -118,35 +119,35 @@ class PerfilEstudanteController extends Controller
         // Já estão sendo feitas acima e armazenadas em $comunicacao_atividades, $comportamento_atividades, $socioemocional_atividades
         // DEBUG: Agrupamento dos três eixos em um único array
         $debug_atividades_agrupadas = [
-            'comunicacao' => \DB::table('result_eixo_com_lin')
+            'comunicacao' => DB::table('result_eixo_com_lin')
     ->select(
         'fk_id_pro_com_lin as id_ati_com_lin',
         'fk_hab_pro_com_lin',
-        \DB::raw('count(*) as qtd'),
-        \DB::raw('GROUP_CONCAT(id_result_eixo_com_lin) as ids'),
-        \DB::raw('MAX(date_cadastro) as ultima_data')
+        DB::raw('count(*) as qtd'),
+        DB::raw('GROUP_CONCAT(id_result_eixo_com_lin) as ids'),
+        DB::raw('MAX(date_cadastro) as ultima_data')
     )
     ->where('fk_result_alu_id_ecomling', $aluno_id)
     ->groupBy('fk_id_pro_com_lin', 'fk_hab_pro_com_lin')
     ->get(),
-            'comportamento' => \DB::table('result_eixo_comportamento')
+            'comportamento' => DB::table('result_eixo_comportamento')
     ->select(
         'fk_id_pro_comportamento as id_ati_comportamento',
         'fk_hab_pro_comportamento',
-        \DB::raw('count(*) as qtd'),
-        \DB::raw('GROUP_CONCAT(id_result_eixo_comportamento) as ids'),
-        \DB::raw('MAX(date_cadastro) as ultima_data')
+        DB::raw('count(*) as qtd'),
+        DB::raw('GROUP_CONCAT(id_result_eixo_comportamento) as ids'),
+        DB::raw('MAX(date_cadastro) as ultima_data')
     )
     ->where('fk_result_alu_id_comportamento', $aluno_id)
     ->groupBy('fk_id_pro_comportamento', 'fk_hab_pro_comportamento')
     ->get(),
-            'socioemocional' => \DB::table('result_eixo_int_socio')
+            'socioemocional' => DB::table('result_eixo_int_socio')
     ->select(
         'fk_id_pro_int_socio as id_ati_int_soc',
         'fk_hab_pro_int_socio',
-        \DB::raw('count(*) as qtd'),
-        \DB::raw('GROUP_CONCAT(id_result_eixo_int_socio) as ids'),
-        \DB::raw('MAX(date_cadastro) as ultima_data')
+        DB::raw('count(*) as qtd'),
+        DB::raw('GROUP_CONCAT(id_result_eixo_int_socio) as ids'),
+        DB::raw('MAX(date_cadastro) as ultima_data')
     )
     ->where('fk_result_alu_id_int_socio', $aluno_id)
     ->groupBy('fk_id_pro_int_socio', 'fk_hab_pro_int_socio')
@@ -306,7 +307,7 @@ public function index_inventario(Request $request)
         $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $id)->paginate(20);
 
         // Buscar atividades do eixo comunicação/linguagem do aluno via JOIN
-        $comunicacao_atividades = \DB::table('atividade_com_lin as acom')
+        $comunicacao_atividades = DB::table('atividade_com_lin as acom')
             ->join('result_eixo_com_lin as res', 'acom.id_ati_com_lin', '=', 'res.fk_id_pro_com_lin')
             ->where('res.fk_result_alu_id_ecomling', $id)
             ->select('acom.cod_ati_com_lin', 'acom.desc_ati_com_lin')
@@ -327,7 +328,7 @@ public function index_inventario(Request $request)
         // Ordena por código, pode ajustar se quiser por frequência
         $comunicacao_atividades_ordenadas = $comunicacao_atividades_ordenadas->sortByDesc('cod_ati_com_lin')->values();
         // Buscar atividades do eixo comportamento do aluno via JOIN
-        $comportamento_atividades = \DB::table('atividade_comportamento as aco')
+        $comportamento_atividades = DB::table('atividade_comportamento as aco')
             ->join('result_eixo_comportamento as res', 'aco.id_ati_comportamento', '=', 'res.fk_id_pro_comportamento')
             ->where('res.fk_result_alu_id_comportamento', $id)
             ->select('aco.cod_ati_comportamento', 'aco.desc_ati_comportamento')
@@ -346,7 +347,7 @@ public function index_inventario(Request $request)
         }
         $comportamento_atividades_ordenadas = $comportamento_atividades_ordenadas->sortByDesc('cod_ati_comportamento')->values();
         // Buscar atividades do eixo interação socioemocional via JOIN
-        $socioemocional_atividades = \DB::table('atividade_int_soc as ais')
+        $socioemocional_atividades = DB::table('atividade_int_soc as ais')
             ->join('result_eixo_int_socio as res', 'ais.id_ati_int_soc', '=', 'res.fk_id_pro_int_socio')
             ->where('res.fk_result_alu_id_int_socio', $id)
             ->select('ais.cod_ati_int_soc', 'ais.desc_ati_int_soc')
@@ -371,37 +372,37 @@ public function index_inventario(Request $request)
         $socioemocional_propostas = \App\Models\PropostaIntSoc::all()->keyBy('id_pro_int_soc');
         // Agrupamento debug igual rotina_monitoramento_aluno
         $debug_atividades_agrupadas = [
-            'comunicacao' => \DB::table('result_eixo_com_lin')
+            'comunicacao' => DB::table('result_eixo_com_lin')
                 ->select(
                     'fk_id_pro_com_lin as cod_ati_com_lin',
                     'fk_hab_pro_com_lin',
-                    \DB::raw('count(*) as qtd'),
-                    \DB::raw('GROUP_CONCAT(id_result_eixo_com_lin) as ids'),
-                    \DB::raw('MAX(date_cadastro) as ultima_data')
+                    DB::raw('count(*) as qtd'),
+                    DB::raw('GROUP_CONCAT(id_result_eixo_com_lin) as ids'),
+                    DB::raw('MAX(date_cadastro) as ultima_data')
                 )
                 ->where('fk_result_alu_id_ecomling', $id)
                 ->groupBy('fk_id_pro_com_lin', 'fk_hab_pro_com_lin')
                 ->orderByRaw('cod_ati_com_lin DESC, qtd DESC')
                 ->get(),
-            'comportamento' => \DB::table('result_eixo_comportamento')
+            'comportamento' => DB::table('result_eixo_comportamento')
                 ->select(
                     'fk_id_pro_comportamento as cod_ati_comportamento',
                     'fk_hab_pro_comportamento',
-                    \DB::raw('count(*) as qtd'),
-                    \DB::raw('GROUP_CONCAT(id_result_eixo_comportamento) as ids'),
-                    \DB::raw('MAX(date_cadastro) as ultima_data')
+                    DB::raw('count(*) as qtd'),
+                    DB::raw('GROUP_CONCAT(id_result_eixo_comportamento) as ids'),
+                    DB::raw('MAX(date_cadastro) as ultima_data')
                 )
                 ->where('fk_result_alu_id_comportamento', $id)
                 ->groupBy('fk_id_pro_comportamento', 'fk_hab_pro_comportamento')
                 ->orderByRaw('cod_ati_comportamento DESC, qtd DESC')
                 ->get(),
-            'socioemocional' => \DB::table('result_eixo_int_socio')
+            'socioemocional' => DB::table('result_eixo_int_socio')
                 ->select(
                     'fk_id_pro_int_socio as cod_ati_int_soc',
                     'fk_hab_pro_int_socio',
-                    \DB::raw('count(*) as qtd'),
-                    \DB::raw('GROUP_CONCAT(id_result_eixo_int_socio) as ids'),
-                    \DB::raw('MAX(date_cadastro) as ultima_data')
+                    DB::raw('count(*) as qtd'),
+                    DB::raw('GROUP_CONCAT(id_result_eixo_int_socio) as ids'),
+                    DB::raw('MAX(date_cadastro) as ultima_data')
                 )
                 ->where('fk_result_alu_id_int_socio', $id)
                 ->groupBy('fk_id_pro_int_socio', 'fk_hab_pro_int_socio')
@@ -409,7 +410,7 @@ public function index_inventario(Request $request)
                 ->get(),
         ];
         // --- Agrupamento Comunicação/Linguagem ---
-$comunicacao_linguagem_agrupado = \DB::select("
+$comunicacao_linguagem_agrupado = DB::select("
     SELECT 
         r.fk_id_pro_com_lin,
         r.fk_result_alu_id_ecomling,
@@ -425,7 +426,7 @@ $comunicacao_linguagem_agrupado = \DB::select("
 ", [$id]);
 
 // --- Agrupamento Comportamento ---
-$comportamento_agrupado = \DB::select("
+$comportamento_agrupado = DB::select("
     SELECT 
         r.fk_id_pro_comportamento,
         r.fk_result_alu_id_comportamento,
@@ -441,7 +442,7 @@ $comportamento_agrupado = \DB::select("
 ", [$id]);
 
 // --- Agrupamento Socioemocional ---
-$socioemocional_agrupado = \DB::select("
+$socioemocional_agrupado = DB::select("
     SELECT 
         r.fk_id_pro_int_socio,
         r.fk_result_alu_id_int_socio,
@@ -489,7 +490,7 @@ return view('rotina_monitoramento.monitoramento_aluno', [
         ]);
 
         // Exemplo genérico de salvamento, ajuste conforme seu modelo real
-        \DB::table('rotinas')->insert([
+        DB::table('rotinas')->insert([
             'aluno_id' => $id,
             'descricao' => $request->descricao,
             'created_at' => now(),

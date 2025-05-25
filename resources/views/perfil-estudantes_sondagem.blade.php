@@ -1,29 +1,17 @@
-<form method="POST" action="{{ route('perfil.estudante.salvar') }}">
-    @csrf
+@extends('index')
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do Estudante</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
+@section('styles')
+<style>
+        .perfil-container {
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             max-width: 800px;
             margin: auto;
-
             position: relative;
-    border-left: 10px solid rgba(0, 0, 0, 0.5); /* Amarelo apagado */
-    padding-left: 15px; /* Ajuste para não colar no conteúdo */
+            border-left: 10px solid rgba(0, 0, 0, 0.5); /* Amarelo apagado */
+            padding-left: 15px; /* Ajuste para não colar no conteúdo */
         }
         h2 {
             text-align: center;
@@ -91,18 +79,19 @@ button:hover {
 
 
     </style>
-</head>
-<body>
-    <div class="container">
+@endsection
+
+@section('content')
+    <div class="perfil-container">
         
         <h2>I - Perfil do Estudante</h2>
-        <form>
-        <div class="form-group">
+        <form method="POST" action="{{ route('perfil.estudante.salvar') }}">
+            @csrf
+            <div class="form-group">
                 <label>Nome do Aluno:</label>
                 <input type="text" name="nome_aluno"  
                 value="{{ $aluno->alu_nome }}" class="form-control">
             </div>
-            
             
             <div class="row">
                 <div class="form-group">
@@ -388,8 +377,6 @@ button:hover {
 <a href="{{ route('index') }}" class="btn btn-danger">Cancelassr</a>
     <button type="button" class="pdf-button">Gerar PDF</button>
 </div>
-
-
         </form>
     </div>
 
@@ -418,10 +405,7 @@ button:hover {
         });
     });
 </script>
-
-</body>
-</html>
-
+@endsection
 
 @if(session('success'))
     <p style="color: green;">{{ session('success') }}</p>

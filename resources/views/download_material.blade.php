@@ -1,4 +1,7 @@
-@extends('layouts.app')
+@extends('index')
+
+@section('styles')
+@endsection
 
 @section('content')
 <div style="max-width:540px;margin:40px auto;background:#fff;border-radius:10px;box-shadow:0 2px 8px #0001;padding:30px 24px;font-family:Arial,sans-serif;">
@@ -13,9 +16,6 @@
         </div>
         <div style="text-align:center;margin:22px 0;">
             <a href="{{ $link }}" target="_blank" class="btn btn-primary" style="padding:12px 32px;font-size:17px;">Acessar Material</a>
-        </div>
-        <div style="text-align:center;margin-top:18px;">
-            <a href="{{ route('index') }}" class="btn btn-secondary">Voltar ao início</a>
         </div>
     @endif
 </div>
