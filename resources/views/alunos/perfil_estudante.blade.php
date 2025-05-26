@@ -683,6 +683,7 @@
             if (stepNumber === 1) {
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'block';
+                finishBtn.style.display = 'none';
             } else if (stepNumber === totalSteps) {
                 prevBtn.style.display = 'block';
                 nextBtn.style.display = 'none';
@@ -724,9 +725,8 @@
             finishBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                // Verifica se estamos na última etapa
-                const totalSteps = steps.length;
-                if (currentStep !== totalSteps) {
+                // Verifica se estamos na última etapa e o botão Finalizar está visível
+                if (currentStep !== totalSteps || finishBtn.style.display === 'none') {
                     alert('Por favor, complete todas as etapas do formulário antes de finalizar.');
                     return;
                 }
@@ -743,8 +743,7 @@
                 // Envia o formulário
                 document.getElementById('perfilForm').submit();
             });
-        }
-        
+        }      
         // Evento para o botão Cancelar
         const cancelBtn = document.querySelector('.cancel-btn');
         if (cancelBtn) {
@@ -782,6 +781,18 @@
     } else {
         initializeForm();
     }
+
+    // Adiciona evento para prevenir envio do formulário via tecla Enter
+    document.getElementById('perfilForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const totalSteps = steps.length;
+        if (currentStep !== totalSteps) {
+            alert('Por favor, complete todas as etapas do formulário antes de finalizar.');
+            return;
+        }
+        // Se estiver na última etapa, permite o envio
+        this.submit();
+    });
     </script>
     
 
