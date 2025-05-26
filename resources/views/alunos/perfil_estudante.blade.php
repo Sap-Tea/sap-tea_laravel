@@ -560,51 +560,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group mt-4" style="display: flex; justify-content: center; gap: 18px;">
-    <button type="submit" class="btn btn-primary" style="width: 170px;">Cadastrar Perfil</button>
-    <a href="{{ url('/sondagem/perfil-estudante') }}" class="btn btn-danger" style="width: 90px; min-width: unset; max-width: 100px; display: inline-block; text-align: center;">Cancelar</a>
-</div>
-\DB::transaction(function () use (&$habilidades, &$resultadosInseridos) {
-    if (count($habilidades) > 0) {
-        \App\Models\ResultEixoComLin::insert($habilidades);
-        $resultadosInseridos = $habilidades;
-        // ADICIONE ESTA CHAMADA:
-        foreach ($habilidades as $hab) {
-            $this->atualizarResultadoAgrupado(
-                1, // eixo comunicação/linguagem
-                $hab['fk_result_alu_id_ecomling'],
-                $hab['fk_id_pro_com_lin'],
-                $hab['tipo_fase_com_lin']
-            );
-        }
-    }
-});\DB::transaction(function () use (&$habilidadesComp, &$resultadosInseridosComp) {
-    if (count($habilidadesComp) > 0) {
-        \App\Models\ResultEixoComportamento::insert($habilidadesComp);
-        $resultadosInseridosComp = $habilidadesComp;
-        foreach ($habilidadesComp as $hab) {
-            $this->atualizarResultadoAgrupado(
-                2,
-                $hab['fk_result_alu_id_comportamento'],
-                $hab['fk_id_pro_comportamento'],
-                $hab['tipo_fase_comportamento']
-            );
-        }
-    }
-});\DB::transaction(function () use (&$habilidadesIntSocio, &$resultadosInseridosIntSocio) {
-    if (count($habilidadesIntSocio) > 0) {
-        \App\Models\ResultEixoIntSocio::insert($habilidadesIntSocio);
-        $resultadosInseridosIntSocio = $habilidadesIntSocio;
-        foreach ($habilidadesIntSocio as $hab) {
-            $this->atualizarResultadoAgrupado(
-                3,
-                $hab['fk_result_alu_id_int_socio'],
-                $hab['fk_id_pro_int_socio'],
-                $hab['tipo_fase_int_socio']
-            );
-        }
-    }
-});        </form>
+    </form>
     </div>
 
     <!-- Navegação entre etapas -->
@@ -767,6 +723,13 @@
         if (finishBtn) {
             finishBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                
+                // Verifica se estamos na última etapa
+                const totalSteps = steps.length;
+                if (currentStep !== totalSteps) {
+                    alert('Por favor, complete todas as etapas do formulário antes de finalizar.');
+                    return;
+                }
                 
                 // Mensagem de confirmação
                 if (!confirm('Tem certeza que deseja finalizar e salvar os dados?')) {
