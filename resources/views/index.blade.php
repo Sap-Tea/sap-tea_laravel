@@ -232,6 +232,11 @@
                         <i class="fa-solid fa-graduation-cap"></i> Perfil do Estudante
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('visualizar.perfil', ['id' => 1]) }}" class="menu-link" data-page="Atualizar Perfil">
+                        <i class="fa-solid fa-user-edit"></i> Atualizar Perfil
+                    </a>
+                </li>
             </ul>
 
             <h3 style="margin:20px 15px 10px;">Foccus - Cadastros</h3>
