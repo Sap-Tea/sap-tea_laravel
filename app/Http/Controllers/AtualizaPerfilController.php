@@ -10,71 +10,80 @@ use App\Models\Preferencia;
 use App\Models\PerfilFamilia;
 use Illuminate\Support\Facades\DB;
 
-class AtualizacaoPerfilController extends Controller
+class AtualizaPerfilController extends Controller
 {
-    /**
-     * Atualiza o perfil do estudante e redireciona para a página do perfil.
-     */
-    public function AtualizaPerfil(Request $request, $id)
+    public function atualizaPerfil(Request $request, $id)
     {
+        // Log dos dados recebidos
+        \Log::info('Dados recebidos no formulário:', [
+            'all_data' => $request->all(),
+            'validated_data' => $request->validated()
+        ]);
+
+        // Log dos dados da sessão
+        \Log::info('Sessão:', [
+            'session' => session()->all()
+        ]);
+
+        // Validação básica dos campos essenciais
         // Validação básica dos campos essenciais
         $request->validate([
-    'diag_laudo' => 'nullable|numeric',
-    'cid' => 'nullable',
-    'nome_medico' => 'nullable',
-    'data_laudo' => 'nullable|date',
-    'nivel_suporte' => 'nullable',
-    'uso_medicamento' => 'nullable|numeric',
-    'quais_medicamento' => 'nullable',
-    'nec_pro_apoio' => 'nullable|numeric',
-    'prof_apoio' => 'nullable|numeric',
-    'loc_01' => 'nullable|numeric',
-    'hig_02' => 'nullable|numeric',
-    'ali_03' => 'nullable|numeric',
-    'com_04' => 'nullable|numeric',
-    'out_05' => 'nullable|numeric',
-    'out_momentos' => 'nullable',
-    'at_especializado' => 'nullable|numeric',
-    'nome_prof_AEE' => 'nullable',
-    'caracteristicas' => 'nullable',
-    'areas_interesse' => 'nullable',
-    'atividades_livre' => 'nullable',
-    'feliz' => 'nullable',
-    'triste' => 'nullable',
-    'objeto_apego' => 'nullable',
-    'precisa_comunicacao' => 'nullable|numeric',
-    'entende_instrucao' => 'nullable|numeric',
-    'recomenda_instrucao' => 'nullable',
-    's_auditiva' => 'nullable|numeric',
-    's_visual' => 'nullable|numeric',
-    's_tatil' => 'nullable|numeric',
-    's_outros' => 'nullable|numeric',
-    'maneja_04' => 'nullable',
-    'asa_04' => 'nullable|numeric',
-    'alimentos_pref_04' => 'nullable',
-    'alimento_evita_04' => 'nullable',
-    'contato_pc_04' => 'nullable',
-    'reage_contato' => 'nullable',
-    'interacao_escola_04' => 'nullable',
-    'interesse_atividade_04' => 'nullable',
-    'aprende_visual_04' => 'nullable|numeric',
-    'recurso_auditivo_04' => 'nullable|numeric',
-    'material_concreto_04' => 'nullable|numeric',
-    'outro_identificar_04' => 'nullable|numeric',
-    'descricao_outro_identificar_04' => 'nullable',
-    'realiza_tarefa_04' => 'nullable',
-    'mostram_eficazes_04' => 'nullable',
-    'prefere_ts_04' => 'nullable',
-    'expectativa_05' => 'nullable',
-    'estrategia_05' => 'nullable',
-    'crise_esta_05' => 'nullable'
-]);
+            'diag_laudo' => 'nullable|numeric',
+            'cid' => 'nullable',
+            'nome_medico' => 'nullable',
+            'data_laudo' => 'nullable|date',
+            'nivel_suporte' => 'nullable',
+            'uso_medicamento' => 'nullable|numeric',
+            'quais_medicamento' => 'nullable',
+            'nec_pro_apoio' => 'nullable|numeric',
+            'prof_apoio' => 'nullable|numeric',
+            'loc_01' => 'nullable|numeric',
+            'hig_02' => 'nullable|numeric',
+            'ali_03' => 'nullable|numeric',
+            'com_04' => 'nullable|numeric',
+            'out_05' => 'nullable|numeric',
+            'out_momentos' => 'nullable',
+            'at_especializado' => 'nullable|numeric',
+            'nome_prof_AEE' => 'nullable',
+            'caracteristicas' => 'nullable',
+            'areas_interesse' => 'nullable',
+            'atividades_livre' => 'nullable',
+            'feliz' => 'nullable',
+            'triste' => 'nullable',
+            'objeto_apego' => 'nullable',
+            'precisa_comunicacao' => 'nullable|numeric',
+            'entende_instrucao' => 'nullable|numeric',
+            'recomenda_instrucao' => 'nullable',
+            's_auditiva' => 'nullable|numeric',
+            's_visual' => 'nullable|numeric',
+            's_tatil' => 'nullable|numeric',
+            's_outros' => 'nullable|numeric',
+            'maneja_04' => 'nullable',
+            'asa_04' => 'nullable|numeric',
+            'alimentos_pref_04' => 'nullable',
+            'alimento_evita_04' => 'nullable',
+            'contato_pc_04' => 'nullable',
+            'reage_contato' => 'nullable',
+            'interacao_escola_04' => 'nullable',
+            'interesse_atividade_04' => 'nullable',
+            'aprende_visual_04' => 'nullable|numeric',
+            'recurso_auditivo_04' => 'nullable|numeric',
+            'material_concreto_04' => 'nullable|numeric',
+            'outro_identificar_04' => 'nullable|numeric',
+            'descricao_outro_identificar_04' => 'nullable',
+            'realiza_tarefa_04' => 'nullable',
+            'mostram_eficazes_04' => 'nullable',
+            'prefere_ts_04' => 'nullable',
+            'expectativa_05' => 'nullable',
+            'estrategia_05' => 'nullable',
+            'crise_esta_05' => 'nullable'
+        ]);
 
         DB::beginTransaction();
         try {
             // Atualização das tabelas relacionadas ao estudante
             $this->atualizarPerfilEstudante($request, $id);
-            $perfil = \App\Models\PerfilEstudante::where('fk_id_aluno', $id)->first();
+            $perfil = PerfilEstudante::where('fk_id_aluno', $id)->first();
             $updateCount = $perfil && isset($perfil->update_count) ? $perfil->update_count : 1;
             $this->atualizarPersonalidade($request, $id);
             $this->atualizarComunicacao($request, $id);
@@ -92,20 +101,10 @@ class AtualizacaoPerfilController extends Controller
             DB::rollBack();
 
             // Retorna para a página anterior com mensagem de erro
-            
-            // Log dos dados recebidos
-            \Log::info('Dados recebidos no formulário:', [
-                'all_data' => $request->all(),
-                'validated_data' => $request->validated()
-            ]);
-            
             return redirect()->back()->with('error', 'Erro ao atualizar o perfil. Verifique se todos os campos foram preenchidos corretamente. Erro: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Atualiza os dados na tabela PerfilEstudante.
-     */
     private function atualizarPerfilEstudante($request, $id)
     {
         $perfil = PerfilEstudante::where('fk_id_aluno', $id)->firstOrFail();
@@ -134,13 +133,9 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
-    /**
-     * Atualiza os dados na tabela PersonalidadeAluno.
-     */
     private function atualizarPersonalidade($request, $id)
     {
         $model = PersonalidadeAluno::where('fk_id_aluno', $id)->firstOrFail();
-
         $model->update([
             'carac_principal' => $request->carac_principal,
             'inter_princ_carac' => $request->inter_princ_carac,
@@ -151,13 +146,9 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
-    /**
-     * Atualiza os dados na tabela Comunicacao.
-     */
     private function atualizarComunicacao($request, $id)
     {
         $model = Comunicacao::where('fk_id_aluno', $id)->firstOrFail();
-
         $model->update([
             'precisa_comunicacao' => $request->precisa_comunicacao,
             'entende_instrucao' => $request->entende_instrucao,
@@ -165,13 +156,9 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
-    /**
-     * Atualiza os dados na tabela Preferencia.
-     */
     private function atualizarPreferencia($request, $id)
     {
         $model = Preferencia::where('fk_id_aluno', $id)->firstOrFail();
-
         $model->update([
             'auditivo_04' => $request->has('auditivo_04') ? 1 : 0,
             'visual_04' => $request->has('visual_04') ? 1 : 0,
@@ -196,19 +183,15 @@ class AtualizacaoPerfilController extends Controller
         ]);
     }
 
-    /**
-     * Atualiza ou cria os dados na tabela PerfilFamilia.
-     */
     private function atualizarPerfilFamilia($request, $id)
     {
         PerfilFamilia::updateOrCreate(
             ['fk_id_aluno' => $id],
             [
-                'expectativa_05' => $request->expectativas_familia,
-                'estrategia_05' => $request->estrategias_familia,
-                'crise_esta_05' => $request->crise_estresse
+                'expectativa_05' => $request->expectativa_05,
+                'estrategia_05' => $request->estrategia_05,
+                'crise_esta_05' => $request->crise_esta_05
             ]
         );
     }
 }
-

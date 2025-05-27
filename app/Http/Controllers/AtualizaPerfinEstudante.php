@@ -11,7 +11,7 @@ class AtualizaPerfinEstudante extends Controller
 {
     // Consulta para obter dados do aluno
 
-$query = "SELECT alu.alu_id, alu.alu_nome, alu.alu_dtnasc,
+$query = "SELECT alu.alu_id, alu.alu_nome, alu.alu_dtnasc, alu.alu_ra,
                      tm.desc_modalidade,
                      ser.serie_desc AS desc_serie_modalidade,
                      fun.func_nome, tp.desc_tipo_funcao, tur.fk_cod_func

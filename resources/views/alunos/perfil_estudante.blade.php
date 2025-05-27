@@ -53,6 +53,10 @@
                     <label>Nome do Aluno:</label>
                     <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
                 </div>
+                <div class="form-group">
+                 <label>RA do Aluno:</label>
+                 <input type="text" name="alu_ra" value="{{ $aluno->alu_ra }}" readonly>
+                    </div>
                 
                 <div class="row">
                     <div class="form-group">
@@ -68,6 +72,11 @@
                     <div class="form-group">
                         <label>Idade do aluno:</label>
                         <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>RA do Aluno:</label>
+                        <input type="text" name="alu_ra" value="{{ $aluno->alu_ra }}" readonly>
                     </div>
                 </div>
                 
