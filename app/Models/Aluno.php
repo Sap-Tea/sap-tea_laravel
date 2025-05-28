@@ -27,6 +27,7 @@ class Aluno extends Model
                       alu.alu_id, 
                       alu.alu_nome, 
                       alu.alu_dtnasc, 
+                      alu.alu_ra,
                       mat.numero_matricula,
                       esc.esc_inep, 
                       esc.esc_razao_social,

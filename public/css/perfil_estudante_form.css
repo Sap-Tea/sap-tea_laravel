@@ -59,12 +59,13 @@
 /* Estilos para a paginação em abas */
 .step-tabs {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-bottom: 20px;
     overflow-x: auto;
     padding-bottom: 5px;
     position: relative;
     z-index: 2;
+    gap: 5px;
 }
 
 .step-tab {
@@ -74,8 +75,16 @@
     cursor: pointer;
     font-weight: bold;
     text-align: center;
-    min-width: 100px;
-    margin-right: 5px;
+    min-width: 150px;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: none;
+    outline: none;
+}
+
+.step-tab:hover {
+    background-color: #d0d0d0;
 }
 
 .step-tab.active {

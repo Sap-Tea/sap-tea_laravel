@@ -109,11 +109,10 @@ class AtualizacaoPerfilController extends Controller
     private function atualizarPerfilEstudante($request, $id)
     {
         $perfil = PerfilEstudante::where('fk_id_aluno', $id)->firstOrFail();
-        // Incrementa o contador de atualizações
-        $perfil->update_count = ($perfil->update_count ?? 0) + 1;
-        $perfil->save();
-
-        $perfil->update([
+        
+        // Prepara os dados para atualização
+        $dadosAtualizacao = [
+            // Dados básicos
             'diag_laudo' => $request->diag_laudo,
             'cid' => $request->cid,
             'nome_medico' => $request->nome_medico,
@@ -123,15 +122,70 @@ class AtualizacaoPerfilController extends Controller
             'quais_medicamento' => $request->quais_medicamento,
             'nec_pro_apoio' => $request->nec_pro_apoio,
             'prof_apoio' => $request->prof_apoio,
-            'loc_01' => $request->has('loc_01') ? 1 : 0,
-            'hig_02' => $request->has('hig_02') ? 1 : 0,
-            'ali_03' => $request->has('ali_03') ? 1 : 0,
-            'com_04' => $request->has('com_04') ? 1 : 0,
-            'out_05' => $request->has('out_05') ? 1 : 0,
+            
+            // Checkboxes de momentos da rotina
+            'loc_01' => $request->loc_01 ?? 0,
+            'hig_02' => $request->hig_02 ?? 0,
+            'ali_03' => $request->ali_03 ?? 0,
+            'com_04' => $request->com_04 ?? 0,
+            'out_05' => $request->out_05 ?? 0,
             'out_momentos' => $request->out_momentos,
+            
+            // Dados de AEE
             'at_especializado' => $request->at_especializado,
-            'nome_prof_AEE' => $request->nome_prof_AEE
-        ]);
+            'nome_prof_AEE' => $request->nome_prof_AEE,
+            
+            // Campos de sensibilidade
+            's_auditiva' => $request->s_auditiva ?? 0,
+            's_visual' => $request->s_visual ?? 0,
+            's_tatil' => $request->s_tatil ?? 0,
+            's_outros' => $request->s_outros ?? 0,
+            'maneja_04' => $request->maneja_04,
+            
+            // Campos de alimentação
+            'asa_04' => $request->asa_04,
+            'alimentos_pref_04' => $request->alimentos_pref_04,
+            'alimento_evita_04' => $request->alimento_evita_04,
+            
+            // Campos de interação
+            'contato_pc_04' => $request->contato_pc_04,
+            'reage_contato' => $request->reage_contato,
+            'interacao_escola_04' => $request->interacao_escola_04,
+            'interesse_atividade_04' => $request->interesse_atividade_04,
+            
+            // Campos de aprendizado
+            'aprende_visual_04' => $request->aprende_visual_04 ?? 0,
+            'recurso_auditivo_04' => $request->recurso_auditivo_04 ?? 0,
+            'material_concreto_04' => $request->material_concreto_04 ?? 0,
+            'outro_identificar_04' => $request->outro_identificar_04 ?? 0,
+            'descricao_outro_identificar_04' => $request->descricao_outro_identificar_04,
+            'realiza_tarefa_04' => $request->realiza_tarefa_04,
+            'mostram_eficazes_04' => $request->mostram_eficazes_04,
+            'prefere_ts_04' => $request->prefere_ts_04,
+            
+            // Campos da família
+            'expectativa_05' => $request->expectativa_05,
+            'estrategia_05' => $request->estrategia_05,
+            'crise_esta_05' => $request->crise_esta_05
+        ];
+
+        // Verifica se houve alterações nos campos
+        $houveAlteracao = false;
+        foreach ($dadosAtualizacao as $campo => $valor) {
+            if ($perfil->$campo != $valor) {
+                $houveAlteracao = true;
+                break;
+            }
+        }
+
+        // Se houve alteração, incrementa o contador
+        if ($houveAlteracao) {
+            $perfil->update_count = ($perfil->update_count ?? 0) + 1;
+            $dadosAtualizacao['update_count'] = $perfil->update_count;
+        }
+
+        // Atualiza os dados
+        $perfil->update($dadosAtualizacao);
     }
 
     /**
@@ -204,9 +258,9 @@ class AtualizacaoPerfilController extends Controller
         PerfilFamilia::updateOrCreate(
             ['fk_id_aluno' => $id],
             [
-                'expectativa_05' => $request->expectativas_familia,
-                'estrategia_05' => $request->estrategias_familia,
-                'crise_esta_05' => $request->crise_estresse
+                'expectativa_05' => $request->expectativa_05,
+                'estrategia_05' => $request->estrategia_05,
+                'crise_esta_05' => $request->crise_esta_05
             ]
         );
     }
