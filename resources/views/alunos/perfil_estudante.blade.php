@@ -195,17 +195,17 @@
                 <h2>II - Personalidade (Continuação)</h2>
                 
                 <div class="form-group">
-                    <label>Gosta de fazer no tempo livre:</label>
+                    <label>O que gosta de fazer no tempo livre:</label>
                     <textarea rows="3" name="atividades_livre"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>Deixa o estudante muito feliz:</label>
+                    <label>O que deixa o estudante muito feliz:</label>
                     <textarea rows="3" name="feliz"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>Deixa o estudante muito triste ou desconfortável:</label>
+                    <label>O que deixa o estudante muito triste ou desconfortável:</label>
                     <textarea rows="3" name="triste"></textarea>
                 </div>
                 
@@ -233,9 +233,14 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Caso não, como você recomenda dar instruções?</label>
+                    <label>Caso não, o que você recomenda dar instruções?</label>
                     <textarea rows="3" name="recomenda_instrucao"></textarea>
                 </div>
+  <div class="form-group">
+                    <label>Caso não, o que você recomenda dar instruções?</label>
+                    <textarea rows="3" name="recomenda_instrucao"></textarea>
+                </div>
+
             </div>
             
             <!-- Etapa 4: Preferências -->
@@ -281,7 +286,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Como reage no contato com novas pessoas ou situações</label>
+                    <label>Como reage no contato com novas pessoas ou situações?</label>
                     <textarea rows="3" name="reacao_contato"></textarea>
                 </div>
             </div>
@@ -291,7 +296,7 @@
                 <h2>IV - Preferências (Continuação)</h2>
                 
                 <div class="form-group">
-                    <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?</label>
+                    <label>O que ajuda a sua interação na escola? E o que dificulta a sua interação na escola?</label>
                     <textarea rows="3" name="interacao_escola"></textarea>
                 </div>
                 
@@ -326,7 +331,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>O que desperta seu interesse para realizar uma tarefa/atividade</label>
+                    <label>O que desperta seu interesse para realizar uma tarefa/atividade?</label>
                     <textarea rows="3" name="interesse_tarefa"></textarea>
                 </div>
                 
