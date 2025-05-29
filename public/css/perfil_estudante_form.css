@@ -174,3 +174,12 @@
 .custom-toast.show {
     display: flex;
 }
+
+/* Garantir que a aba Profissionais fique visível */
+.step-tab[data-step="6"] {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
