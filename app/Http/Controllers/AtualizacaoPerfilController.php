@@ -9,6 +9,7 @@ use App\Models\Comunicacao;
 use App\Models\Preferencia;
 use App\Models\PerfilFamilia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AtualizacaoPerfilController extends Controller
 {
@@ -16,178 +17,76 @@ class AtualizacaoPerfilController extends Controller
      * Atualiza o perfil do estudante e redireciona para a página do perfil.
      */
     public function AtualizaPerfil(Request $request, $id)
-    {
-        // Validação básica dos campos essenciais
-        $validatedData = $request->validate([
-            'diag_laudo' => 'nullable|numeric',
-            'cid' => 'nullable',
-            'nome_medico' => 'nullable',
-            'data_laudo' => 'nullable|date',
-            'nivel_suporte' => 'nullable',
-            'uso_medicamento' => 'nullable|numeric',
-            'quais_medicamento' => 'nullable',
-            'nec_pro_apoio' => 'nullable|numeric',
-            'prof_apoio' => 'nullable|numeric',
-            'loc_01' => 'nullable|numeric',
-            'hig_02' => 'nullable|numeric',
-            'ali_03' => 'nullable|numeric',
-            'com_04' => 'nullable|numeric',
-            'out_05' => 'nullable|numeric',
-            'out_momentos' => 'nullable',
-            'at_especializado' => 'nullable|numeric',
-            'nome_prof_AEE' => 'nullable',
-            'caracteristicas' => 'nullable',
-            'areas_interesse' => 'nullable',
-            'atividades_livre' => 'nullable',
-            'feliz' => 'nullable',
-            'triste' => 'nullable',
-            'objeto_apego' => 'nullable',
-            'precisa_comunicacao' => 'nullable|numeric',
-            'entende_instrucao' => 'nullable|numeric',
-            'recomenda_instrucao' => 'nullable',
-            's_auditiva' => 'nullable|numeric',
-            's_visual' => 'nullable|numeric',
-            's_tatil' => 'nullable|numeric',
-            's_outros' => 'nullable|numeric',
-            'maneja_04' => 'nullable',
-            'asa_04' => 'nullable|numeric',
-            'alimentos_pref_04' => 'nullable',
-            'alimento_evita_04' => 'nullable',
-            'contato_pc_04' => 'nullable',
-            'reage_contato' => 'nullable',
-            'interacao_escola_04' => 'nullable',
-            'interesse_atividade_04' => 'nullable',
-            'aprende_visual_04' => 'nullable|numeric',
-            'recurso_auditivo_04' => 'nullable|numeric',
-            'material_concreto_04' => 'nullable|numeric',
-            'outro_identificar_04' => 'nullable|numeric',
-            'descricao_outro_identificar_04' => 'nullable',
-            'realiza_tarefa_04' => 'nullable',
-            'mostram_eficazes_04' => 'nullable',
-            'prefere_ts_04' => 'nullable',
-            'expectativa_05' => 'nullable',
-            'estrategia_05' => 'nullable',
-            'crise_esta_05' => 'nullable'
-        ]);
-
+{
+    try {
         DB::beginTransaction();
-        try {
-            // Atualização das tabelas relacionadas ao estudante
-            $this->atualizarPerfilEstudante($request, $id);
-            $perfil = \App\Models\PerfilEstudante::where('fk_id_aluno', $id)->first();
-            $updateCount = $perfil && isset($perfil->update_count) ? $perfil->update_count : 1;
-            $this->atualizarPersonalidade($request, $id);
-            $this->atualizarComunicacao($request, $id);
-            $this->atualizarPreferencia($request, $id);
-            $this->atualizarPerfilFamilia($request, $id);
 
-            // Confirma a transação
-            DB::commit();
+        // Atualiza perfil_estudante
+        $perfil = \App\Models\PerfilEstudante::firstOrNew(['fk_id_aluno' => $id]);
+        $perfil->fill($request->only([
+            'diag_laudo', 'cid', 'nome_medico', 'data_laudo', 'nivel_suporte',
+            'uso_medicamento', 'quais_medicamento', 'nec_pro_apoio', 'prof_apoio',
+            'loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05', 'out_momentos',
+            'at_especializado', 'nome_prof_AEE', 'fk_id_aluno', 'update_count'
+        ]));
+        $perfil->fk_id_aluno = $id;
+        $perfil->save();
 
-            // Redireciona para a página de perfil do aluno específico
-            \Log::info('REQUEST ATUALIZA PERFIL', $request->all());
-            return redirect()->route('perfil.estudante.mostrar', ['id' => $id])->with('success', 'Perfil atualizado com sucesso!')->with('updateCount', $updateCount);
-        } catch (\Exception $e) {
-            // Reverte a transação em caso de erro
-            DB::rollBack();
+        // Atualiza personalidade
+        $personalidade = \App\Models\PersonalidadeAluno::firstOrNew(['fk_id_aluno' => $id]);
+        $personalidade->fill($request->only([
+            'carac_principal', 'inter_princ_carac', 'livre_gosta_fazer',
+            'feliz_est', 'trist_est', 'obj_apego'
+        ]));
+        $personalidade->fk_id_aluno = $id;
+        $personalidade->save();
 
-            // Log do erro
-            \Log::error('Erro ao atualizar perfil: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
+        // Atualiza preferencia
+        $preferencia = \App\Models\Preferencia::firstOrNew(['fk_id_aluno' => $id]);
+        $preferencia->fill($request->only([
+            'auditivo_04', 'visual_04', 'tatil_04', 'outros_04', 'maneja_04', 'asa_04',
+            'alimentos_pref_04', 'alimento_evita_04', 'contato_pc_04', 'reage_contato',
+            'interacao_escola_04', 'interesse_atividade_04', 'aprende_visual_04',
+            'recurso_auditivo_04', 'material_concreto_04', 'outro_identificar_04',
+            'descricao_outro_identificar_04', 'realiza_tarefa_04', 'mostram_eficazes_04',
+            'prefere_ts_04'
+        ]));
+        $preferencia->fk_id_aluno = $id;
+        $preferencia->save();
 
-            // Log dos dados recebidos
-            \Log::info('Dados recebidos no formulário:', [
-                'all_data' => $request->all(),
-                'validated_data' => $validatedData
-            ]);
-            
-            return redirect()->back()->with('error', 'Erro ao atualizar o perfil. Verifique se todos os campos foram preenchidos corretamente. Erro: ' . $e->getMessage());
-        }
+        // Atualiza perfil_familia
+        $familia = \App\Models\PerfilFamilia::firstOrNew(['fk_id_aluno' => $id]);
+        $familia->fill($request->only([
+            'expectativa_05', 'estrategia_05', 'crise_esta_05'
+        ]));
+        $familia->fk_id_aluno = $id;
+        $familia->save();
+
+        DB::commit();
+
+        // Redireciona para a tela anterior (formulário de edição)
+        return redirect()->back()->with('success', 'Perfil atualizado com sucesso!');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->with('error', 'Erro ao atualizar perfil: ' . $e->getMessage())
+            ->withInput();
     }
+}
+
 
     /**
      * Atualiza os dados na tabela PerfilEstudante.
      */
     private function atualizarPerfilEstudante($request, $id)
     {
-        $perfil = PerfilEstudante::where('fk_id_aluno', $id)->firstOrFail();
+        $perfil = PerfilEstudante::updateOrCreate(
+            ['fk_id_aluno' => $id],
+            $request->all()
+        );
         
-        // Prepara os dados para atualização
-        $dadosAtualizacao = [
-            // Dados básicos
-            'diag_laudo' => $request->diag_laudo,
-            'cid' => $request->cid,
-            'nome_medico' => $request->nome_medico,
-            'data_laudo' => $request->data_laudo,
-            'nivel_suporte' => $request->nivel_suporte,
-            'uso_medicamento' => $request->uso_medicamento,
-            'quais_medicamento' => $request->quais_medicamento,
-            'nec_pro_apoio' => $request->nec_pro_apoio,
-            'prof_apoio' => $request->prof_apoio,
-            
-            // Checkboxes de momentos da rotina
-            'loc_01' => $request->loc_01 ?? 0,
-            'hig_02' => $request->hig_02 ?? 0,
-            'ali_03' => $request->ali_03 ?? 0,
-            'com_04' => $request->com_04 ?? 0,
-            'out_05' => $request->out_05 ?? 0,
-            'out_momentos' => $request->out_momentos,
-            
-            // Dados de AEE
-            'at_especializado' => $request->at_especializado,
-            'nome_prof_AEE' => $request->nome_prof_AEE,
-            
-            // Campos de sensibilidade
-            's_auditiva' => $request->s_auditiva ?? 0,
-            's_visual' => $request->s_visual ?? 0,
-            's_tatil' => $request->s_tatil ?? 0,
-            's_outros' => $request->s_outros ?? 0,
-            'maneja_04' => $request->maneja_04,
-            
-            // Campos de alimentação
-            'asa_04' => $request->asa_04,
-            'alimentos_pref_04' => $request->alimentos_pref_04,
-            'alimento_evita_04' => $request->alimento_evita_04,
-            
-            // Campos de interação
-            'contato_pc_04' => $request->contato_pc_04,
-            'reage_contato' => $request->reage_contato,
-            'interacao_escola_04' => $request->interacao_escola_04,
-            'interesse_atividade_04' => $request->interesse_atividade_04,
-            
-            // Campos de aprendizado
-            'aprende_visual_04' => $request->aprende_visual_04 ?? 0,
-            'recurso_auditivo_04' => $request->recurso_auditivo_04 ?? 0,
-            'material_concreto_04' => $request->material_concreto_04 ?? 0,
-            'outro_identificar_04' => $request->outro_identificar_04 ?? 0,
-            'descricao_outro_identificar_04' => $request->descricao_outro_identificar_04,
-            'realiza_tarefa_04' => $request->realiza_tarefa_04,
-            'mostram_eficazes_04' => $request->mostram_eficazes_04,
-            'prefere_ts_04' => $request->prefere_ts_04,
-            
-            // Campos da família
-            'expectativa_05' => $request->expectativa_05,
-            'estrategia_05' => $request->estrategia_05,
-            'crise_esta_05' => $request->crise_esta_05
-        ];
-
-        // Verifica se houve alterações nos campos
-        $houveAlteracao = false;
-        foreach ($dadosAtualizacao as $campo => $valor) {
-            if ($perfil->$campo != $valor) {
-                $houveAlteracao = true;
-                break;
-            }
-        }
-
-        // Se houve alteração, incrementa o contador
-        if ($houveAlteracao) {
-            $perfil->update_count = ($perfil->update_count ?? 0) + 1;
-            $dadosAtualizacao['update_count'] = $perfil->update_count;
-        }
-
-        // Atualiza os dados
-        $perfil->update($dadosAtualizacao);
+        return $perfil;
     }
 
     /**
