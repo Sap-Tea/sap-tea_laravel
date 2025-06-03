@@ -57,8 +57,7 @@
             </div>
 
             <!-- Dados adicionais do perfil -->
-            @if(isset($results) && count($results) > 0)
-                @php $perfil = $results[0]; @endphp
+            @if(isset($perfil))
 
                 <div class="form-group">
                     <label>Possui diagnóstico/laudo?</label>
@@ -130,14 +129,23 @@
                 </div>   
 
                 <div class="form-group">
-                 <label>Em quais momentos da rotina esse profissional se faz necessário?</label>
+                    <label>Em quais momentos da rotina esse profissional se faz necessário?</label>
                     <div class="checkbox-group">
-                         <input type="checkbox" name="loc_01" @if($perfil->loc_01 == 1) checked @endif><label for="loc_01">Locomoção</label>
-                         <input type="checkbox" name="hig_02" @if($perfil->hig_02 == 1) checked @endif><label for="hig_02">Higiene</label>
-                         <input type="checkbox" name="ali_03" @if($perfil->ali_03 == 1) checked @endif><label for="ali_03">Alimentação</label>
-                         <input type="checkbox" name="com_04" @if($perfil->com_04 == 1) checked @endif><label for="com_04">Comunicação</label>
-                         <input type="checkbox" name="out_05" @if($perfil->out_05 == 1) checked @endif><label for="out_05">Outros momentos</label>
-                </div>
+                        <input type="hidden" name="loc_01" value="0">
+                        <input type="checkbox" name="loc_01" value="1" @if($perfil->loc_01 == 1) checked @endif><label for="loc_01">Locomoção</label>
+                        
+                        <input type="hidden" name="hig_02" value="0">
+                        <input type="checkbox" name="hig_02" value="1" @if($perfil->hig_02 == 1) checked @endif><label for="hig_02">Higiene</label>
+                        
+                        <input type="hidden" name="ali_03" value="0">
+                        <input type="checkbox" name="ali_03" value="1" @if($perfil->ali_03 == 1) checked @endif><label for="ali_03">Alimentação</label>
+                        
+                        <input type="hidden" name="com_04" value="0">
+                        <input type="checkbox" name="com_04" value="1" @if($perfil->com_04 == 1) checked @endif><label for="com_04">Comunicação</label>
+                        
+                        <input type="hidden" name="out_05" value="0">
+                        <input type="checkbox" name="out_05" value="1" @if($perfil->out_05 == 1) checked @endif><label for="out_05">Outros momentos</label>
+                    </div>
                     <input type="text" name="out_momentos" placeholder="Quais?" value="{{$perfil->out_momentos }}">
                 </div>
 
@@ -217,12 +225,19 @@
 
                 <div class="form-group">
                     <label>Apresenta sensibilidade:</label>
-                        <div class="checkbox-group">
-                            <input type="checkbox" name="auditivo_04" @if($perfil->auditivo_04) checked @endif><label for="auditivo_04">Auditiva</label>
-                            <input type="checkbox" name="visual_04" @if($perfil->visual_04) checked @endif><label for="visual_04">Visual</label>
-                            <input type="checkbox" name="tatil_04" @if($perfil->tatil_04) checked @endif><label for="tatil_04">Tátil</label>
-                            <input type="checkbox" name="outros_04" @if($perfil->outros_04) checked @endif><label for="outros_04">Outros estímulos</label>
-                        </div>
+                    <div class="checkbox-group">
+                        <input type="hidden" name="s_auditiva" value="0">
+                        <input type="checkbox" name="s_auditiva" value="1" @if($perfil->s_auditiva) checked @endif><label for="s_auditiva">Auditiva</label>
+                        
+                        <input type="hidden" name="s_visual" value="0">
+                        <input type="checkbox" name="s_visual" value="1" @if($perfil->s_visual) checked @endif><label for="s_visual">Visual</label>
+                        
+                        <input type="hidden" name="s_tatil" value="0">
+                        <input type="checkbox" name="s_tatil" value="1" @if($perfil->s_tatil) checked @endif><label for="s_tatil">Tátil</label>
+                        
+                        <input type="hidden" name="s_outros" value="0">
+                        <input type="checkbox" name="s_outros" value="1" @if($perfil->s_outros) checked @endif><label for="s_outros">Outros estímulos</label>
+                    </div>
                 </div>
 
 
@@ -274,10 +289,14 @@
                 <div class="form-group">
     <label>Como o(a) estudante aprende melhor?</label>
     <div class="checkbox-group">
-        <input type="checkbox" name="aprende_visual_04" @if($perfil->aprende_visual_04) checked @endif><label for="aprende_visual_04">Recurso visual</label>
-        <input type="checkbox" name="recurso_auditivo_04" @if($perfil->recurso_auditivo_04) checked @endif><label for="recurso_auditivo_04">Recurso auditivo</label>
-        <input type="checkbox" name="material_concreto_04" @if($perfil->material_concreto_04) checked @endif><label for="material_concreto_04">Material concreto</label>
-        <input type="checkbox" name="outro_identificar_04" @if($perfil->outro_identificar_04) checked @endif><label for="outro_identificar_04">Outro - identificar</label>
+        <input type="hidden" name="aprende_visual_04" value="0">
+        <input type="checkbox" name="aprende_visual_04" value="1" @if($perfil->aprende_visual_04) checked @endif><label for="aprende_visual_04">Recurso visual</label>
+        <input type="hidden" name="recurso_auditivo_04" value="0">
+        <input type="checkbox" name="recurso_auditivo_04" value="1" @if($perfil->recurso_auditivo_04) checked @endif><label for="recurso_auditivo_04">Recurso auditivo</label>
+        <input type="hidden" name="material_concreto_04" value="0">
+        <input type="checkbox" name="material_concreto_04" value="1" @if($perfil->material_concreto_04) checked @endif><label for="material_concreto_04">Material concreto</label>
+        <input type="hidden" name="outro_identificar_04" value="0">
+        <input type="checkbox" name="outro_identificar_04" value="1" @if($perfil->outro_identificar_04) checked @endif><label for="outro_identificar_04">Outro - identificar</label>
     </div>
 
     <div class="form-group">
@@ -399,30 +418,18 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         // Debug: Log dos dados do formulário
         const formData = new FormData(form);
-        console.log('Dados do formulário:', {});
+        console.log('Dados do formulário:');
         for (let [key, value] of formData.entries()) {
             console.log(key + ': ' + value);
         }
 
-        // Verifica se todos os campos obrigatórios estão preenchidos
-        const requiredFields = ['diag_laudo', 'nivel_suporte', 'uso_medicamento'];
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            const element = document.querySelector(`[name="${field}"]`);
-            if (!element.value) {
-                isValid = false;
-                alert(`Por favor, preencha o campo: ${element.getAttribute('label')}`);
-            }
-        });
-
-        if (!isValid) {
+        // Confirmação antes de enviar
+        if (!confirm('Tem certeza que deseja atualizar o perfil do aluno?')) {
             e.preventDefault();
             return false;
         }
-
-        // Confirmação antes de enviar
-        return confirm('Tem certeza que deseja atualizar o perfil do aluno?');
+        
+        return true;
     });
 });
 </script>
@@ -548,8 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
             </div>
 
-            @if(isset($results) && count($results) > 0)
-                @php $perfil = $results[0]; @endphp
+            @if(isset($perfil))
 
                 <!-- Seção de Dados do Perfil -->
                 <div class="form-group">

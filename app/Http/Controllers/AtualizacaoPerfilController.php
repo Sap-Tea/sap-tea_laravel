@@ -18,57 +18,57 @@ class AtualizacaoPerfilController extends Controller
     public function AtualizaPerfil(Request $request, $id)
     {
         // Validação básica dos campos essenciais
-        $request->validate([
-    'diag_laudo' => 'nullable|numeric',
-    'cid' => 'nullable',
-    'nome_medico' => 'nullable',
-    'data_laudo' => 'nullable|date',
-    'nivel_suporte' => 'nullable',
-    'uso_medicamento' => 'nullable|numeric',
-    'quais_medicamento' => 'nullable',
-    'nec_pro_apoio' => 'nullable|numeric',
-    'prof_apoio' => 'nullable|numeric',
-    'loc_01' => 'nullable|numeric',
-    'hig_02' => 'nullable|numeric',
-    'ali_03' => 'nullable|numeric',
-    'com_04' => 'nullable|numeric',
-    'out_05' => 'nullable|numeric',
-    'out_momentos' => 'nullable',
-    'at_especializado' => 'nullable|numeric',
-    'nome_prof_AEE' => 'nullable',
-    'caracteristicas' => 'nullable',
-    'areas_interesse' => 'nullable',
-    'atividades_livre' => 'nullable',
-    'feliz' => 'nullable',
-    'triste' => 'nullable',
-    'objeto_apego' => 'nullable',
-    'precisa_comunicacao' => 'nullable|numeric',
-    'entende_instrucao' => 'nullable|numeric',
-    'recomenda_instrucao' => 'nullable',
-    's_auditiva' => 'nullable|numeric',
-    's_visual' => 'nullable|numeric',
-    's_tatil' => 'nullable|numeric',
-    's_outros' => 'nullable|numeric',
-    'maneja_04' => 'nullable',
-    'asa_04' => 'nullable|numeric',
-    'alimentos_pref_04' => 'nullable',
-    'alimento_evita_04' => 'nullable',
-    'contato_pc_04' => 'nullable',
-    'reage_contato' => 'nullable',
-    'interacao_escola_04' => 'nullable',
-    'interesse_atividade_04' => 'nullable',
-    'aprende_visual_04' => 'nullable|numeric',
-    'recurso_auditivo_04' => 'nullable|numeric',
-    'material_concreto_04' => 'nullable|numeric',
-    'outro_identificar_04' => 'nullable|numeric',
-    'descricao_outro_identificar_04' => 'nullable',
-    'realiza_tarefa_04' => 'nullable',
-    'mostram_eficazes_04' => 'nullable',
-    'prefere_ts_04' => 'nullable',
-    'expectativa_05' => 'nullable',
-    'estrategia_05' => 'nullable',
-    'crise_esta_05' => 'nullable'
-]);
+        $validatedData = $request->validate([
+            'diag_laudo' => 'nullable|numeric',
+            'cid' => 'nullable',
+            'nome_medico' => 'nullable',
+            'data_laudo' => 'nullable|date',
+            'nivel_suporte' => 'nullable',
+            'uso_medicamento' => 'nullable|numeric',
+            'quais_medicamento' => 'nullable',
+            'nec_pro_apoio' => 'nullable|numeric',
+            'prof_apoio' => 'nullable|numeric',
+            'loc_01' => 'nullable|numeric',
+            'hig_02' => 'nullable|numeric',
+            'ali_03' => 'nullable|numeric',
+            'com_04' => 'nullable|numeric',
+            'out_05' => 'nullable|numeric',
+            'out_momentos' => 'nullable',
+            'at_especializado' => 'nullable|numeric',
+            'nome_prof_AEE' => 'nullable',
+            'caracteristicas' => 'nullable',
+            'areas_interesse' => 'nullable',
+            'atividades_livre' => 'nullable',
+            'feliz' => 'nullable',
+            'triste' => 'nullable',
+            'objeto_apego' => 'nullable',
+            'precisa_comunicacao' => 'nullable|numeric',
+            'entende_instrucao' => 'nullable|numeric',
+            'recomenda_instrucao' => 'nullable',
+            's_auditiva' => 'nullable|numeric',
+            's_visual' => 'nullable|numeric',
+            's_tatil' => 'nullable|numeric',
+            's_outros' => 'nullable|numeric',
+            'maneja_04' => 'nullable',
+            'asa_04' => 'nullable|numeric',
+            'alimentos_pref_04' => 'nullable',
+            'alimento_evita_04' => 'nullable',
+            'contato_pc_04' => 'nullable',
+            'reage_contato' => 'nullable',
+            'interacao_escola_04' => 'nullable',
+            'interesse_atividade_04' => 'nullable',
+            'aprende_visual_04' => 'nullable|numeric',
+            'recurso_auditivo_04' => 'nullable|numeric',
+            'material_concreto_04' => 'nullable|numeric',
+            'outro_identificar_04' => 'nullable|numeric',
+            'descricao_outro_identificar_04' => 'nullable',
+            'realiza_tarefa_04' => 'nullable',
+            'mostram_eficazes_04' => 'nullable',
+            'prefere_ts_04' => 'nullable',
+            'expectativa_05' => 'nullable',
+            'estrategia_05' => 'nullable',
+            'crise_esta_05' => 'nullable'
+        ]);
 
         DB::beginTransaction();
         try {
@@ -91,12 +91,14 @@ class AtualizacaoPerfilController extends Controller
             // Reverte a transação em caso de erro
             DB::rollBack();
 
-            // Retorna para a página anterior com mensagem de erro
-            
+            // Log do erro
+            \Log::error('Erro ao atualizar perfil: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+
             // Log dos dados recebidos
             \Log::info('Dados recebidos no formulário:', [
                 'all_data' => $request->all(),
-                'validated_data' => $request->validated()
+                'validated_data' => $validatedData
             ]);
             
             return redirect()->back()->with('error', 'Erro ao atualizar o perfil. Verifique se todos os campos foram preenchidos corretamente. Erro: ' . $e->getMessage());
