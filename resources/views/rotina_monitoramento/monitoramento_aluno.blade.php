@@ -171,19 +171,6 @@
 @endsection
 
 @section('content')
-@php
-    if (!isset($total_eixos)) $total_eixos = 0;
-@endphp
-<div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
-    Total de atividades em todos os eixos: {{ $total_eixos }}
-</div>
-
-@endphp
-<div class="alert alert-info" style="font-size:1.2em; font-weight:bold;">
-    Total de atividades em todos os eixos: {{ $total_eixos }}
-</div>
-
-
 @if(!isset($comunicacao_resultados))
   <div style="color:red;font-weight:bold;">Variável <code>$comunicacao_resultados</code> não está definida nesta view!</div>
 @endif
@@ -312,35 +299,7 @@
   </table>
 </div>
 
-{{-- RESUMO - COMUNICAÇÃO/LINGUAGEM (AGRUPADO) --}}
-@php
-    if (!isset($comunicacao_linguagem_agrupado)) $comunicacao_linguagem_agrupado = [];
-@endphp
-<div class="table-responsive mt-4">
-  <h4>Resumo - Comunicação/Linguagem (Agrupado)</h4>
-  <table class="table table-bordered" style="background: white;">
-    <thead>
-      <tr style="background: #f8f9fa;">
-        <th>Código</th>
-        <th>Descrição</th>
-        <th>Aluno</th>
-        <th>Fase</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach($comunicacao_linguagem_agrupado as $linha)
-      <tr>
-        <td>{{ $linha->cod_ati_com_lin }}</td>
-        <td>{{ $linha->desc_ati_com_lin }}</td>
-        <td>{{ $linha->fk_result_alu_id_ecomling }}</td>
-        <td>{{ $linha->tipo_fase_com_lin }}</td>
-        <td>{{ $linha->total }}</td>
-      </tr>
-      @endforeach
-    </tbody>
-  </table>
-</div>
+    
 
     {{-- EIXO COMPORTAMENTO (PADRÃO VISUAL) --}}
 <div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
@@ -379,10 +338,43 @@
   </table>
 </div>
 
-{{-- RESUMO - COMPORTAMENTO (AGRUPADO) --}}
-@php
+    
+
+    {{-- TABELA AGRUPADA - COMUNICAÇÃO/LINGUAGEM --}}
+<div class="table-responsive mt-4">
+  <h4>Resumo - Comunicação/Linguagem (Agrupado)</h4>
+  <table class="table table-bordered" style="background: white;">
+    <thead>
+      <tr style="background: #f8f9fa;">
+        <th>Código</th>
+        <th>Descrição</th>
+        <th>Aluno</th>
+        <th>Fase</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      @php
+    if (!isset($comunicacao_linguagem_agrupado)) $comunicacao_linguagem_agrupado = [];
     if (!isset($comportamento_agrupado)) $comportamento_agrupado = [];
+    if (!isset($socioemocional_agrupado)) $socioemocional_agrupado = [];
+
 @endphp
+@foreach($comunicacao_linguagem_agrupado as $linha)
+      <tr>
+        <td>{{ $linha->cod_ati_com_lin }}</td>
+        <td>{{ $linha->desc_ati_com_lin }}</td>
+        <td>{{ $linha->fk_result_alu_id_ecomling }}</td>
+        <td>{{ $linha->tipo_fase_com_lin }}</td>
+        <td>{{ $linha->total }}</td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
+</div>
+
+
+{{-- TABELA AGRUPADA - COMPORTAMENTO --}}
 <div class="table-responsive mt-4">
   <h4>Resumo - Comportamento (Agrupado)</h4>
   <table class="table table-bordered" style="background: white;">
@@ -409,7 +401,36 @@
   </table>
 </div>
 
-    {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (PADRÃO VISUAL) --}}
+{{-- TABELA AGRUPADA - INTERAÇÃO SOCIOEMOCIONAL --}}
+<div class="table-responsive mt-4">
+  <h4>Resumo - Interação Socioemocional (Agrupado)</h4>
+  <table class="table table-bordered" style="background: white;">
+    <thead>
+      <tr style="background: #f8f9fa;">
+        <th>Código</th>
+        <th>Descrição</th>
+        <th>Aluno</th>
+        <th>Fase</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($socioemocional_agrupado as $linha)
+      <tr>
+        <td>{{ $linha->cod_ati_int_soc }}</td>
+        <td>{{ $linha->desc_ati_int_soc }}</td>
+        <td>{{ $linha->fk_result_alu_id_int_socio }}</td>
+        <td>{{ $linha->tipo_fase_int_socio }}</td>
+        <td>{{ $linha->total }}</td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
+</div>
+
+
+
+{{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (PADRÃO VISUAL) --}}
 <div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
   <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
   <table class="result-table" style="background: #fff;">
@@ -445,35 +466,6 @@
   </table>
 </div>
 
-{{-- RESUMO - INTERAÇÃO SOCIOEMOCIONAL (AGRUPADO) --}}
-@php
-    if (!isset($socioemocional_agrupado)) $socioemocional_agrupado = [];
-@endphp
-<div class="table-responsive mt-4">
-  <h4>Resumo - Interação Socioemocional (Agrupado)</h4>
-  <table class="table table-bordered" style="background: white;">
-    <thead>
-      <tr style="background: #f8f9fa;">
-        <th>Código</th>
-        <th>Descrição</th>
-        <th>Aluno</th>
-        <th>Fase</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach($socioemocional_agrupado as $linha)
-      <tr>
-        <td>{{ $linha->cod_ati_int_soc }}</td>
-        <td>{{ $linha->desc_ati_int_soc }}</td>
-        <td>{{ $linha->fk_result_alu_id_int_socio }}</td>
-        <td>{{ $linha->tipo_fase_int_socio }}</td>
-        <td>{{ $linha->total }}</td>
-      </tr>
-      @endforeach
-    </tbody>
-  </table>
-</div>
 
     <!-- OBSERVAÇÕES FINAIS -->
     <div class="observations">

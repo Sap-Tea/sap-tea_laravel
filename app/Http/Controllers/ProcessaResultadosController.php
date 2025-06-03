@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\EixoComunicacaoLinguagem;
 use App\Models\EixoComportamento;
@@ -20,7 +20,6 @@ class ProcessaResultadosController extends Controller
     // Função para exibir o monitoramento do aluno (ajuste o nome conforme o seu controller)
     public function monitoramentoAluno(Request $request)
     {
-        abort(500, 'DEBUG: Este controller está sendo executado!');
         // Consulta agrupada Comunicação/Linguagem
         $comunicacao_linguagem_agrupado = DB::select("
             SELECT 
@@ -94,23 +93,11 @@ class ProcessaResultadosController extends Controller
         $socioemocional_agrupado = $socioemocional_agrupado ?: [];
 
         // --- NOVO: calcular e passar as variáveis *_atividades_ordenadas ---
-        // Comunicação/Linguagem (EIS01 aparece apenas uma vez, sem contagem de frequência)
+        // Comunicação
         $comunicacao_frequencias = [];
         foreach ($comunicacao_linguagem_agrupado as $item) {
             $cod = $item->cod_ati_com_lin;
             $desc = $item->desc_ati_com_lin;
-            // Se for EIS01, adiciona apenas uma vez e ignora a contagem
-            if (strpos($cod, 'EIS01') === 0) {
-                if (!isset($comunicacao_frequencias[$cod])) {
-                    $comunicacao_frequencias[$cod] = [
-                        'codigo' => $cod,
-                        'descricao' => $desc,
-                        'total' => 1 // Sempre 1
-                    ];
-                }
-                continue;
-            }
-            // Para os demais, faz a contagem normalmente
             $total = $item->total;
             if (!isset($comunicacao_frequencias[$cod])) {
                 $comunicacao_frequencias[$cod] = [
@@ -123,39 +110,22 @@ class ProcessaResultadosController extends Controller
         }
         // Ordena por total desc
         usort($comunicacao_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
-        // Gera lista conforme frequência (EIS01 só entra uma vez)
+        // Gera lista repetida conforme frequência
         $comunicacao_atividades_ordenadas = [];
         foreach ($comunicacao_frequencias as $item) {
-            $repeticoes = $item['total'];
-            for ($i = 0; $i < $repeticoes; $i++) {
+            for ($i = 0; $i < $item['total']; $i++) {
                 $obj = new \stdClass();
                 $obj->cod_ati_com_lin = $item['codigo'];
                 $obj->desc_ati_com_lin = $item['descricao'];
                 $comunicacao_atividades_ordenadas[] = $obj;
-                // Se for EIS01, só adiciona uma vez
-                if (strpos($item['codigo'], 'EIS01') === 0) {
-                    break;
-                }
             }
         }
 
-        // Comportamento (ECP03 aparece apenas uma vez, sem contagem de frequência)
+        // Comportamento
         $comportamento_frequencias = [];
         foreach ($comportamento_agrupado as $item) {
             $cod = $item->cod_ati_comportamento;
             $desc = $item->desc_ati_comportamento;
-            // Se for ECP03, adiciona apenas uma vez e ignora a contagem
-            if (strpos($cod, 'ECP03') === 0) {
-                if (!isset($comportamento_frequencias[$cod])) {
-                    $comportamento_frequencias[$cod] = [
-                        'codigo' => $cod,
-                        'descricao' => $desc,
-                        'total' => 1 // Sempre 1
-                    ];
-                }
-                continue;
-            }
-            // Para os demais, faz a contagem normalmente
             $total = $item->total;
             if (!isset($comportamento_frequencias[$cod])) {
                 $comportamento_frequencias[$cod] = [
@@ -166,21 +136,14 @@ class ProcessaResultadosController extends Controller
             }
             $comportamento_frequencias[$cod]['total'] += $total;
         }
-        // Ordena por total desc
         usort($comportamento_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
-        // Gera lista conforme frequência (ECP03 só entra uma vez)
         $comportamento_atividades_ordenadas = [];
         foreach ($comportamento_frequencias as $item) {
-            $repeticoes = $item['total'];
-            for ($i = 0; $i < $repeticoes; $i++) {
+            for ($i = 0; $i < $item['total']; $i++) {
                 $obj = new \stdClass();
                 $obj->cod_ati_comportamento = $item['codigo'];
                 $obj->desc_ati_comportamento = $item['descricao'];
                 $comportamento_atividades_ordenadas[] = $obj;
-                // Se for ECP03, só adiciona uma vez
-                if (strpos($item['codigo'], 'ECP03') === 0) {
-                    break;
-                }
             }
         }
 
@@ -211,40 +174,6 @@ class ProcessaResultadosController extends Controller
         }
         // --- FIM NOVO ---
 
-        // DEBUG: Mostra o conteúdo dos agrupados antes do cálculo do total
-        dd([
-            'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
-            'comportamento_agrupado' => $comportamento_agrupado,
-            'socioemocional_agrupado' => $socioemocional_agrupado
-        ]);
-        // Calcula o total de atividades somando todos os campos 'total' dos agrupados
-        $total_eixos = 0;
-        foreach ($comunicacao_linguagem_agrupado as $item) {
-            if (is_array($item) && isset($item['total'])) {
-                $total_eixos += (int)$item['total'];
-            } elseif (is_object($item) && isset($item->total)) {
-                $total_eixos += (int)$item->total;
-            }
-        }
-        foreach ($comportamento_agrupado as $item) {
-            if (is_array($item) && isset($item['total'])) {
-                $total_eixos += (int)$item['total'];
-            } elseif (is_object($item) && isset($item->total)) {
-                $total_eixos += (int)$item->total;
-            }
-        }
-        foreach ($socioemocional_agrupado as $item) {
-            if (is_array($item) && isset($item['total'])) {
-                $total_eixos += (int)$item['total'];
-            } elseif (is_object($item) && isset($item->total)) {
-                $total_eixos += (int)$item->total;
-            }
-        }
-
-
-        // Passa a variável para a view
-
-
         // Retorna para a view
         return view('rotina_monitoramento.monitoramento_aluno', compact(
             'comunicacao_linguagem_agrupado',
@@ -252,8 +181,7 @@ class ProcessaResultadosController extends Controller
             'socioemocional_agrupado',
             'comunicacao_atividades_ordenadas',
             'comportamento_atividades_ordenadas',
-            'socioemocional_atividades_ordenadas',
-            'total_eixos'
+            'socioemocional_atividades_ordenadas'
         ));
     }
 
