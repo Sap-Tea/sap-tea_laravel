@@ -228,16 +228,20 @@
                     <label>Apresenta sensibilidade:</label>
                     <div class="checkbox-group">
                         <input type="hidden" name="s_auditiva" value="0">
-                        <input type="checkbox" name="s_auditiva" value="1" @if(isset($perfil->s_auditiva) && $perfil->s_auditiva) checked @endif><label for="s_auditiva">Auditiva</label>
+                        <input type="hidden" name="s_auditiva" value="0">
+<input type="checkbox" name="s_auditiva" value="1" @if(isset($perfil->s_auditiva) && $perfil->s_auditiva) checked @endif><label for="s_auditiva">Auditiva</label>
                         
                         <input type="hidden" name="s_visual" value="0">
-                        <input type="checkbox" name="s_visual" value="1" @if(isset($perfil->s_visual) && $perfil->s_visual) checked @endif><label for="s_visual">Visual</label>
+                        <input type="hidden" name="s_visual" value="0">
+<input type="checkbox" name="s_visual" value="1" @if(isset($perfil->s_visual) && $perfil->s_visual) checked @endif><label for="s_visual">Visual</label>
                         
                         <input type="hidden" name="s_tatil" value="0">
-                        <input type="checkbox" name="s_tatil" value="1" @if(isset($perfil->s_tatil) && $perfil->s_tatil) checked @endif><label for="s_tatil">Tátil</label>
+                        <input type="hidden" name="s_tatil" value="0">
+<input type="checkbox" name="s_tatil" value="1" @if(isset($perfil->s_tatil) && $perfil->s_tatil) checked @endif><label for="s_tatil">Tátil</label>
                         
                         <input type="hidden" name="s_outros" value="0">
-                        <input type="checkbox" name="s_outros" value="1" @if(isset($perfil->s_outros) && $perfil->s_outros) checked @endif><label for="s_outros">Outros estímulos</label>
+                        <input type="hidden" name="s_outros" value="0">
+<input type="checkbox" name="s_outros" value="1" @if(isset($perfil->s_outros) && $perfil->s_outros) checked @endif><label for="s_outros">Outros estímulos</label>
                     </div>
                 </div>
 
@@ -291,13 +295,17 @@
     <label>Como o(a) estudante aprende melhor?</label>
     <div class="checkbox-group">
         <input type="hidden" name="aprende_visual_04" value="0">
-        <input type="checkbox" name="aprende_visual_04" value="1" @if(isset($perfil->aprende_visual_04) && $perfil->aprende_visual_04) checked @endif><label for="aprende_visual_04">Recurso visual</label>
+        <input type="hidden" name="aprende_visual_04" value="0">
+<input type="checkbox" name="aprende_visual_04" value="1" @if(isset($perfil->aprende_visual_04) && $perfil->aprende_visual_04) checked @endif><label for="aprende_visual_04">Recurso visual</label>
         <input type="hidden" name="recurso_auditivo_04" value="0">
-        <input type="checkbox" name="recurso_auditivo_04" value="1" @if(isset($perfil->recurso_auditivo_04) && $perfil->recurso_auditivo_04) checked @endif><label for="recurso_auditivo_04">Recurso auditivo</label>
+        <input type="hidden" name="recurso_auditivo_04" value="0">
+<input type="checkbox" name="recurso_auditivo_04" value="1" @if(isset($perfil->recurso_auditivo_04) && $perfil->recurso_auditivo_04) checked @endif><label for="recurso_auditivo_04">Recurso auditivo</label>
         <input type="hidden" name="material_concreto_04" value="0">
-        <input type="checkbox" name="material_concreto_04" value="1" @if(isset($perfil->material_concreto_04) && $perfil->material_concreto_04) checked @endif><label for="material_concreto_04">Material concreto</label>
+        <input type="hidden" name="material_concreto_04" value="0">
+<input type="checkbox" name="material_concreto_04" value="1" @if(isset($perfil->material_concreto_04) && $perfil->material_concreto_04) checked @endif><label for="material_concreto_04">Material concreto</label>
         <input type="hidden" name="outro_identificar_04" value="0">
-        <input type="checkbox" name="outro_identificar_04" value="1" @if(isset($perfil->outro_identificar_04) && $perfil->outro_identificar_04) checked @endif><label for="outro_identificar_04">Outro</label>
+        <input type="hidden" name="outro_identificar_04" value="0">
+<input type="checkbox" name="outro_identificar_04" value="1" @if(isset($perfil->outro_identificar_04) && $perfil->outro_identificar_04) checked @endif><label for="outro_identificar_04">Outro</label>
     </div>
 
     <div class="form-group">
@@ -337,7 +345,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Caso o estudante tenha uma crise ou situação de estresse elevado, o que fazer?</label>
+                    <label>Como a família lida com situações de crise ou estresse do estudante?</label>
                     <textarea rows="3" name="crise_esta_05">{{ isset($perfil->crise_esta_05) ? $perfil->crise_esta_05 : '' }}</textarea>
                 </div>
 
