@@ -1,31 +1,166 @@
-@extends('index')
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Estudante</title>
+    
+    <!-- Importando CSS no Laravel -->
+    <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
+    
+    <style>
+        .container {
+            position: relative;
+        }
 
-@section('title', 'Perfil do Estudante')
+        /* Estilos para a tabela de profissionais */
+        .profissionais-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
 
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
-<link rel="stylesheet" href="{{ asset('css/perfil_estudante_form.css') }}">
-@endsection
+        .profissional-row {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
 
-@section('content')
-@if(session('updateCount'))
-    <div class="custom-toast toast-success show" style="position: fixed; top: 24px; right: 24px; z-index: 9999; background: #28a745; color: #fff; padding: 16px 32px; border-radius: 8px; font-size: 1.15rem; box-shadow: 0 2px 12px rgba(40,167,69,0.15); display: flex; align-items: center; gap: 12px;">
-        <i class='fas fa-check-circle'></i> Perfil atualizado com sucesso! Total de atualizações: {{ session('updateCount') }}
-    </div>
-    <script>
-        setTimeout(function(){
-            document.querySelector('.custom-toast').classList.remove('show');
-            setTimeout(function(){
-                var toast = document.querySelector('.custom-toast');
-                if (toast) toast.remove();
-            }, 500);
-        }, 2200);
-    </script>
-@endif
+        .profissional-row:nth-child(even) {
+            background-color: #ffffff;
+        }
 
+        .profissional-row label {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .profissional-row input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .profissional-field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .profissional-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .profissional-field input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* Estilos para a paginação em abas */
+        .step-tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            position: relative;
+            z-index: 2; /* Acima de tudo */
+        }
+        
+        .step-tab {
+            padding: 10px 15px;
+            background-color: #e0e0e0;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            min-width: 100px;
+            margin-right: 5px;
+        }
+        
+        .step-tab.active {
+            background-color: #d35400;
+            color: white;
+        }
+        
+        /* Estilos para os conteúdos das etapas */
+        .step-content {
+            display: none;
+            position: relative;
+            z-index: 1; /* Na frente das imagens */
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        /* Botões de navegação */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 2; /* Acima de tudo */
+        }
+        
+        .prev-btn, .next-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .prev-btn {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        
+        .next-btn {
+            background-color: #d35400;
+            color: white;
+        }
+        
+        .prev-btn:hover, .next-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* Barra de progresso */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 2; /* Acima de tudo */
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #d35400;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+
+<body>
     <div class="container">
-        <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm">
+        <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" onsubmit="return confirmSubmit(event)">
             @csrf
+            <input type="hidden" name="is_confirmed" id="is_confirmed" value="0">
             <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
             
             <h2>Perfil do Estudante</h2>
@@ -39,9 +174,9 @@
             <div class="step-tabs">
                 <button class="step-tab" data-step="1">Dados Pessoais</button>
                 <button class="step-tab" data-step="2">Perfil do Estudante</button>
-                <button class="step-tab" data-step="3">Personalidade </button>
-                <button class="step-tab" data-step="4">Preferências </button>
-                <button class="step-tab" data-step="5">Informações<br>da Família</button>
+                <button class="step-tab" data-step="3">Personalidade</button>
+                <button class="step-tab" data-step="4">Preferências</button>
+                <button class="step-tab" data-step="5">Informações da Família</button>
                 <button class="step-tab" data-step="6">Profissionais</button>
             </div>
             
@@ -53,15 +188,11 @@
                     <label>Nome do Aluno:</label>
                     <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
                 </div>
-                <div class="form-group">
-                 <label>RA do Aluno:</label>
-                 <input type="text" name="alu_ra" value="{{ $aluno->alu_ra }}" readonly>
-                    </div>
                 
                 <div class="row">
                     <div class="form-group">
                         <label>Ano/Série:</label>
-                        <input type="text" value="{{$aluno->desc_modalidade.' - '. $aluno->serie_desc}}" readonly>
+                        <input type="text" value="{{$aluno->desc_modalidade.'-'.  $aluno->desc_modalidade}}" readonly>
                     </div>
                     
                     <div class="form-group">
@@ -72,11 +203,6 @@
                     <div class="form-group">
                         <label>Idade do aluno:</label>
                         <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>RA do Aluno:</label>
-                        <input type="text" name="alu_ra" value="{{ $aluno->alu_ra }}" readonly>
                     </div>
                 </div>
                 
@@ -195,17 +321,17 @@
                 <h2>II - Personalidade (Continuação)</h2>
                 
                 <div class="form-group">
-                    <label>O que gosta de fazer no tempo livre</label>
+                    <label>Gosta de fazer no tempo livre:</label>
                     <textarea rows="3" name="atividades_livre"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>O que deixa o estudante muito feliz?</label>
+                    <label>Deixa o estudante muito feliz:</label>
                     <textarea rows="3" name="feliz"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>O que deixa o estudante muito triste ou desconfortável?</label>
+                    <label>Deixa o estudante muito triste ou desconfortável:</label>
                     <textarea rows="3" name="triste"></textarea>
                 </div>
                 
@@ -253,7 +379,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Caso sim, como manejar em sala de aula?</label>
+                    <label>Caso sim, como manejar em sala de aula</label>
                     <textarea rows="3" name="manejo_sensibilidade"></textarea>
                 </div>
                 
@@ -281,7 +407,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Como reage no contato com novas pessoas ou situações?</label>
+                    <label>Como reage no contato com novas pessoas ou situações</label>
                     <textarea rows="3" name="reacao_contato"></textarea>
                 </div>
             </div>
@@ -291,7 +417,7 @@
                 <h2>IV - Preferências (Continuação)</h2>
                 
                 <div class="form-group">
-                    <label>O que ajuda a sua interação na escola? E o que dificulta a sua interação na escola?</label>
+                    <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?</label>
                     <textarea rows="3" name="interacao_escola"></textarea>
                 </div>
                 
@@ -326,7 +452,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>O que desperta seu interesse para realizar uma tarefa/atividade? </label>
+                    <label>O que desperta seu interesse para realizar uma tarefa/atividade</label>
                     <textarea rows="3" name="interesse_tarefa"></textarea>
                 </div>
                 
@@ -424,24 +550,27 @@
                     </div>
                 </div>
             </div>
-    </form>
-    </div>
-
-    <!-- Navegação entre etapas -->
-    <div class="step-navigation">
-        <div class="navigation-group">
-            <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
-                <i class="fas fa-arrow-left"></i> Anterior
-            </button>
-            <button type="button" class="next-btn" id="nextBtn" style="display: none;">
-                <i class="fas fa-arrow-right"></i> Próximo
-            </button>
-        </div>
-        <div class="action-group">
-            <button type="button" class="finish-btn" id="finishBtn" style="display: none;">
-                <i class="fas fa-check"></i> Finalizar
-            </button>
-        </div>
+            
+            <!-- Navegação entre etapas -->
+            <div class="step-navigation">
+                <div class="navigation-group">
+                    <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button type="button" class="next-btn" id="nextBtn" style="display: none;">
+                        <i class="fas fa-arrow-right"></i> Próximo
+                    </button>
+                </div>
+                <div class="action-group">
+                    <button type="button" class="finish-btn" id="finishBtn" style="display: none;">
+                        <i class="fas fa-check"></i> Finalizar
+                    </button>
+                    <button type="button" class="btn btn-danger cancel-btn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <style>
@@ -449,11 +578,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 20px 0;
+            margin-top: 30px;
             border-top: 1px solid #ddd;
             background-color: #f8f9fa;
             gap: 20px;
+            width: 100%;
         }
         .navigation-group, .action-group {
             display: flex;
@@ -515,6 +645,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <script>
+    // Função para confirmar o envio do formulário
+    function confirmSubmit(event) {
+        // Se já foi confirmado, permite o envio
+        if (document.getElementById('is_confirmed').value === '1') {
+            return true;
+        }
+        
+        // Impede o envio padrão do formulário
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Mostra confirmação
+        if (confirm('Tem certeza que deseja finalizar e salvar os dados?')) {
+            // Marca como confirmado e envia o formulário
+            document.getElementById('is_confirmed').value = '1';
+            document.getElementById('perfilForm').submit();
+        }
+        
+        return false;
+    }
+    
     // Script para paginação
     // Função para inicializar o formulário
     function initializeForm() {
@@ -525,6 +676,7 @@
         const nextBtn = document.getElementById('nextBtn');
         let currentStep = 1;
         const totalSteps = steps.length;
+        let visitedSteps = new Set([1]); // Rastreia as etapas visitadas
         
         // Atualiza a barra de progresso
         function updateProgressBar() {
@@ -537,32 +689,67 @@
         
         // Mostra a etapa atual
         function showStep(stepNumber) {
+            // Impede navegação direta para etapas não visitadas
+            if (stepNumber > 1 && !visitedSteps.has(stepNumber - 1) && stepNumber !== currentStep) {
+                alert('Por favor, preencha as etapas em ordem.');
+                return false;
+            }
+            
             steps.forEach(step => step.classList.remove('active'));
             tabs.forEach(tab => tab.classList.remove('active'));
             
             document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
             document.querySelector(`.step-tab[data-step="${stepNumber}"]`).classList.add('active');
             
-            // Atualiza a visibilidade dos botões
+            // Mantém a lógica original de visibilidade dos botões
             if (stepNumber === 1) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'block';
-                finishBtn.style.display = 'none';
+                prevBtn.style.display = prevBtn.style.display || 'none';
+                nextBtn.style.display = nextBtn.style.display || 'block';
+                if (finishBtn) finishBtn.style.display = 'none';
             } else if (stepNumber === totalSteps) {
-                prevBtn.style.display = 'block';
+                prevBtn.style.display = prevBtn.style.display || 'block';
                 nextBtn.style.display = 'none';
-                finishBtn.style.display = 'block';
+                if (finishBtn) finishBtn.style.display = 'block';
             } else {
-                prevBtn.style.display = 'block';
-                nextBtn.style.display = 'block';
-                finishBtn.style.display = 'none';
+                prevBtn.style.display = prevBtn.style.display || 'block';
+                nextBtn.style.display = nextBtn.style.display || 'block';
+                if (finishBtn) finishBtn.style.display = 'none';
             }
+            
+            // Marca a etapa como visitada
+            visitedSteps.add(stepNumber);
             
             // Atualiza a barra de progresso
             updateProgressBar();
             
             // Salvar o estado atual no armazenamento de sessão
             sessionStorage.setItem('currentStep', stepNumber);
+            
+            return true;
+        }
+        
+        // Função para validar os campos da etapa atual
+        function validateCurrentStep() {
+            const currentStepElement = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+            const requiredFields = currentStepElement.querySelectorAll('[required]');
+            let isValid = true;
+            
+            // Verifica campos obrigatórios
+            for (let i = 0; i < requiredFields.length; i++) {
+                const field = requiredFields[i];
+                if (!field.value.trim()) {
+                    isValid = false;
+                    // Rola até o primeiro campo inválido
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    break;
+                }
+            }
+            
+            if (!isValid) {
+                alert('Por favor, preencha todos os campos obrigatórios antes de continuar.');
+            }
+            
+            return isValid;
         }
         
         // Eventos para os botões de navegação
@@ -578,8 +765,11 @@
         if (nextBtn) {
             nextBtn.addEventListener('click', function() {
                 if (currentStep < totalSteps) {
-                    currentStep++;
-                    showStep(currentStep);
+                    // Valida os campos antes de avançar
+                    if (validateCurrentStep()) {
+                        currentStep++;
+                        showStep(currentStep);
+                    }
                 }
             });
         }
@@ -589,25 +779,31 @@
             finishBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                // Verifica se estamos na última etapa e o botão Finalizar está visível
-                if (currentStep !== totalSteps || finishBtn.style.display === 'none') {
-                    alert('Por favor, complete todas as etapas do formulário antes de finalizar.');
+                // Verifica se todas as etapas foram visitadas
+                if (visitedSteps.size < totalSteps) {
+                    alert('Por favor, preencha todas as etapas antes de finalizar o cadastro.');
+                    // Vai para a primeira etapa não visitada
+                    for (let i = 1; i <= totalSteps; i++) {
+                        if (!visitedSteps.has(i)) {
+                            currentStep = i;
+                            showStep(currentStep);
+                            break;
+                        }
+                    }
                     return;
                 }
                 
-                // Mensagem de confirmação
-                if (!confirm('Tem certeza que deseja finalizar e salvar os dados?')) {
+                // Valida os campos da última etapa
+                if (!validateCurrentStep()) {
                     return;
                 }
                 
-                // Desabilita o botão de finalizar para evitar múltiplos envios
-                this.disabled = true;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-                
-                // Envia o formulário
+                // Marca como confirmado e envia o formulário
+                document.getElementById('is_confirmed').value = '1';
                 document.getElementById('perfilForm').submit();
             });
-        }      
+        }
+        
         // Evento para o botão Cancelar
         const cancelBtn = document.querySelector('.cancel-btn');
         if (cancelBtn) {
@@ -628,8 +824,18 @@
         
         // Eventos para as abas
         tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                currentStep = parseInt(this.getAttribute('data-step'));
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetStep = parseInt(this.getAttribute('data-step'));
+                
+                // Se estiver tentando avançar para uma etapa não visitada, valida a atual primeiro
+                if (targetStep > currentStep) {
+                    if (!validateCurrentStep()) {
+                        return;
+                    }
+                }
+                
+                currentStep = targetStep;
                 showStep(currentStep);
             });
         });
@@ -645,19 +851,8 @@
     } else {
         initializeForm();
     }
-
-    // Adiciona evento para prevenir envio do formulário via tecla Enter
-    document.getElementById('perfilForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const totalSteps = steps.length;
-        if (currentStep !== totalSteps) {
-            alert('Por favor, complete todas as etapas do formulário antes de finalizar.');
-            return;
-        }
-        // Se estiver na última etapa, permite o envio
-        this.submit();
-    });
     </script>
     
 
-@endsection
+</body>
+</html>
