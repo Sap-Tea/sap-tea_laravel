@@ -20,7 +20,10 @@ class ProcessaResultadosController extends Controller
     // Função para exibir o monitoramento do aluno (ajuste o nome conforme o seu controller)
     public function monitoramentoAluno(Request $request)
     {
-        // Consulta agrupada Comunicação/Linguagem
+        // Obter o ID do aluno da requisição
+        $alunoId = $request->route('id');
+        
+        // Consulta agrupada Comunicação/Linguagem para o aluno específico
         $comunicacao_linguagem_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_com_lin,
@@ -33,6 +36,8 @@ class ProcessaResultadosController extends Controller
                 result_eixo_com_lin r
             JOIN 
                 atividade_com_lin a ON r.fk_id_pro_com_lin = a.id_ati_com_lin
+            WHERE
+                r.fk_result_alu_id_ecomling = ?
             GROUP BY
                 r.fk_id_pro_com_lin,
                 r.fk_result_alu_id_ecomling,
@@ -41,8 +46,8 @@ class ProcessaResultadosController extends Controller
                 a.desc_ati_com_lin
             ORDER BY
                 COUNT(*) DESC
-        ");
-        // Consulta agrupada Comportamento - EXCLUINDO a atividade ECP03 (id=3)
+        ", [$alunoId]);
+        // Consulta agrupada Comportamento - EXCLUINDO a atividade ECP03 (id=3) para o aluno específico
         $comportamento_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_comportamento,
@@ -56,7 +61,9 @@ class ProcessaResultadosController extends Controller
             JOIN 
                 atividade_comportamento a ON r.fk_id_pro_comportamento = a.id_ati_comportamento
             WHERE
-                a.id_ati_comportamento != 3 AND a.cod_ati_comportamento != 'ECP03'
+                r.fk_result_alu_id_comportamento = ? AND
+                a.id_ati_comportamento != 3 AND 
+                a.cod_ati_comportamento != 'ECP03'
             GROUP BY
                 r.fk_id_pro_comportamento,
                 r.fk_result_alu_id_comportamento,
@@ -65,8 +72,8 @@ class ProcessaResultadosController extends Controller
                 a.desc_ati_comportamento
             ORDER BY
                 COUNT(*) DESC
-        ");
-        // Consulta agrupada Interação Socioemocional - EXCLUINDO a atividade EIS01 (id=1)
+        ", [$alunoId]);
+        // Consulta agrupada Interação Socioemocional - EXCLUINDO a atividade EIS01 (id=1) para o aluno específico
         $socioemocional_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_int_socio,
@@ -80,7 +87,9 @@ class ProcessaResultadosController extends Controller
             JOIN 
                 atividade_int_socio a ON r.fk_id_pro_int_socio = a.id_ati_int_socio
             WHERE
-                a.id_ati_int_socio != 1 AND a.cod_ati_int_socio != 'EIS01'
+                r.fk_result_alu_id_int_socio = ? AND
+                a.id_ati_int_socio != 1 AND 
+                a.cod_ati_int_socio != 'EIS01'
             GROUP BY
                 r.fk_id_pro_int_socio,
                 r.fk_result_alu_id_int_socio,
@@ -89,7 +98,7 @@ class ProcessaResultadosController extends Controller
                 a.desc_ati_int_socio
             ORDER BY
                 COUNT(*) DESC
-        ");
+        ", [$alunoId]);
 
         // Garante arrays vazios se não houver dados
         $comunicacao_linguagem_agrupado = $comunicacao_linguagem_agrupado ?: [];
@@ -285,9 +294,24 @@ class ProcessaResultadosController extends Controller
                 continue;
             }
             
-        // Contar atividades de Comportamento (excluindo ECP03)
+            if (isset($item->total)) {
+                $total_eixos += (int)$item->total;
+            }
+        }
+        
+        // Definir os totais individuais para cada eixo
+        $total_comunicacao_linguagem = 0;
+        $total_comportamento = 0;
+        $total_socioemocional = 0;
+        
+        // Calcular totais individuais
+        foreach ($comunicacao_linguagem_agrupado as $item) {
+            if (isset($item->total)) {
+                $total_comunicacao_linguagem += (int)$item->total;
+            }
+        }
+        
         foreach ($comportamento_agrupado as $item) {
-            // Pular ECP03
             if (isset($item->cod_ati_comportamento) && $item->cod_ati_comportamento === 'ECP03') {
                 continue;
             }
@@ -299,28 +323,12 @@ class ProcessaResultadosController extends Controller
         // Contar atividades de Interação Socioemocional (excluindo EIS01)
         foreach ($socioemocional_agrupado as $item) {
             // Pular EIS01
-            if (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') {
-                continue;
-            }
-            if (isset($item->total)) {
-                $total_socioemocional += (int)$item->total;
-            }
-        }
-        
-        // Somar os totais de cada eixo para obter o total geral
-        $total_atividades = $total_comunicacao + $total_comportamento + $total_socioemocional;
-        
-        // Adicionar debug para verificar os totais
-        $debug_totais = [
-            'comunicacao' => $total_comunicacao,
-            'comportamento' => $total_comportamento,
-            'socioemocional' => $total_socioemocional,
-            'total_geral' => $total_atividades
-        ];
         
         // Passar o debug para a view
         $debug_info = json_encode($debug_totais);
-
+        
+        // Log para depuração
+        \Log::info('Debug Info no Controller:', ['debug_info' => $debug_info]);
 
         // Retorna para a view com todas as variáveis necessárias
         return view('rotina_monitoramento.monitoramento_aluno', [

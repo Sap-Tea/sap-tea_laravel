@@ -172,27 +172,26 @@
 
 @section('content')
 @php
-    if (!isset($total_atividades)) $total_atividades = 0;
+    // Debug: Verificar se as variáveis estão definidas
+    \Log::info('Totais no controller:', [
+        'total_atividades' => $total_atividades ?? 'não definido',
+        'total_comunicacao' => $total_comunicacao_linguagem ?? 'não definido',
+        'total_comportamento' => $total_comportamento ?? 'não definido',
+        'total_socioemocional' => $total_socioemocional ?? 'não definido'
+    ]);
+    
+    // Garantir que temos um valor padrão
+    if (!isset($total_atividades)) {
+        $total_atividades = ($total_comunicacao_linguagem ?? 0) + 
+                          ($total_comportamento ?? 0) + 
+                          ($total_socioemocional ?? 0);
+    }
 @endphp
+
+{{-- Total de Atividades --}}
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
-    Total de atividades em todos os eixos: {{ $total_atividades }} {{-- Total dinâmico calculado --}}
+    Total de atividades em todos os eixos: {{ $total_atividades }}
 </div>
-
-@if(isset($debug_info))
-<div class="alert alert-secondary" style="font-size:14px; margin-bottom:20px;">
-    <strong>Detalhes da contagem:</strong><br>
-    @php
-        $debug = json_decode($debug_info);
-    @endphp
-    <ul>
-        <li>Comunicação/Linguagem: {{ $debug->comunicacao }} atividades</li>
-        <li>Comportamento: {{ $debug->comportamento }} atividades (já excluindo ECP03)</li>
-        <li>Socioemocional: {{ $debug->socioemocional }} atividades</li>
-        <li>Total geral: {{ $debug->total_geral }} atividades</li>
-    </ul>
-</div>
-@endif
-
 
 @if(!isset($comunicacao_resultados))
   <div style="color:red;font-weight:bold;">Variável <code>$comunicacao_resultados</code> não está definida nesta view!</div>
