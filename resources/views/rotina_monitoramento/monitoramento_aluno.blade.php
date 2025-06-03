@@ -172,16 +172,26 @@
 
 @section('content')
 @php
-    if (!isset($total_eixos)) $total_eixos = 0;
+    if (!isset($total_atividades)) $total_atividades = 0;
 @endphp
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
-    Total de atividades em todos os eixos: {{ $total_eixos }}
+    Total de atividades em todos os eixos: {{ $total_atividades }} {{-- Total dinâmico calculado --}}
 </div>
 
-@endphp
-<div class="alert alert-info" style="font-size:1.2em; font-weight:bold;">
-    Total de atividades em todos os eixos: {{ $total_eixos }}
+@if(isset($debug_info))
+<div class="alert alert-secondary" style="font-size:14px; margin-bottom:20px;">
+    <strong>Detalhes da contagem:</strong><br>
+    @php
+        $debug = json_decode($debug_info);
+    @endphp
+    <ul>
+        <li>Comunicação/Linguagem: {{ $debug->comunicacao }} atividades</li>
+        <li>Comportamento: {{ $debug->comportamento }} atividades (já excluindo ECP03)</li>
+        <li>Socioemocional: {{ $debug->socioemocional }} atividades</li>
+        <li>Total geral: {{ $debug->total_geral }} atividades</li>
+    </ul>
 </div>
+@endif
 
 
 @if(!isset($comunicacao_resultados))
@@ -361,19 +371,20 @@
     </thead>
     <tbody>
       @php $idx = 0; @endphp
-@foreach($comportamento_agrupado as $linha)
-    @for($q=0; $q<$linha->total; $q++)
-      <tr>
-        <td>{{ $linha->cod_ati_comportamento }}</td>
-        <td>{{ $linha->desc_ati_comportamento }}</td>
-        <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
-     
-        <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
-      </tr>
-    @php $idx++; @endphp
-    @endfor
+@foreach($comportamento_atividades_ordenadas as $linha)
+  {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
+  @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
+    @continue
+  @endif
+  <tr>
+    <td>{{ $linha->cod_ati_comportamento }}</td>
+    <td>{{ $linha->desc_ati_comportamento }}</td>
+    <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
+    <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
+    <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
+    <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
+  </tr>
+  @php $idx++; @endphp
 @endforeach
     </tbody>
   </table>
@@ -397,6 +408,10 @@
     </thead>
     <tbody>
       @foreach($comportamento_agrupado as $linha)
+      {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
+      @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
+        @continue
+      @endif
       <tr>
         <td>{{ $linha->cod_ati_comportamento }}</td>
         <td>{{ $linha->desc_ati_comportamento }}</td>
@@ -423,57 +438,6 @@
       </tr>
       <tr style="background: #ffe066;">
         <th style="width: 5%;">Sim</th>
-        <th style="width: 5%;">Não</th>
-      </tr>
-    </thead>
-    <tbody>
-      @php $idx = 0; @endphp
-@foreach($socioemocional_agrupado as $linha)
-    @for($q=0; $q<$linha->total; $q++)
-      <tr>
-        <td>{{ $linha->cod_ati_int_soc }}</td>
-        <td>{{ $linha->desc_ati_int_soc }}</td>
-        <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
-        <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
-      </tr>
-    @php $idx++; @endphp
-    @endfor
-@endforeach
-    </tbody>
-  </table>
-</div>
-
-{{-- RESUMO - INTERAÇÃO SOCIOEMOCIONAL (AGRUPADO) --}}
-@php
-    if (!isset($socioemocional_agrupado)) $socioemocional_agrupado = [];
-@endphp
-<div class="table-responsive mt-4">
-  <h4>Resumo - Interação Socioemocional (Agrupado)</h4>
-  <table class="table table-bordered" style="background: white;">
-    <thead>
-      <tr style="background: #f8f9fa;">
-        <th>Código</th>
-        <th>Descrição</th>
-        <th>Aluno</th>
-        <th>Fase</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach($socioemocional_agrupado as $linha)
-      <tr>
-        <td>{{ $linha->cod_ati_int_soc }}</td>
-        <td>{{ $linha->desc_ati_int_soc }}</td>
-        <td>{{ $linha->fk_result_alu_id_int_socio }}</td>
-        <td>{{ $linha->tipo_fase_int_socio }}</td>
-        <td>{{ $linha->total }}</td>
-      </tr>
-      @endforeach
-    </tbody>
-  </table>
-</div>
 
     <!-- OBSERVAÇÕES FINAIS -->
     <div class="observations">
