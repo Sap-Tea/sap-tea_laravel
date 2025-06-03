@@ -323,17 +323,26 @@ class ProcessaResultadosController extends Controller
 
 
         // Retorna para a view com todas as variáveis necessárias
-        return view('rotina_monitoramento.monitoramento_aluno', compact(
-            'comunicacao_linguagem_agrupado',
-            'comportamento_agrupado',
-            'socioemocional_agrupado',
-            'comunicacao_atividades_ordenadas',
-            'comportamento_atividades_ordenadas',
-            'socioemocional_atividades_ordenadas',
-            'total_eixos',
-            'total_atividades', // Total dinâmico calculado
-            'debug_info'
-        ));
+        return view('rotina_monitoramento.monitoramento_aluno', [
+            'alunoDetalhado' => $aluno,
+            'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
+            'comportamento_agrupado' => $comportamento_agrupado,
+            'socioemocional_agrupado' => $socioemocional_agrupado,
+            'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
+            'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
+            'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
+            'total_eixos' => $total_eixos,
+            'total_atividades' => $total_atividades, // Adicionado o total de atividades
+            'total_comunicacao' => $total_comunicacao_linguagem,
+            'total_comportamento' => $total_comportamento,
+            'total_socioemocional' => $total_socioemocional,
+            'comunicacao_resultados' => $comunicacao_resultados ?? [],
+            'comportamento_resultados' => $comportamento_resultados ?? [],
+            'socioemocional_resultados' => $socioemocional_resultados ?? [],
+            'data_inicial_com_lin' => $data_inicial_com_lin ?? null,
+            'detalhe' => $detalhe ?? null,
+            'debug_info' => $debug_info // Adicionado para debug
+        ]);
     }
 
     // Chama todos os processamentos de eixo para o aluno informado

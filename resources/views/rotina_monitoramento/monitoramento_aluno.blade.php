@@ -429,7 +429,7 @@
   <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
   <table class="result-table" style="background: #fff;">
     <thead>
-    <tr style="background: #ffe066;">
+      <tr style="background: #ffe066;">
         <th style="width: 8%;" rowspan="2">Código</th>
         <th style="width: 28%;" rowspan="2">Descrição</th>
         <th style="width: 12%;" rowspan="2">Data de aplicação</th>
@@ -438,6 +438,66 @@
       </tr>
       <tr style="background: #ffe066;">
         <th style="width: 5%;">Sim</th>
+        <th style="width: 5%;">Não</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if(isset($socioemocional_atividades_ordenadas) && count($socioemocional_atividades_ordenadas) > 0)
+        @php $idx = 0; @endphp
+        @foreach($socioemocional_atividades_ordenadas as $linha)
+          @if(isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01')
+            @continue
+          @endif
+          <tr>
+            <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
+            <td>{{ $linha->desc_ati_int_socio ?? 'Descrição não disponível' }}</td>
+            <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
+            <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
+            <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
+            <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
+          </tr>
+          @php $idx++; @endphp
+        @endforeach
+      @else
+        <tr>
+          <td colspan="6" style="text-align: center;">Nenhuma atividade socioemocional encontrada.</td>
+        </tr>
+      @endif
+    </tbody>
+  </table>
+</div>
+
+{{-- RESUMO - INTERAÇÃO SOCIOEMOCIONAL (AGRUPADO) --}}
+@if(isset($socioemocional_agrupado) && count($socioemocional_agrupado) > 0)
+<div class="table-responsive mt-4">
+  <h4>Resumo - Interação Socioemocional (Agrupado)</h4>
+  <table class="table table-bordered" style="background: white;">
+    <thead>
+      <tr style="background: #f8f9fa;">
+        <th>Código</th>
+        <th>Descrição</th>
+        <th>Aluno</th>
+        <th>Fase</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($socioemocional_agrupado as $linha)
+        @if(isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01')
+          @continue
+        @endif
+        <tr>
+          <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
+          <td>{{ $linha->desc_ati_int_socio ?? 'Descrição não disponível' }}</td>
+          <td>{{ $linha->fk_result_alu_id_int_socio ?? 'N/A' }}</td>
+          <td>{{ $linha->tipo_fase_int_socio ?? 'N/A' }}</td>
+          <td>{{ $linha->total ?? '0' }}</td>
+        </tr>
+      @endforeach
+    </tbody>
+  </table>
+</div>
+@endif
 
     <!-- OBSERVAÇÕES FINAIS -->
     <div class="observations">
