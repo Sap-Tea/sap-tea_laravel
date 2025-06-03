@@ -154,6 +154,25 @@ class PerfilEstudanteController extends Controller
     ->get(),
         ];
 
+        // Calcula o total de todos os eixos (total_eixos)
+        // Calcula o total de atividades dos três eixos (cada ocorrência em cada eixo)
+        $total_eixos = 0;
+        if (isset($comunicacao_frequencias) && is_iterable($comunicacao_frequencias)) {
+            foreach ($comunicacao_frequencias as $qtd) {
+                $total_eixos += (int)$qtd;
+            }
+        }
+        if (isset($comportamento_frequencias) && is_iterable($comportamento_frequencias)) {
+            foreach ($comportamento_frequencias as $qtd) {
+                $total_eixos += (int)$qtd;
+            }
+        }
+        if (isset($socioemocional_frequencias) && is_iterable($socioemocional_frequencias)) {
+            foreach ($socioemocional_frequencias as $qtd) {
+                $total_eixos += (int)$qtd;
+            }
+        }
+
         return view('rotina_monitoramento.monitoramento_aluno', compact(
             'alunoDetalhado',
             'data_inicial_com_lin',
@@ -167,7 +186,8 @@ class PerfilEstudanteController extends Controller
             'socioemocional_atividades',
             'socioemocional_atividades_ordenadas',
             'socioemocional_atividades_assoc',
-            'debug_atividades_agrupadas'
+            'debug_atividades_agrupadas',
+            'total_eixos'
         ));
     }
 
@@ -457,27 +477,40 @@ $socioemocional_agrupado = DB::select("
     ORDER BY total DESC
 ", [$id]);
 
+// Calcula o total de atividades em todos os eixos (soma dos campos 'total' dos agrupados)
+$total_eixos = 0;
+foreach ($comunicacao_linguagem_agrupado as $item) {
+    if (isset($item->total)) $total_eixos += (int)$item->total;
+}
+foreach ($comportamento_agrupado as $item) {
+    if (isset($item->total)) $total_eixos += (int)$item->total;
+}
+foreach ($socioemocional_agrupado as $item) {
+    if (isset($item->total)) $total_eixos += (int)$item->total;
+}
+
 return view('rotina_monitoramento.monitoramento_aluno', [
-            'alunoDetalhado' => $alunoDetalhado,
-            'professor_nome' => $professor->func_nome,
-            'data_inicial_com_lin' => $data_inicial_com_lin,
-            'comunicacao_resultados' => $comunicacao_resultados,
+    'alunoDetalhado' => $alunoDetalhado,
+    'professor_nome' => $professor->func_nome,
+    'data_inicial_com_lin' => $data_inicial_com_lin,
+    'comunicacao_resultados' => $comunicacao_resultados,
     'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
     'comportamento_agrupado' => $comportamento_agrupado,
     'socioemocional_agrupado' => $socioemocional_agrupado,
-            'comunicacao_atividades' => $comunicacao_atividades,
-            'comportamento_atividades' => $comportamento_atividades,
-            'socioemocional_atividades' => $socioemocional_atividades,
-            'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
-            'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
-            'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
-            'comportamento_resultados' => $comportamento_resultados,
-            'socioemocional_resultados' => $socioemocional_resultados,
-            'comunicacao_propostas' => $comunicacao_propostas,
-            'comportamento_propostas' => $comportamento_propostas,
-            'socioemocional_propostas' => $socioemocional_propostas,
-            'debug_atividades_agrupadas' => $debug_atividades_agrupadas,
-        ]);
+    'comunicacao_atividades' => $comunicacao_atividades,
+    'comportamento_atividades' => $comportamento_atividades,
+    'socioemocional_atividades' => $socioemocional_atividades,
+    'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
+    'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
+    'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
+    'comportamento_resultados' => $comportamento_resultados,
+    'socioemocional_resultados' => $socioemocional_resultados,
+    'comunicacao_propostas' => $comunicacao_propostas,
+    'comportamento_propostas' => $comportamento_propostas,
+    'socioemocional_propostas' => $socioemocional_propostas,
+    'debug_atividades_agrupadas' => $debug_atividades_agrupadas,
+    'total_eixos' => $total_eixos,
+]);
     }
 
     /**
