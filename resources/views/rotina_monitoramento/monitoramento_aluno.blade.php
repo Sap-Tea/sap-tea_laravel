@@ -230,31 +230,6 @@
     }
 @endphp
 
-{{-- DEBUG --}}
-<pre style="background: #f8f8f8; color: #333; border: 1px solid #ccc; padding: 10px;">
-DEBUG:
-total_atividades: {{ var_export($total_atividades, true) }}
-total_dividido: {{ var_export($total_dividido, true) }}
-qtd_percentual: {{ var_export($qtd_percentual, true) }}
-total_comunicacao_linguagem: {{ var_export($total_comunicacao_linguagem ?? null, true) }}
-total_comportamento: {{ var_export($total_comportamento ?? null, true) }}
-total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
-
-// Arrays brutos
-comunicacao_linguagem_agrupado: {{ var_export($comunicacao_linguagem_agrupado ?? [], true) }}
-comportamento_agrupado: {{ var_export($comportamento_agrupado ?? [], true) }}
-socioemocional_agrupado: {{ var_export($socioemocional_agrupado ?? [], true) }}
-
-// Arrays filtrados (apenas itens realmente somados)
-comunicacao_linguagem_filtrado: {{ var_export(collect($comunicacao_linguagem_agrupado ?? [])->filter(function($item){ return !isset($item->cod_ati_com_lin) || $item->cod_ati_com_lin !== 'EIS01'; })->values()->all(), true) }}
-comportamento_filtrado: {{ var_export(collect($comportamento_agrupado ?? [])->filter(function($item){ return !isset($item->cod_ati_comportamento) || $item->cod_ati_comportamento !== 'ECP03'; })->values()->all(), true) }}
-socioemocional_filtrado: {{ var_export(collect($socioemocional_agrupado ?? [])->filter(function($item){ return !( (isset($item->cod_ati_int_soc) && $item->cod_ati_int_soc === 'EIS01') || (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') || (isset($item->fk_id_pro_int_socio) && $item->fk_id_pro_int_socio == 1) ); })->values()->all(), true) }}
-
-// Normalização por eixo (total/total_dividido)
-comunicacao_linguagem_normalizado: {{ var_export(collect($comunicacao_linguagem_agrupado ?? [])->mapWithKeys(function($item) use ($total_dividido) { return [($item->cod_ati_com_lin ?? 'N/A') => (isset($item->total) && $total_dividido > 0 ? round($item->total / $total_dividido, 2) : 0)]; })->all(), true) }}
-comportamento_normalizado: {{ var_export(collect($comportamento_agrupado ?? [])->mapWithKeys(function($item) use ($total_dividido) { return [($item->cod_ati_comportamento ?? 'N/A') => (isset($item->total) && $total_dividido > 0 ? round($item->total / $total_dividido, 2) : 0)]; })->all(), true) }}
-socioemocional_normalizado: {{ var_export(collect($socioemocional_agrupado ?? [])->filter(function($item){ return !( (isset($item->cod_ati_int_soc) && $item->cod_ati_int_soc === 'EIS01') || (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') || (isset($item->fk_id_pro_int_socio) && $item->fk_id_pro_int_socio == 1) ); })->mapWithKeys(function($item) use ($total_dividido) { return [($item->cod_ati_int_soc ?? 'N/A') => (isset($item->total) && $total_dividido > 0 ? round($item->total / $total_dividido, 2) : 0)]; })->all(), true) }}
-</pre>
 
 {{-- Total de Atividades --}}
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
@@ -562,6 +537,7 @@ socioemocional_normalizado: {{ var_export(collect($socioemocional_agrupado ?? []
           <td>{{ $linha->fk_result_alu_id_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->tipo_fase_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->total ?? '0' }}</td>
+          <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido, 2) : 0 }}</td>
         </tr>
       @endforeach
     </tbody>
