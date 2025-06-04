@@ -316,18 +316,51 @@ if ($total_atividades_geral > 0) {
     }
     // Distribui o restante para fechar 40
     $faltam = 40 - $soma_norm;
+    $chaves_validas = array_keys($atividades_unicas); // só as que realmente exibem
     if ($faltam > 0) {
+        // Adiciona +1 nos maiores decimais, só nas válidas
         arsort($decimais);
         foreach (array_keys($decimais) as $key) {
             if ($faltam <= 0) break;
-            $norm_atividades[$key]++;
-            $faltam--;
+            if (in_array($key, $chaves_validas)) {
+                $norm_atividades[$key]++;
+                $faltam--;
+            }
+        }
+    } elseif ($faltam < 0) {
+        // Remove -1 dos menores decimais, só nas válidas
+        asort($decimais);
+        foreach (array_keys($decimais) as $key) {
+            if ($faltam >= 0) break;
+            if (in_array($key, $chaves_validas) && $norm_atividades[$key] > 0) {
+                $norm_atividades[$key]--;
+                $faltam++;
+            }
         }
     }
 }
 // --- FIM NORMALIZAÇÃO POR ATIVIDADE ---
 @endphp
 
+{{-- DEBUG: Soma dos Total Normalizado exibidos --}}
+@php
+    $soma_norm_debug = 0;
+@endphp
+<div class="alert alert-warning" style="font-size:16px; font-weight:bold; margin-bottom:10px;">
+    <span style="color:#b28600;">[DEBUG]</span> Soma dos Total Normalizado exibidos: 
+    @php
+        foreach(array_keys($atividades_unicas) as $k) {
+            $soma_norm_debug += $norm_atividades[$k] ?? 0;
+        }
+    @endphp
+    <span style="color:#267a3e;">{{ $soma_norm_debug }}</span>
+    <br>
+    <span style="font-size:13px; color:#555;">Detalhe por atividade: 
+        @foreach($atividades_unicas as $k => $dados)
+            [{{ $k }}: {{ $norm_atividades[$k] ?? 0 }}]
+        @endforeach
+    </span>
+</div>
 
 {{-- Total de Atividades --}}
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
@@ -511,7 +544,7 @@ if ($total_atividades_geral > 0) {
     </thead>
     <tbody>
       @php $idx = 0; @endphp
-@foreach($comportamento_atividades_ordenadas as $linha)
+@foreach($comportamento_agrupado as $linha)
   {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
   @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
     @continue
@@ -540,17 +573,17 @@ if ($total_atividades_geral > 0) {
 @php
     if (!isset($comportamento_agrupado)) $comportamento_agrupado = [];
 @endphp
-<div class="table-responsive mt-4">
-  <h4>Resumo - Comportamento (Agrupado)</h4>
-  <table class="table table-bordered" style="background: white;">
+<div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+  <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Resumo - Comportamento (Agrupado)</div>
+  <table class="table table-bordered" style="background: #fff;">
     <thead>
-      <tr style="background: #f8f9fa;">
-        <th>Código</th>
-        <th>Descrição</th>
-        <th>Aluno</th>
-        <th>Fase</th>
-        <th>Total</th>
-<th>Total Normalizado</th>
+      <tr style="background: #ffe066;">
+        <th style="width: 8%;">Código</th>
+        <th style="width: 28%;">Descrição</th>
+        <th style="width: 12%;">Aluno</th>
+        <th style="width: 12%;">Fase</th>
+        <th style="width: 12%;">Total</th>
+        <th style="width: 12%;">Total Normalizado</th>
       </tr>
     </thead>
     <tbody>
@@ -565,9 +598,9 @@ if ($total_atividades_geral > 0) {
         <td>{{ $linha->fk_result_alu_id_comportamento }}</td>
         <td>{{ $linha->tipo_fase_comportamento }}</td>
         <td>{{ $linha->total }}</td>
-        <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}</td>
+        <td>{{ $norm_atividades['comp_'.$linha->cod_ati_comportamento] ?? 0 }}</td>
       </tr>
-@endforeach
+      @endforeach
     </tbody>
   </table>
 </div>
