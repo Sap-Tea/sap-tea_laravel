@@ -592,27 +592,31 @@ if ($total_atividades_geral > 0) {
     <tbody>
       @if(isset($socioemocional_atividades_ordenadas) && count($socioemocional_atividades_ordenadas) > 0)
         @php $idx = 0; @endphp
-        @foreach($socioemocional_atividades_ordenadas as $linha)
-          @if((isset($linha->cod_ati_int_soc) && ($linha->cod_ati_int_soc === 'EIS01' || $linha->cod_ati_int_soc == 'EIS01')) || (isset($linha->cod_ati_int_socio) && ($linha->cod_ati_int_socio === 'EIS01' || $linha->cod_ati_int_socio == 'EIS01')))
-            @continue
-          @endif
-          @php
-            $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
-            $key = 'soc_' . $cod;
-            $qtd = $norm_atividades[$key] ?? 0;
-          @endphp
-          @for($q=0; $q<$qtd; $q++)
-            <tr>
-              <td>{{ $linha->cod_ati_int_soc ?? 'N/A' }}</td>
-              <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
-              <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
-              <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
-              <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
-              <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
-            </tr>
-            @php $idx++; @endphp
-          @endfor
-        @endforeach
+        @foreach($socioemocional_agrupado as $linha)
+    @if(
+        (isset($linha->cod_ati_int_soc) && $linha->cod_ati_int_soc === 'EIS01') ||
+        (isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01') ||
+        (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
+    )
+        @continue
+    @endif
+    @php
+        $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
+        $key = 'soc_' . $cod;
+        $qtd = $norm_atividades[$key] ?? 0;
+    @endphp
+    @for($q=0; $q<$qtd; $q++)
+        <tr>
+            <td>{{ $cod ?? 'N/A' }}</td>
+            <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
+            <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
+            <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
+            <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
+            <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
+        </tr>
+        @php $idx++; @endphp
+    @endfor
+@endforeach
       @else
         <tr>
           <td colspan="6" style="text-align: center;">Nenhuma atividade socioemocional encontrada.</td>
