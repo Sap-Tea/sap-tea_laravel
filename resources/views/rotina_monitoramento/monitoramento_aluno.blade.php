@@ -471,7 +471,7 @@ total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
           @endif
           <tr>
             <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
-            <td>{{ $linha->desc_ati_int_socio ?? 'Descrição não disponível' }}</td>
+            <td>{{ $linha->desc_ati_int_socio ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
             <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
             <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
             <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
@@ -509,7 +509,7 @@ total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
         @endif
         <tr>
           <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
-          <td>{{ $linha->desc_ati_int_socio ?? 'Descrição não disponível' }}</td>
+          <td>{{ $linha->desc_ati_int_socio ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
           <td>{{ $linha->fk_result_alu_id_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->tipo_fase_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->total ?? '0' }}</td>
