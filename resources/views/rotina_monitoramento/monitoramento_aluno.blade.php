@@ -203,8 +203,24 @@
             $total_socioemocional += (int)($item->total ?? 0);
         }
     }
-    // Soma final dos totais por eixo
-    $total_atividades = ($total_comunicacao_linguagem ?? 0) + ($total_comportamento ?? 0) + ($total_socioemocional ?? 0);
+    // Soma final dos totais por eixo, considerando apenas o que aparece nos resumos (aplicando os mesmos filtros)
+    $total_atividades = 0;
+    foreach(($comunicacao_linguagem_agrupado ?? []) as $item) {
+        if (isset($item->cod_ati_com_lin) && $item->cod_ati_com_lin === 'EIS01') continue;
+        if (isset($item->total)) $total_atividades += (int)$item->total;
+    }
+    foreach(($comportamento_agrupado ?? []) as $item) {
+        if (isset($item->cod_ati_comportamento) && $item->cod_ati_comportamento === 'ECP03') continue;
+        if (isset($item->total)) $total_atividades += (int)$item->total;
+    }
+    foreach(($socioemocional_agrupado ?? []) as $item) {
+        if (
+            (isset($item->cod_ati_int_soc) && $item->cod_ati_int_soc === 'EIS01') ||
+            (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') ||
+            (isset($item->fk_id_pro_int_socio) && $item->fk_id_pro_int_socio == 1)
+        ) continue;
+        if (isset($item->total)) $total_atividades += (int)$item->total;
+    }
 @endphp
 
 {{-- DEBUG --}}
@@ -466,12 +482,12 @@ total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
       @if(isset($socioemocional_atividades_ordenadas) && count($socioemocional_atividades_ordenadas) > 0)
         @php $idx = 0; @endphp
         @foreach($socioemocional_atividades_ordenadas as $linha)
-          @if(isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01')
+          @if((isset($linha->cod_ati_int_soc) && ($linha->cod_ati_int_soc === 'EIS01' || $linha->cod_ati_int_soc == 'EIS01')) || (isset($linha->cod_ati_int_socio) && ($linha->cod_ati_int_socio === 'EIS01' || $linha->cod_ati_int_socio == 'EIS01')))
             @continue
           @endif
           <tr>
-            <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
-            <td>{{ $linha->desc_ati_int_socio ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
+            <td>{{ $linha->cod_ati_int_soc ?? 'N/A' }}</td>
+            <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
             <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
             <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
             <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
@@ -504,12 +520,16 @@ total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
     </thead>
     <tbody>
       @foreach($socioemocional_agrupado as $linha)
-        @if(isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01')
+        @if(
+          (isset($linha->cod_ati_int_soc) && $linha->cod_ati_int_soc === 'EIS01') ||
+          (isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01') ||
+          (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
+        )
           @continue
         @endif
         <tr>
-          <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
-          <td>{{ $linha->desc_ati_int_socio ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
+          <td>{{ $linha->cod_ati_int_soc ?? 'N/A' }}</td>
+          <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
           <td>{{ $linha->fk_result_alu_id_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->tipo_fase_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->total ?? '0' }}</td>

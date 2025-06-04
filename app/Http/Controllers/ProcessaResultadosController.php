@@ -80,23 +80,26 @@ class ProcessaResultadosController extends Controller
                 r.fk_id_pro_int_socio,
                 r.fk_result_alu_id_int_socio,
                 r.tipo_fase_int_socio,
-                a.cod_ati_int_socio,
-                a.desc_ati_int_socio,
+                a.cod_ati_int_soc,
+                a.desc_ati_int_soc,
+                a.id_ati_int_soc,
                 COUNT(*) AS total
             FROM 
-                result_eixo_int_socio r
+                result_eixo_int_soc r
             JOIN 
-                atividade_int_socio a ON r.fk_id_pro_int_socio = a.id_ati_int_socio
+                atividade_int_soc a ON r.fk_id_pro_int_socio = a.id_ati_int_soc
             WHERE
-                r.fk_result_alu_id_int_socio = ? AND
-                a.id_ati_int_socio != 1 AND 
-                a.cod_ati_int_socio != 'EIS01'
+                r.fk_result_alu_id_int_socio = ?
+                AND a.id_ati_int_soc != 1
+                AND a.cod_ati_int_soc != 'EIS01'
+                AND r.fk_id_pro_int_socio != 1
             GROUP BY
                 r.fk_id_pro_int_socio,
                 r.fk_result_alu_id_int_socio,
                 r.tipo_fase_int_socio,
-                a.cod_ati_int_socio,
-                a.desc_ati_int_socio
+                a.cod_ati_int_soc,
+                a.desc_ati_int_soc,
+                a.id_ati_int_soc
             ORDER BY
                 COUNT(*) DESC
         ", [$alunoId]);
@@ -211,25 +214,17 @@ class ProcessaResultadosController extends Controller
         // Socioemocional - IMPORTANTE: Excluir COMPLETAMENTE a atividade id=1 e código EIS01
         $socioemocional_frequencias = [];
         foreach ($socioemocional_agrupado as $item) {
-            // Filtro para excluir a atividade EIS01 (id=1) de todas as contagens
-            // Verifica se é a atividade com id=1 OU código EIS01
+            // Excluir EIS01 por id da atividade, código OU fk_id_pro_int_socio
             if (
-                (isset($item->id_ati_int_socio) && $item->id_ati_int_socio == 1) ||
-                (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01')
+                (isset($item->id_ati_int_soc) && $item->id_ati_int_soc == 1) ||
+                (isset($item->cod_ati_int_soc) && $item->cod_ati_int_soc === 'EIS01') ||
+                (isset($item->fk_id_pro_int_socio) && $item->fk_id_pro_int_socio == 1)
             ) {
-                // Pula completamente esta atividade
                 continue;
             }
-            
-            $cod = $item->cod_ati_int_socio;
-            $desc = $item->desc_ati_int_socio;
+            $cod = $item->cod_ati_int_soc;
+            $desc = $item->desc_ati_int_soc;
             $total = $item->total;
-            
-            // Verifica novamente pelo código para garantir que não seja EIS01
-            if (strpos($cod, 'EIS01') === 0) {
-                continue;
-            }
-            
             if (!isset($socioemocional_frequencias[$cod])) {
                 $socioemocional_frequencias[$cod] = [
                     'codigo' => $cod,
@@ -246,16 +241,12 @@ class ProcessaResultadosController extends Controller
         // Gera lista conforme frequência
         $socioemocional_atividades_ordenadas = [];
         foreach ($socioemocional_frequencias as $item) {
-            // Garantia extra: nunca incluir EIS01 na lista ordenada
-            if (strpos($item['codigo'], 'EIS01') === 0) {
-                continue;
-            }
-            
+            // Exatamente como no comportamento: não precisa filtrar aqui, já está filtrado
             $repeticoes = $item['total'];
             for ($i = 0; $i < $repeticoes; $i++) {
                 $obj = new \stdClass();
-                $obj->cod_ati_int_socio = $item['codigo'];
-                $obj->desc_ati_int_socio = $item['descricao'];
+                $obj->cod_ati_int_soc = $item['codigo'];
+                $obj->desc_ati_int_soc = $item['descricao'];
                 $socioemocional_atividades_ordenadas[] = $obj;
             }
         }
@@ -270,9 +261,39 @@ class ProcessaResultadosController extends Controller
             if (isset($item->cod_ati_com_lin) && $item->cod_ati_com_lin === 'EIS01') {
                 continue;
             }
-            
             if (isset($item->total)) {
                 $total_eixos += (int)$item->total;
+            }
+        }
+
+        // Soma as atividades de todos os eixos para o total_atividades, excluindo EIS01
+        $total_atividades = 0;
+        foreach ($comunicacao_linguagem_agrupado as $item) {
+            if (isset($item->cod_ati_com_lin) && $item->cod_ati_com_lin === 'EIS01') {
+                continue;
+            }
+            if (isset($item->total)) {
+                $total_atividades += (int)$item->total;
+            }
+        }
+        foreach ($comportamento_agrupado as $item) {
+            if (isset($item->cod_ati_comportamento) && $item->cod_ati_comportamento === 'ECP03') {
+                continue;
+            }
+            if (isset($item->total)) {
+                $total_atividades += (int)$item->total;
+            }
+        }
+        foreach ($socioemocional_agrupado as $item) {
+            if (
+                (isset($item->cod_ati_int_soc) && $item->cod_ati_int_soc === 'EIS01') ||
+                (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') ||
+                (isset($item->fk_id_pro_int_socio) && $item->fk_id_pro_int_socio == 1)
+            ) {
+                continue;
+            }
+            if (isset($item->total)) {
+                $total_atividades += (int)$item->total;
             }
         }
         
@@ -290,11 +311,14 @@ class ProcessaResultadosController extends Controller
         
         // Soma as atividades do eixo Interação Socioemocional, EXCLUINDO a EIS01
         foreach ($socioemocional_agrupado as $item) {
-            // Pula a atividade EIS01
-            if (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') {
+            // Pula qualquer EIS01 por código ou vínculo (total geral)
+            if (
+                (isset($item->cod_ati_int_soc) && $item->cod_ati_int_soc === 'EIS01') ||
+                (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') ||
+                (isset($item->fk_id_pro_int_socio) && $item->fk_id_pro_int_socio == 1)
+            ) {
                 continue;
             }
-            
             if (isset($item->total)) {
                 $total_eixos += (int)$item->total;
             }
@@ -323,8 +347,18 @@ class ProcessaResultadosController extends Controller
         
         // Contar atividades de Interação Socioemocional (excluindo EIS01)
         foreach ($socioemocional_agrupado as $item) {
-            // Pular EIS01
-        
+            // Pula qualquer EIS01 por código ou vínculo
+            if (
+                (isset($item->cod_ati_int_soc) && $item->cod_ati_int_soc === 'EIS01') ||
+                (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') ||
+                (isset($item->fk_id_pro_int_socio) && $item->fk_id_pro_int_socio == 1)
+            ) {
+                continue;
+            }
+            if (isset($item->total)) {
+                $total_socioemocional += (int)$item->total;
+            }
+        }
         // Passar o debug para a view
         $debug_info = json_encode($debug_totais);
         
