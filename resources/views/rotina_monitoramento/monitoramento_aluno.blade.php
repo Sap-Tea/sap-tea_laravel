@@ -233,7 +233,7 @@
 
 {{-- Total de Atividades --}}
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
-    Total de atividades em todos os eixos: $total_atividades
+    Total de atividades em todos os eixos: {{ $total_atividades }}
 @if(!isset($alunoDetalhado) || empty($alunoDetalhado))
     <div style="background: #ffdddd; color: #a00; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
         <strong>Erro:</strong> Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.
