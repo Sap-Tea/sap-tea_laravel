@@ -180,23 +180,45 @@
         'total_socioemocional' => $total_socioemocional ?? 'não definido'
     ]);
     
-    // Garantir que temos um valor padrão
-    if (!isset($total_atividades)) {
-        $total_atividades = ($total_comunicacao_linguagem ?? 0) + 
-                          ($total_comportamento ?? 0) + 
-                          ($total_socioemocional ?? 0);
+    // Garantir que os totais usados já excluem ECP03/EIS01 (devem vir do controller já filtrados)
+    // Se não vierem, usar os resumos por eixo para calcular corretamente
+    if (!isset($total_comunicacao_linguagem) && isset($comunicacao_linguagem_agrupado)) {
+        $total_comunicacao_linguagem = 0;
+        foreach ($comunicacao_linguagem_agrupado as $item) {
+            if (isset($item->cod_ati_com_lin) && $item->cod_ati_com_lin === 'EIS01') continue;
+            $total_comunicacao_linguagem += (int)($item->total ?? 0);
+        }
     }
+    if (!isset($total_comportamento) && isset($comportamento_agrupado)) {
+        $total_comportamento = 0;
+        foreach ($comportamento_agrupado as $item) {
+            if (isset($item->cod_ati_comportamento) && $item->cod_ati_comportamento === 'ECP03') continue;
+            $total_comportamento += (int)($item->total ?? 0);
+        }
+    }
+    if (!isset($total_socioemocional) && isset($socioemocional_agrupado)) {
+        $total_socioemocional = 0;
+        foreach ($socioemocional_agrupado as $item) {
+            if (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') continue;
+            $total_socioemocional += (int)($item->total ?? 0);
+        }
+    }
+    // Soma final dos totais por eixo
+    $total_atividades = ($total_comunicacao_linguagem ?? 0) + ($total_comportamento ?? 0) + ($total_socioemocional ?? 0);
 @endphp
+
+{{-- DEBUG --}}
+<pre style="background: #f8f8f8; color: #333; border: 1px solid #ccc; padding: 10px;">
+DEBUG:
+total_atividades: {{ var_export($total_atividades, true) }}
+total_comunicacao_linguagem: {{ var_export($total_comunicacao_linguagem ?? null, true) }}
+total_comportamento: {{ var_export($total_comportamento ?? null, true) }}
+total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
+</pre>
 
 {{-- Total de Atividades --}}
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
     Total de atividades em todos os eixos: {{ $total_atividades }}
-</div>
-
-@if(!isset($comunicacao_resultados))
-  <div style="color:red;font-weight:bold;">Variável <code>$comunicacao_resultados</code> não está definida nesta view!</div>
-@endif
-
 @if(!isset($alunoDetalhado) || empty($alunoDetalhado))
     <div style="background: #ffdddd; color: #a00; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
         <strong>Erro:</strong> Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.
