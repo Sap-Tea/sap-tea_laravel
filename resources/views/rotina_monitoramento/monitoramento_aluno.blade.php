@@ -254,6 +254,78 @@
             }
         }
     }
+// --- NORMALIZAÇÃO POR ATIVIDADE (SOMA EXATA 40) ---
+$atividades_unicas = [];
+
+// Comunicação/Linguagem
+foreach (($comunicacao_linguagem_agrupado ?? []) as $linha) {
+    if (!isset($linha->cod_ati_com_lin)) continue;
+    $key = 'com_'.$linha->cod_ati_com_lin;
+    $atividades_unicas[$key] = [
+        'eixo' => 'comunicacao',
+        'codigo' => $linha->cod_ati_com_lin,
+        'descricao' => $linha->desc_ati_com_lin,
+        'aluno' => $linha->fk_result_alu_id_ecomling,
+        'fase' => $linha->tipo_fase_com_lin,
+        'total' => $linha->total ?? 0,
+    ];
+}
+// Comportamento (exclui ECP03)
+foreach (($comportamento_agrupado ?? []) as $linha) {
+    if (!isset($linha->cod_ati_comportamento) || $linha->cod_ati_comportamento === 'ECP03') continue;
+    $key = 'comp_'.$linha->cod_ati_comportamento;
+    $atividades_unicas[$key] = [
+        'eixo' => 'comportamento',
+        'codigo' => $linha->cod_ati_comportamento,
+        'descricao' => $linha->desc_ati_comportamento,
+        'aluno' => $linha->fk_result_alu_id_comportamento,
+        'fase' => $linha->tipo_fase_comportamento,
+        'total' => $linha->total ?? 0,
+    ];
+}
+// Socioemocional (exclui EIS01 e fk_id_pro_int_socio == 1)
+foreach (($socioemocional_agrupado ?? []) as $linha) {
+    $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
+    if (
+        (isset($cod) && $cod === 'EIS01') ||
+        (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
+    ) continue;
+    $key = 'soc_'.$cod;
+    $atividades_unicas[$key] = [
+        'eixo' => 'socioemocional',
+        'codigo' => $cod,
+        'descricao' => $linha->desc_ati_int_soc ?? $linha->descricao ?? '',
+        'aluno' => $linha->fk_result_alu_id_int_socio ?? '',
+        'fase' => $linha->tipo_fase_int_socio ?? '',
+        'total' => $linha->total ?? 0,
+    ];
+}
+// Soma total de todas atividades
+$total_atividades_geral = array_sum(array_column($atividades_unicas, 'total'));
+
+// Calcula normalizados
+$norm_atividades = [];
+$decimais = [];
+$soma_norm = 0;
+if ($total_atividades_geral > 0) {
+    foreach ($atividades_unicas as $key => $dados) {
+        $val = ($dados['total'] / $total_atividades_geral) * 40;
+        $norm_atividades[$key] = floor($val);
+        $decimais[$key] = $val - floor($val);
+        $soma_norm += $norm_atividades[$key];
+    }
+    // Distribui o restante para fechar 40
+    $faltam = 40 - $soma_norm;
+    if ($faltam > 0) {
+        arsort($decimais);
+        foreach (array_keys($decimais) as $key) {
+            if ($faltam <= 0) break;
+            $norm_atividades[$key]++;
+            $faltam--;
+        }
+    }
+}
+// --- FIM NORMALIZAÇÃO POR ATIVIDADE ---
 @endphp
 
 
@@ -368,7 +440,11 @@
     <tbody>
       @php $idx = 0; @endphp
 @foreach($comunicacao_linguagem_agrupado as $linha)
-    @for($q=0; $q<$linha->total; $q++)
+    @php
+        $key = 'com_' . $linha->cod_ati_com_lin;
+        $qtd = $norm_atividades[$key] ?? 0;
+    @endphp
+    @for($q=0; $q<$qtd; $q++)
       <tr>
         <td>{{ $linha->cod_ati_com_lin }}</td>
         <td>{{ $linha->desc_ati_com_lin }}</td>
@@ -377,7 +453,7 @@
         <td><input type="checkbox" name="linguagem[{{$idx}}][nao_inicial]" value="1"></td>
         <td><input type="text" name="linguagem[{{$idx}}][observacoes]" style="width:100%"></td>
       </tr>
-    @php $idx++; @endphp
+      @php $idx++; @endphp
     @endfor
 @endforeach
     </tbody>
@@ -440,15 +516,21 @@
   @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
     @continue
   @endif
-  <tr>
-    <td>{{ $linha->cod_ati_comportamento }}</td>
-    <td>{{ $linha->desc_ati_comportamento }}</td>
-    <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
-    <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
-    <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
-    <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
-  </tr>
-  @php $idx++; @endphp
+  @php
+    $key = 'comp_' . $linha->cod_ati_comportamento;
+    $qtd = $norm_atividades[$key] ?? 0;
+  @endphp
+  @for($q=0; $q<$qtd; $q++)
+    <tr>
+      <td>{{ $linha->cod_ati_comportamento }}</td>
+      <td>{{ $linha->desc_ati_comportamento }}</td>
+      <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
+      <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
+      <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
+      <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
+    </tr>
+    @php $idx++; @endphp
+  @endfor
 @endforeach
     </tbody>
   </table>
@@ -514,15 +596,22 @@
           @if((isset($linha->cod_ati_int_soc) && ($linha->cod_ati_int_soc === 'EIS01' || $linha->cod_ati_int_soc == 'EIS01')) || (isset($linha->cod_ati_int_socio) && ($linha->cod_ati_int_socio === 'EIS01' || $linha->cod_ati_int_socio == 'EIS01')))
             @continue
           @endif
-          <tr>
-            <td>{{ $linha->cod_ati_int_soc ?? 'N/A' }}</td>
-            <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
-            <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
-            <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
-            <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
-            <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
-          </tr>
-          @php $idx++; @endphp
+          @php
+            $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
+            $key = 'soc_' . $cod;
+            $qtd = $norm_atividades[$key] ?? 0;
+          @endphp
+          @for($q=0; $q<$qtd; $q++)
+            <tr>
+              <td>{{ $linha->cod_ati_int_soc ?? 'N/A' }}</td>
+              <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
+              <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
+              <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
+              <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
+              <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
+            </tr>
+            @php $idx++; @endphp
+          @endfor
         @endforeach
       @else
         <tr>
