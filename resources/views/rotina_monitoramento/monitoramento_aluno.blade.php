@@ -228,6 +228,32 @@
     if ($qtd_percentual > 40) {
         $qtd_percentual = 40;
     }
+    // Normalização dos totais dos eixos para inteiros cuja soma seja 40
+    $totais_eixos = [
+        'comunicacao' => $total_comunicacao_linguagem ?? 0,
+        'comportamento' => $total_comportamento ?? 0,
+        'socioemocional' => $total_socioemocional ?? 0,
+    ];
+    $total_geral = array_sum($totais_eixos);
+    $normalizados = ['comunicacao' => 0, 'comportamento' => 0, 'socioemocional' => 0];
+    $decimais = [];
+    if ($total_geral > 0) {
+        foreach ($totais_eixos as $k => $v) {
+            $val = ($v / $total_geral) * 40;
+            $normalizados[$k] = floor($val);
+            $decimais[$k] = $val - floor($val);
+        }
+        $soma = array_sum($normalizados);
+        $faltam = 40 - $soma;
+        if ($faltam > 0) {
+            arsort($decimais);
+            foreach (array_keys($decimais) as $k) {
+                if ($faltam <= 0) break;
+                $normalizados[$k]++;
+                $faltam--;
+            }
+        }
+    }
 @endphp
 
 
@@ -377,15 +403,15 @@
     </thead>
     <tbody>
       @foreach($comunicacao_linguagem_agrupado as $linha)
-      <tr>
+    <tr>
         <td>{{ $linha->cod_ati_com_lin }}</td>
         <td>{{ $linha->desc_ati_com_lin }}</td>
         <td>{{ $linha->fk_result_alu_id_ecomling }}</td>
         <td>{{ $linha->tipo_fase_com_lin }}</td>
         <td>{{ $linha->total }}</td>
-<td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido, 2) : 0 }}</td>
-      </tr>
-      @endforeach
+        <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}</td>
+    </tr>
+@endforeach
     </tbody>
   </table>
 </div>
@@ -457,9 +483,9 @@
         <td>{{ $linha->fk_result_alu_id_comportamento }}</td>
         <td>{{ $linha->tipo_fase_comportamento }}</td>
         <td>{{ $linha->total }}</td>
-<td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido, 2) : 0 }}</td>
+        <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}</td>
       </tr>
-      @endforeach
+@endforeach
     </tbody>
   </table>
 </div>
@@ -537,9 +563,9 @@
           <td>{{ $linha->fk_result_alu_id_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->tipo_fase_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->total ?? '0' }}</td>
-          <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido, 2) : 0 }}</td>
+          <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}</td>
         </tr>
-      @endforeach
+@endforeach
     </tbody>
   </table>
 </div>
