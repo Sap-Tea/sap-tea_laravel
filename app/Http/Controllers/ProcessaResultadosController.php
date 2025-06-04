@@ -20,8 +20,10 @@ class ProcessaResultadosController extends Controller
     // Função para exibir o monitoramento do aluno (ajuste o nome conforme o seu controller)
     public function monitoramentoAluno(Request $request)
     {
-        abort(500, 'DEBUG: Este controller está sendo executado!');
-        // Consulta agrupada Comunicação/Linguagem
+        // Obter o ID do aluno da requisição
+        $alunoId = $request->route('id');
+        
+        // Consulta agrupada Comunicação/Linguagem para o aluno específico
         $comunicacao_linguagem_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_com_lin,
@@ -34,6 +36,8 @@ class ProcessaResultadosController extends Controller
                 result_eixo_com_lin r
             JOIN 
                 atividade_com_lin a ON r.fk_id_pro_com_lin = a.id_ati_com_lin
+            WHERE
+                r.fk_result_alu_id_ecomling = ?
             GROUP BY
                 r.fk_id_pro_com_lin,
                 r.fk_result_alu_id_ecomling,
@@ -42,8 +46,8 @@ class ProcessaResultadosController extends Controller
                 a.desc_ati_com_lin
             ORDER BY
                 COUNT(*) DESC
-        ");
-        // Consulta agrupada Comportamento
+        ", [$alunoId]);
+        // Consulta agrupada Comportamento - EXCLUINDO a atividade ECP03 (id=3) para o aluno específico
         $comportamento_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_comportamento,
@@ -56,6 +60,10 @@ class ProcessaResultadosController extends Controller
                 result_eixo_comportamento r
             JOIN 
                 atividade_comportamento a ON r.fk_id_pro_comportamento = a.id_ati_comportamento
+            WHERE
+                r.fk_result_alu_id_comportamento = ? AND
+                a.id_ati_comportamento != 3 AND 
+                a.cod_ati_comportamento != 'ECP03'
             GROUP BY
                 r.fk_id_pro_comportamento,
                 r.fk_result_alu_id_comportamento,
@@ -64,8 +72,8 @@ class ProcessaResultadosController extends Controller
                 a.desc_ati_comportamento
             ORDER BY
                 COUNT(*) DESC
-        ");
-        // Consulta agrupada Interação Socioemocional
+        ", [$alunoId]);
+        // Consulta agrupada Interação Socioemocional - EXCLUINDO a atividade EIS01 (id=1) para o aluno específico
         $socioemocional_agrupado = DB::select("
             SELECT 
                 r.fk_id_pro_int_socio,
@@ -78,6 +86,10 @@ class ProcessaResultadosController extends Controller
                 result_eixo_int_socio r
             JOIN 
                 atividade_int_socio a ON r.fk_id_pro_int_socio = a.id_ati_int_socio
+            WHERE
+                r.fk_result_alu_id_int_socio = ? AND
+                a.id_ati_int_socio != 1 AND 
+                a.cod_ati_int_socio != 'EIS01'
             GROUP BY
                 r.fk_id_pro_int_socio,
                 r.fk_result_alu_id_int_socio,
@@ -86,7 +98,7 @@ class ProcessaResultadosController extends Controller
                 a.desc_ati_int_socio
             ORDER BY
                 COUNT(*) DESC
-        ");
+        ", [$alunoId]);
 
         // Garante arrays vazios se não houver dados
         $comunicacao_linguagem_agrupado = $comunicacao_linguagem_agrupado ?: [];
@@ -139,24 +151,28 @@ class ProcessaResultadosController extends Controller
             }
         }
 
-        // Comportamento (ECP03 aparece apenas uma vez, sem contagem de frequência)
+        // Comportamento - IMPORTANTE: Excluir COMPLETAMENTE a atividade id=3 e código ECP03 de todas as contagens e resumos
         $comportamento_frequencias = [];
         foreach ($comportamento_agrupado as $item) {
-            $cod = $item->cod_ati_comportamento;
-            $desc = $item->desc_ati_comportamento;
-            // Se for ECP03, adiciona apenas uma vez e ignora a contagem
-            if (strpos($cod, 'ECP03') === 0) {
-                if (!isset($comportamento_frequencias[$cod])) {
-                    $comportamento_frequencias[$cod] = [
-                        'codigo' => $cod,
-                        'descricao' => $desc,
-                        'total' => 1 // Sempre 1
-                    ];
-                }
+            // Filtro mais abrangente: exclui a atividade ECP03 (id=3) de todas as contagens
+            // Verifica se é a atividade com id=3 OU código ECP03
+            if (
+                (isset($item->id_ati_comportamento) && $item->id_ati_comportamento == 3) ||
+                (isset($item->cod_ati_comportamento) && $item->cod_ati_comportamento === 'ECP03')
+            ) {
+                // Pula completamente esta atividade
                 continue;
             }
-            // Para os demais, faz a contagem normalmente
+            
+            $cod = $item->cod_ati_comportamento;
+            $desc = $item->desc_ati_comportamento;
             $total = $item->total;
+            
+            // Verifica novamente pelo código para garantir que não seja ECP03
+            if (strpos($cod, 'ECP03') === 0) {
+                continue;
+            }
+            
             if (!isset($comportamento_frequencias[$cod])) {
                 $comportamento_frequencias[$cod] = [
                     'codigo' => $cod,
@@ -166,11 +182,18 @@ class ProcessaResultadosController extends Controller
             }
             $comportamento_frequencias[$cod]['total'] += $total;
         }
+        
         // Ordena por total desc
         usort($comportamento_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
-        // Gera lista conforme frequência (ECP03 só entra uma vez)
+        
+        // Gera lista conforme frequência
         $comportamento_atividades_ordenadas = [];
         foreach ($comportamento_frequencias as $item) {
+            // Garantia extra: nunca incluir ECP03 na lista ordenada
+            if (strpos($item['codigo'], 'ECP03') === 0) {
+                continue;
+            }
+            
             $repeticoes = $item['total'];
             for ($i = 0; $i < $repeticoes; $i++) {
                 $obj = new \stdClass();
@@ -184,12 +207,28 @@ class ProcessaResultadosController extends Controller
             }
         }
 
-        // Socioemocional
+        // Socioemocional - IMPORTANTE: Excluir COMPLETAMENTE a atividade id=1 e código EIS01
         $socioemocional_frequencias = [];
         foreach ($socioemocional_agrupado as $item) {
+            // Filtro para excluir a atividade EIS01 (id=1) de todas as contagens
+            // Verifica se é a atividade com id=1 OU código EIS01
+            if (
+                (isset($item->id_ati_int_socio) && $item->id_ati_int_socio == 1) ||
+                (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01')
+            ) {
+                // Pula completamente esta atividade
+                continue;
+            }
+            
             $cod = $item->cod_ati_int_socio;
             $desc = $item->desc_ati_int_socio;
             $total = $item->total;
+            
+            // Verifica novamente pelo código para garantir que não seja EIS01
+            if (strpos($cod, 'EIS01') === 0) {
+                continue;
+            }
+            
             if (!isset($socioemocional_frequencias[$cod])) {
                 $socioemocional_frequencias[$cod] = [
                     'codigo' => $cod,
@@ -199,10 +238,20 @@ class ProcessaResultadosController extends Controller
             }
             $socioemocional_frequencias[$cod]['total'] += $total;
         }
+        
+        // Ordena por total desc
         usort($socioemocional_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
+        
+        // Gera lista conforme frequência
         $socioemocional_atividades_ordenadas = [];
         foreach ($socioemocional_frequencias as $item) {
-            for ($i = 0; $i < $item['total']; $i++) {
+            // Garantia extra: nunca incluir EIS01 na lista ordenada
+            if (strpos($item['codigo'], 'EIS01') === 0) {
+                continue;
+            }
+            
+            $repeticoes = $item['total'];
+            for ($i = 0; $i < $repeticoes; $i++) {
                 $obj = new \stdClass();
                 $obj->cod_ati_int_socio = $item['codigo'];
                 $obj->desc_ati_int_socio = $item['descricao'];
@@ -211,50 +260,97 @@ class ProcessaResultadosController extends Controller
         }
         // --- FIM NOVO ---
 
-        // DEBUG: Mostra o conteúdo dos agrupados antes do cálculo do total
-        dd([
+        // Manter o cálculo original para os totais dos resumos
+        $total_eixos = 0;
+        
+        // Soma as atividades do eixo Comunicação/Linguagem
+        foreach ($comunicacao_linguagem_agrupado as $item) {
+            // Pula a atividade EIS01 se por acaso estiver aqui
+            if (isset($item->cod_ati_com_lin) && $item->cod_ati_com_lin === 'EIS01') {
+                continue;
+            }
+            
+            if (isset($item->total)) {
+                $total_eixos += (int)$item->total;
+            }
+        }
+        
+        // Soma as atividades do eixo Comportamento, EXCLUINDO a ECP03
+        foreach ($comportamento_agrupado as $item) {
+            // Pula a atividade ECP03
+            if (isset($item->cod_ati_comportamento) && $item->cod_ati_comportamento === 'ECP03') {
+                continue;
+            }
+            
+            if (isset($item->total)) {
+                $total_eixos += (int)$item->total;
+            }
+        }
+        
+        // Soma as atividades do eixo Interação Socioemocional, EXCLUINDO a EIS01
+        foreach ($socioemocional_agrupado as $item) {
+            // Pula a atividade EIS01
+            if (isset($item->cod_ati_int_socio) && $item->cod_ati_int_socio === 'EIS01') {
+                continue;
+            }
+            
+            if (isset($item->total)) {
+                $total_eixos += (int)$item->total;
+            }
+        }
+        
+        // Definir os totais individuais para cada eixo
+        $total_comunicacao_linguagem = 0;
+        $total_comportamento = 0;
+        $total_socioemocional = 0;
+        
+        // Calcular totais individuais
+        foreach ($comunicacao_linguagem_agrupado as $item) {
+            if (isset($item->total)) {
+                $total_comunicacao_linguagem += (int)$item->total;
+            }
+        }
+        
+        foreach ($comportamento_agrupado as $item) {
+            if (isset($item->cod_ati_comportamento) && $item->cod_ati_comportamento === 'ECP03') {
+                continue;
+            }
+            if (isset($item->total)) {
+                $total_comportamento += (int)$item->total;
+            }
+        }
+        
+        // Contar atividades de Interação Socioemocional (excluindo EIS01)
+        foreach ($socioemocional_agrupado as $item) {
+            // Pular EIS01
+        
+        // Passar o debug para a view
+        $debug_info = json_encode($debug_totais);
+        
+        // Log para depuração
+        \Log::info('Debug Info no Controller:', ['debug_info' => $debug_info]);
+
+        // Retorna para a view com todas as variáveis necessárias
+        return view('rotina_monitoramento.monitoramento_aluno', [
+            'alunoDetalhado' => $aluno,
             'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
             'comportamento_agrupado' => $comportamento_agrupado,
-            'socioemocional_agrupado' => $socioemocional_agrupado
+            'socioemocional_agrupado' => $socioemocional_agrupado,
+            'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
+            'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
+            'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
+            'total_eixos' => $total_eixos,
+            'total_atividades' => $total_atividades, // Adicionado o total de atividades
+            'total_comunicacao' => $total_comunicacao_linguagem,
+            'total_comportamento' => $total_comportamento,
+            'total_socioemocional' => $total_socioemocional,
+            'comunicacao_resultados' => $comunicacao_resultados ?? [],
+            'comportamento_resultados' => $comportamento_resultados ?? [],
+            'socioemocional_resultados' => $socioemocional_resultados ?? [],
+            'data_inicial_com_lin' => $data_inicial_com_lin ?? null,
+            'detalhe' => $detalhe ?? null,
+            'debug_info' => $debug_info // Adicionado para debug
         ]);
-        // Calcula o total de atividades somando todos os campos 'total' dos agrupados
-        $total_eixos = 0;
-        foreach ($comunicacao_linguagem_agrupado as $item) {
-            if (is_array($item) && isset($item['total'])) {
-                $total_eixos += (int)$item['total'];
-            } elseif (is_object($item) && isset($item->total)) {
-                $total_eixos += (int)$item->total;
-            }
-        }
-        foreach ($comportamento_agrupado as $item) {
-            if (is_array($item) && isset($item['total'])) {
-                $total_eixos += (int)$item['total'];
-            } elseif (is_object($item) && isset($item->total)) {
-                $total_eixos += (int)$item->total;
-            }
-        }
-        foreach ($socioemocional_agrupado as $item) {
-            if (is_array($item) && isset($item['total'])) {
-                $total_eixos += (int)$item['total'];
-            } elseif (is_object($item) && isset($item->total)) {
-                $total_eixos += (int)$item->total;
-            }
-        }
-
-
-        // Passa a variável para a view
-
-
-        // Retorna para a view
-        return view('rotina_monitoramento.monitoramento_aluno', compact(
-            'comunicacao_linguagem_agrupado',
-            'comportamento_agrupado',
-            'socioemocional_agrupado',
-            'comunicacao_atividades_ordenadas',
-            'comportamento_atividades_ordenadas',
-            'socioemocional_atividades_ordenadas',
-            'total_eixos'
-        ));
     }
 
     // Chama todos os processamentos de eixo para o aluno informado

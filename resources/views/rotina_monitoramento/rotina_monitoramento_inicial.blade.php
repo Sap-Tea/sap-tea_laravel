@@ -160,12 +160,7 @@
                     <td><select name="atividade2_realizada"><option value="">Selecione</option><option value="sim">Sim</option><option value="nao">Não</option></select></td>
                     <td><input type="text" name="atividade2_obs" value="{{ old('atividade2_obs') }}"></td>
                 </tr>
-                <tr>
-                    <td>ECM03 - A mágica de compartilhar</td>
-                    <td><input type="date" name="atividade3_data" value="{{ old('atividade3_data') }}"></td>
-                    <td><select name="atividade3_realizada"><option value="">Selecione</option><option value="sim">Sim</option><option value="nao">Não</option></select></td>
-                    <td><input type="text" name="atividade3_obs" value="{{ old('atividade3_obs') }}"></td>
-                </tr>
+                {{-- ECM03 (view) / ECP03 (banco) removido por regra de negócio: não exibir nem permitir marcação desta atividade para o eixo Comportamento --}}
                 <tr>
                     <td>ECM04 - A mágica do cuidar</td>
                     <td><input type="date" name="atividade4_data" value="{{ old('atividade4_data') }}"></td>

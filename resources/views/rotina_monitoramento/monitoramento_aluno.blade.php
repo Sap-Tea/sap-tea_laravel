@@ -172,17 +172,26 @@
 
 @section('content')
 @php
-    if (!isset($total_eixos)) $total_eixos = 0;
+    // Debug: Verificar se as variáveis estão definidas
+    \Log::info('Totais no controller:', [
+        'total_atividades' => $total_atividades ?? 'não definido',
+        'total_comunicacao' => $total_comunicacao_linguagem ?? 'não definido',
+        'total_comportamento' => $total_comportamento ?? 'não definido',
+        'total_socioemocional' => $total_socioemocional ?? 'não definido'
+    ]);
+    
+    // Garantir que temos um valor padrão
+    if (!isset($total_atividades)) {
+        $total_atividades = ($total_comunicacao_linguagem ?? 0) + 
+                          ($total_comportamento ?? 0) + 
+                          ($total_socioemocional ?? 0);
+    }
 @endphp
+
+{{-- Total de Atividades --}}
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
-    Total de atividades em todos os eixos: {{ $total_eixos }}
+    Total de atividades em todos os eixos: {{ $total_atividades }}
 </div>
-
-@endphp
-<div class="alert alert-info" style="font-size:1.2em; font-weight:bold;">
-    Total de atividades em todos os eixos: {{ $total_eixos }}
-</div>
-
 
 @if(!isset($comunicacao_resultados))
   <div style="color:red;font-weight:bold;">Variável <code>$comunicacao_resultados</code> não está definida nesta view!</div>
@@ -361,19 +370,20 @@
     </thead>
     <tbody>
       @php $idx = 0; @endphp
-@foreach($comportamento_agrupado as $linha)
-    @for($q=0; $q<$linha->total; $q++)
-      <tr>
-        <td>{{ $linha->cod_ati_comportamento }}</td>
-        <td>{{ $linha->desc_ati_comportamento }}</td>
-        <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
-     
-        <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
-      </tr>
-    @php $idx++; @endphp
-    @endfor
+@foreach($comportamento_atividades_ordenadas as $linha)
+  {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
+  @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
+    @continue
+  @endif
+  <tr>
+    <td>{{ $linha->cod_ati_comportamento }}</td>
+    <td>{{ $linha->desc_ati_comportamento }}</td>
+    <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
+    <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
+    <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
+    <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
+  </tr>
+  @php $idx++; @endphp
 @endforeach
     </tbody>
   </table>
@@ -397,6 +407,10 @@
     </thead>
     <tbody>
       @foreach($comportamento_agrupado as $linha)
+      {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
+      @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
+        @continue
+      @endif
       <tr>
         <td>{{ $linha->cod_ati_comportamento }}</td>
         <td>{{ $linha->desc_ati_comportamento }}</td>
@@ -414,7 +428,7 @@
   <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
   <table class="result-table" style="background: #fff;">
     <thead>
-    <tr style="background: #ffe066;">
+      <tr style="background: #ffe066;">
         <th style="width: 8%;" rowspan="2">Código</th>
         <th style="width: 28%;" rowspan="2">Descrição</th>
         <th style="width: 12%;" rowspan="2">Data de aplicação</th>
@@ -427,28 +441,33 @@
       </tr>
     </thead>
     <tbody>
-      @php $idx = 0; @endphp
-@foreach($socioemocional_agrupado as $linha)
-    @for($q=0; $q<$linha->total; $q++)
-      <tr>
-        <td>{{ $linha->cod_ati_int_soc }}</td>
-        <td>{{ $linha->desc_ati_int_soc }}</td>
-        <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
-        <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
-      </tr>
-    @php $idx++; @endphp
-    @endfor
-@endforeach
+      @if(isset($socioemocional_atividades_ordenadas) && count($socioemocional_atividades_ordenadas) > 0)
+        @php $idx = 0; @endphp
+        @foreach($socioemocional_atividades_ordenadas as $linha)
+          @if(isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01')
+            @continue
+          @endif
+          <tr>
+            <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
+            <td>{{ $linha->desc_ati_int_socio ?? 'Descrição não disponível' }}</td>
+            <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
+            <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
+            <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
+            <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
+          </tr>
+          @php $idx++; @endphp
+        @endforeach
+      @else
+        <tr>
+          <td colspan="6" style="text-align: center;">Nenhuma atividade socioemocional encontrada.</td>
+        </tr>
+      @endif
     </tbody>
   </table>
 </div>
 
 {{-- RESUMO - INTERAÇÃO SOCIOEMOCIONAL (AGRUPADO) --}}
-@php
-    if (!isset($socioemocional_agrupado)) $socioemocional_agrupado = [];
-@endphp
+@if(isset($socioemocional_agrupado) && count($socioemocional_agrupado) > 0)
 <div class="table-responsive mt-4">
   <h4>Resumo - Interação Socioemocional (Agrupado)</h4>
   <table class="table table-bordered" style="background: white;">
@@ -463,17 +482,21 @@
     </thead>
     <tbody>
       @foreach($socioemocional_agrupado as $linha)
-      <tr>
-        <td>{{ $linha->cod_ati_int_soc }}</td>
-        <td>{{ $linha->desc_ati_int_soc }}</td>
-        <td>{{ $linha->fk_result_alu_id_int_socio }}</td>
-        <td>{{ $linha->tipo_fase_int_socio }}</td>
-        <td>{{ $linha->total }}</td>
-      </tr>
+        @if(isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01')
+          @continue
+        @endif
+        <tr>
+          <td>{{ $linha->cod_ati_int_socio ?? 'N/A' }}</td>
+          <td>{{ $linha->desc_ati_int_socio ?? 'Descrição não disponível' }}</td>
+          <td>{{ $linha->fk_result_alu_id_int_socio ?? 'N/A' }}</td>
+          <td>{{ $linha->tipo_fase_int_socio ?? 'N/A' }}</td>
+          <td>{{ $linha->total ?? '0' }}</td>
+        </tr>
       @endforeach
     </tbody>
   </table>
 </div>
+@endif
 
     <!-- OBSERVAÇÕES FINAIS -->
     <div class="observations">
