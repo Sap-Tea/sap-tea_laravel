@@ -221,12 +221,15 @@
         ) continue;
         if (isset($item->total)) $total_atividades += (int)$item->total;
     }
+    // Variável com divisão do total por 40
+    $total_dividido = round($total_atividades / 40, 2);
 @endphp
 
 {{-- DEBUG --}}
 <pre style="background: #f8f8f8; color: #333; border: 1px solid #ccc; padding: 10px;">
 DEBUG:
 total_atividades: {{ var_export($total_atividades, true) }}
+total_dividido: {{ var_export($total_dividido, true) }}
 total_comunicacao_linguagem: {{ var_export($total_comunicacao_linguagem ?? null, true) }}
 total_comportamento: {{ var_export($total_comportamento ?? null, true) }}
 total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
@@ -234,7 +237,7 @@ total_socioemocional: {{ var_export($total_socioemocional ?? null, true) }}
 
 {{-- Total de Atividades --}}
 <div class="alert alert-info" style="font-size:18px; font-weight:bold; margin-bottom:20px;">
-    Total de atividades em todos os eixos: {{ $total_atividades }}
+    Total de atividades em todos os eixos: $total_atividades
 @if(!isset($alunoDetalhado) || empty($alunoDetalhado))
     <div style="background: #ffdddd; color: #a00; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
         <strong>Erro:</strong> Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.
