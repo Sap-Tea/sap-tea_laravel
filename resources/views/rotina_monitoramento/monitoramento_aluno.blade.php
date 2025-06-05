@@ -171,6 +171,19 @@
 @endsection
 
 @section('content')
+
+{{-- DEBUG DISTRIBUIÇÃO NORMALIZADA --}}
+@if(isset($atividades_unicas) && isset($norm_atividades))
+<div style="background: #ffe066; color: #333; border: 2px solid #b28600; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+    <b>[DEBUG] Distribuição Normalizada</b><br>
+    <b>Total esperado:</b> 40<br>
+    <b>Soma dos normalizados:</b> {{ array_sum($norm_atividades) }}<br>
+    <b>Atividades únicas:</b> <pre style="display:inline;">{{ print_r($atividades_unicas, true) }}</pre><br>
+    <b>Normalizados:</b> <pre style="display:inline;">{{ print_r($norm_atividades, true) }}</pre><br>
+    <b>Decimais:</b> <pre style="display:inline;">{{ print_r($decimais ?? [], true) }}</pre>
+</div>
+@endif
+
 @php
     // Debug: Verificar se as variáveis estão definidas
     \Log::info('Totais no controller:', [
@@ -222,7 +235,7 @@
         if (isset($item->total)) $total_atividades += (int)$item->total;
     }
     // Variável com divisão do total por 40
-    $total_dividido = round($total_atividades / 40, 2);
+    $total_dividido = round($total_atividades / 40, 1);
     // Percentual: total_atividades / total_dividido * 100, limitado a 40
     $qtd_percentual = ($total_dividido > 0) ? round($total_atividades / $total_dividido * 100, 2) : 0;
     if ($qtd_percentual > 40) {
@@ -496,7 +509,138 @@ if ($total_atividades_geral > 0) {
 {{-- RESUMO - COMUNICAÇÃO/LINGUAGEM (AGRUPADO) --}}
 @php
     if (!isset($comunicacao_linguagem_agrupado)) $comunicacao_linguagem_agrupado = [];
+    // Garante arrays de debug SEMPRE definidos para evitar erro de variável indefinida
+    $debug_detalhe_com = [];
+    $debug_detalhe_comp = [];
+    $debug_detalhe_soc = [];
+    // Defina o divisor global para debug ANTES de qualquer bloco de debug
+    $debug_divisor = ($total_atividades ?? 0) > 0 ? round($total_atividades / 40, 2) : 0;
+
+    // --- Ajuste de normalização para soma exata 40 ---
+    $eixos = [
+        'comunicacao' => 0,
+        'comportamento' => 0,
+        'socioemocional' => 0
+    ];
+    $eixos_bruto = [
+        'comunicacao' => 0.0,
+        'comportamento' => 0.0,
+        'socioemocional' => 0.0
+    ];
+    $eixos_residuo = [
+        'comunicacao' => 0.0,
+        'comportamento' => 0.0,
+        'socioemocional' => 0.0
+    ];
+    // Comunicação/Linguagem
+    $total_com = 0;
+    foreach($comunicacao_linguagem_agrupado as $linha) {
+        $total_com += $linha->total ?? 0;
+    }
+    $bruto_com = ($debug_divisor > 0) ? $total_com / $debug_divisor : 0;
+    $eixos_bruto['comunicacao'] = $bruto_com;
+    $eixos['comunicacao'] = round($bruto_com);
+    $eixos_residuo['comunicacao'] = $bruto_com - round($bruto_com);
+    // Comportamento
+    $total_comp = 0;
+    foreach($comportamento_agrupado as $linha) {
+        $total_comp += $linha->total ?? 0;
+    }
+    $bruto_comp = ($debug_divisor > 0) ? $total_comp / $debug_divisor : 0;
+    $eixos_bruto['comportamento'] = $bruto_comp;
+    $eixos['comportamento'] = round($bruto_comp);
+    $eixos_residuo['comportamento'] = $bruto_comp - round($bruto_comp);
+    // Socioemocional
+    $total_soc = 0;
+    foreach($socioemocional_agrupado as $linha) {
+        $total_soc += $linha->total ?? 0;
+    }
+    $bruto_soc = ($debug_divisor > 0) ? $total_soc / $debug_divisor : 0;
+    $eixos_bruto['socioemocional'] = $bruto_soc;
+    $eixos['socioemocional'] = round($bruto_soc);
+    $eixos_residuo['socioemocional'] = $bruto_soc - round($bruto_soc);
+    // Soma inicial
+    $soma = $eixos['comunicacao'] + $eixos['comportamento'] + $eixos['socioemocional'];
+    // Ajuste se necessário
+    $faltam = 40 - $soma;
+    $ajuste_passos = [];
+    if ($faltam != 0) {
+        // Para cada unidade de ajuste, aplica sempre no maior (ou menor) resíduo
+        for ($i = 0; abs($faltam) > 0; $i++) {
+            // Ordena resíduos decrescentes se faltam>0 (arredonda para cima quem tem maior decimal), crescentes se faltam<0
+            $ordem = $eixos_residuo;
+            arsort($ordem); // maiores resíduos primeiro
+            if ($faltam < 0) {
+                asort($ordem); // menores resíduos primeiro
+            }
+            $k = array_key_first($ordem); // pega o eixo prioritário
+            $ajuste_passos[] = [
+                'eixo'=>$k,
+                'antes'=>$eixos[$k],
+                'residuo'=>$eixos_residuo[$k],
+                'ajuste'=>($faltam > 0) ? 1 : -1
+            ];
+            $eixos[$k] += ($faltam > 0) ? 1 : -1;
+            $faltam += ($faltam > 0) ? -1 : 1;
+        }
+    }
+    // Para debug visual
+    $debug_soma_arredondados_com = $eixos['comunicacao'];
+    $debug_soma_arredondados_comp = $eixos['comportamento'];
+    $debug_soma_arredondados_soc = $eixos['socioemocional'];
+    $debug_soma_total = $debug_soma_arredondados_com + $debug_soma_arredondados_comp + $debug_soma_arredondados_soc;
 @endphp
+<div style="background:#ffe066; color:#333; border:2px solid #b28600; border-radius:8px; padding:16px; margin-bottom:20px;">
+    <b>[DEBUG AJUSTE EIXOS - Passo a Passo]</b><br>
+    <b>Divisor (total/40):</b> <span style="color:#176ca7">{{ $debug_divisor }}</span><br>
+    <b>Bruto:</b> Comunicação/Linguagem = <b>{{ number_format($eixos_bruto['comunicacao'], 3) }}</b>, Comportamento = <b>{{ number_format($eixos_bruto['comportamento'], 3) }}</b>, Socioemocional = <b>{{ number_format($eixos_bruto['socioemocional'], 3) }}</b><br>
+    <b>Arredondado inicial:</b> Comunicação/Linguagem = <b>{{ round($eixos_bruto['comunicacao']) }}</b>, Comportamento = <b>{{ round($eixos_bruto['comportamento']) }}</b>, Socioemocional = <b>{{ round($eixos_bruto['socioemocional']) }}</b><br>
+    <b>Resíduo:</b> Comunicação/Linguagem = <b>{{ number_format($eixos_residuo['comunicacao'], 3) }}</b>, Comportamento = <b>{{ number_format($eixos_residuo['comportamento'], 3) }}</b>, Socioemocional = <b>{{ number_format($eixos_residuo['socioemocional'], 3) }}</b><br>
+    @if(count($ajuste_passos)>0)
+        <b>Ajuste aplicado para fechar 40:</b>
+        <ul>
+            @foreach($ajuste_passos as $passo)
+                <li>Eixo <b>{{ ucfirst($passo['eixo']) }}</b>: valor antes do ajuste = {{ $passo['antes'] }}, resíduo = {{ number_format($passo['residuo'],3) }} ({{ $passo['residuo']>=0?'+':'' }}{{ number_format($passo['residuo'],3) }})</li>
+            @endforeach
+        </ul>
+    @else
+        <b>Nenhum ajuste necessário, soma já era 40.</b>
+    @endif
+    <b>Resultado final:</b> Comunicação/Linguagem = <b>{{ $debug_soma_arredondados_com }}</b>, Comportamento = <b>{{ $debug_soma_arredondados_comp }}</b>, Socioemocional = <b>{{ $debug_soma_arredondados_soc }}</b> <br>
+    <b>Soma final:</b> <span style="font-size:18px;color:#267a3e;">{{ $debug_soma_total }}</span>
+</div>
+
+<div style="background:#ffe066; color:#333; border:2px solid #b28600; border-radius:8px; padding:16px; margin-bottom:20px;">
+    <b>[DEBUG GLOBAL - Soma dos 3 Eixos]</b><br>
+    <b>Comunicação/Linguagem:</b> {{ $debug_soma_arredondados_com }}<br>
+    <b>Comportamento:</b> {{ $debug_soma_arredondados_comp }}<br>
+    <b>Socioemocional:</b> {{ $debug_soma_arredondados_soc }}<br>
+    <b style="font-size:18px;">Soma Final dos 3 Eixos:</b> <span style="color:#267a3e; font-size:20px; font-weight:bold;">{{ $debug_soma_total }}</span>
+    @if($debug_soma_total == 40)
+        <span style="color:#267a3e; font-weight:bold;">✔️ OK</span>
+    @else
+        <span style="color:#a00; font-weight:bold;">❌ Corrija! (Deve ser 40)</span>
+    @endif
+    <hr>
+    <b>Detalhe Comunicação/Linguagem:</b>
+    <ul style="margin:8px 0 0 16px;">
+        @foreach($debug_detalhe_com as $d)
+            <li><b>{{ $d['cod'] }}</b>: bruto = <span style="color:#888">{{ number_format($d['bruto'], 1) }}</span>, arredondado = <span style="color:#267a3e; font-weight:bold;">{{ $d['arred'] }}</span></li>
+        @endforeach
+    </ul>
+    <b>Detalhe Comportamento:</b>
+    <ul style="margin:8px 0 0 16px;">
+        @foreach($debug_detalhe_comp as $d)
+            <li><b>{{ $d['cod'] }}</b>: bruto = <span style="color:#888">{{ number_format($d['bruto'], 1) }}</span>, arredondado = <span style="color:#267a3e; font-weight:bold;">{{ $d['arred'] }}</span></li>
+        @endforeach
+    </ul>
+    <b>Detalhe Socioemocional:</b>
+    <ul style="margin:8px 0 0 16px;">
+        @foreach($debug_detalhe_soc as $d)
+            <li><b>{{ $d['cod'] }}</b>: bruto = <span style="color:#888">{{ number_format($d['bruto'], 1) }}</span>, arredondado = <span style="color:#267a3e; font-weight:bold;">{{ $d['arred'] }}</span></li>
+        @endforeach
+    </ul>
+</div>
 <div class="table-responsive mt-4">
   <h4>Resumo - Comunicação/Linguagem (Agrupado)</h4>
   <table class="table table-bordered" style="background: white;">
@@ -518,7 +662,14 @@ if ($total_atividades_geral > 0) {
         <td>{{ $linha->fk_result_alu_id_ecomling }}</td>
         <td>{{ $linha->tipo_fase_com_lin }}</td>
         <td>{{ $linha->total }}</td>
-        <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}</td>
+        <td>
+    <span style="font-size:12px;color:#888;">
+        {{ number_format($linha->total / $total_dividido, 1) }}
+    </span><br>
+    <span style="font-weight:bold;">
+        {{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}
+    </span>
+</td>
     </tr>
 @endforeach
     </tbody>
@@ -598,7 +749,14 @@ if ($total_atividades_geral > 0) {
         <td>{{ $linha->fk_result_alu_id_comportamento }}</td>
         <td>{{ $linha->tipo_fase_comportamento }}</td>
         <td>{{ $linha->total }}</td>
-        <td>{{ $norm_atividades['comp_'.$linha->cod_ati_comportamento] ?? 0 }}</td>
+        <td>
+    <span style="font-size:12px;color:#888;">
+        {{ number_format($linha->total / $total_dividido, 1) }}
+    </span><br>
+    <span style="font-weight:bold;">
+        {{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}
+    </span>
+</td>
       </tr>
       @endforeach
     </tbody>
@@ -661,6 +819,44 @@ if ($total_atividades_geral > 0) {
 
 {{-- RESUMO - INTERAÇÃO SOCIOEMOCIONAL (AGRUPADO) --}}
 @if(isset($socioemocional_agrupado) && count($socioemocional_agrupado) > 0)
+@php
+    // Defina o divisor global para debug ANTES de qualquer bloco de debug
+    $debug_divisor = ($total_atividades ?? 0) > 0 ? round($total_atividades / 40, 2) : 0;
+@endphp
+@php
+    $debug_soma_arredondados_com = 0;
+    if (!isset($debug_detalhe_com)) $debug_detalhe_com = [];
+@endphp
+@php
+    $debug_soma_arredondados_comp = 0;
+    if (!isset($debug_detalhe_comp)) $debug_detalhe_comp = [];
+@endphp
+@php
+    $debug_soma_arredondados_soc = 0;
+    if (!isset($debug_detalhe_soc)) $debug_detalhe_soc = [];
+@endphp
+<div style="background:#ffe066; color:#333; border:2px solid #b28600; border-radius:8px; padding:16px; margin-bottom:20px;">
+    <b>[DEBUG Distribuição - Socioemocional]</b><br>
+    <b>Divisor (total/40):</b> <span style="color:#176ca7">{{ $debug_divisor }}</span><br>
+    <b>Atividades:</b>
+    <ul style="margin:8px 0 0 16px;">
+        @foreach($socioemocional_agrupado as $linha)
+            @php
+                $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
+                $bruto = ($debug_divisor > 0) ? ($linha->total ?? 0) / $debug_divisor : 0;
+                $arred = round($bruto);
+                $debug_soma_arredondados_soc += $arred;
+            @endphp
+            <li>
+                <b>{{ $cod }}</b>:
+                bruto = <span style="color:#888">{{ number_format($bruto, 1) }}</span>,
+                arredondado = <span style="color:#267a3e; font-weight:bold;">{{ $arred }}</span>
+            </li>
+        @endforeach
+    </ul>
+    <b>Soma dos arredondados:</b> <span style="color:#267a3e; font-size:18px">{{ $debug_soma_arredondados_soc }}</span>
+</div>
+
 <div class="table-responsive mt-4">
   <h4>Resumo - Interação Socioemocional (Agrupado)</h4>
   <table class="table table-bordered" style="background: white;">
@@ -689,7 +885,14 @@ if ($total_atividades_geral > 0) {
           <td>{{ $linha->fk_result_alu_id_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->tipo_fase_int_socio ?? 'N/A' }}</td>
           <td>{{ $linha->total ?? '0' }}</td>
-          <td>{{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}</td>
+          <td>
+    <span style="font-size:12px;color:#888;">
+        {{ number_format($linha->total / $total_dividido, 1) }}
+    </span><br>
+    <span style="font-weight:bold;">
+        {{ ($total_dividido > 0 && isset($linha->total)) ? round($linha->total / $total_dividido) : 0 }}
+    </span>
+</td>
         </tr>
 @endforeach
     </tbody>
