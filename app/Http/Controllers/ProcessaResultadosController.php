@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\EixoComunicacaoLinguagem;
 use App\Models\EixoComportamento;
 use App\Models\EixoInteracaoSocEmocional;
@@ -21,6 +22,13 @@ class ProcessaResultadosController extends Controller
     {
         // Obter o ID do aluno da requisição
         $alunoId = $request->route('id');
+
+        // Consultar dados do aluno
+        $aluno = DB::table('aluno')->where('id_aluno', $alunoId)->first();
+        
+        if (!$aluno) {
+            return redirect()->back()->with('error', 'Aluno não encontrado!');
+        }
         
         // Consulta agrupada Comunicação/Linguagem para o aluno específico
         $comunicacao_linguagem_agrupado = DB::select("
@@ -357,35 +365,31 @@ class ProcessaResultadosController extends Controller
                 $total_socioemocional += (int)$item->total;
             }
         }
-        // Passar o debug para a view
-        $debug_info = json_encode($debug_totais);
-        
-        // Log para depuração
-        \Log::info('Debug Info no Controller:', ['debug_info' => $debug_info]);
 
-        // Retorna para a view com todas as variáveis necessárias
-        return view('rotina_monitoramento.monitoramento_aluno', [
-            'alunoDetalhado' => $aluno,
-            'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
-            'comportamento_agrupado' => $comportamento_agrupado,
-            'socioemocional_agrupado' => $socioemocional_agrupado,
-            'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
-            'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
-            'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
-            'total_eixos' => $total_eixos,
-            'total_atividades' => $total_atividades, // Adicionado o total de atividades
-            'total_comunicacao' => $total_comunicacao_linguagem,
-            'total_comportamento' => $total_comportamento,
-            'total_socioemocional' => $total_socioemocional,
-            'comunicacao_resultados' => $comunicacao_resultados ?? [],
-            'comportamento_resultados' => $comportamento_resultados ?? [],
-            'socioemocional_resultados' => $socioemocional_resultados ?? [],
-            'data_inicial_com_lin' => $data_inicial_com_lin ?? null,
-            'detalhe' => $detalhe ?? null,
-        ]);
-
-// Todo o código de ordenação e manipulação deve vir antes do return view(...)
-// Se precisar dessas operações, mova para antes do return.
+        // --- NORMALIZAÇÃO GLOBAL DAS ATIVIDADES DOS 3 EIXOS ---
+        // Junta todas as atividades dos três eixos em um único array
+        $todas_atividades = [];
+        foreach ($comunicacao_atividades_ordenadas as $item) {
+            $todas_atividades[] = [
+                'codigo' => $item->cod_ati_com_lin,
+                'descricao' => $item->desc_ati_com_lin,
+                'eixo' => 'comunicacao',
+            ];
+        }
+        foreach ($comportamento_atividades_ordenadas as $item) {
+            $todas_atividades[] = [
+                'codigo' => $item->cod_ati_comportamento,
+                'descricao' => $item->desc_ati_comportamento,
+                'eixo' => 'comportamento',
+            ];
+        }
+        foreach ($socioemocional_atividades_ordenadas as $item) {
+            $todas_atividades[] = [
+                'codigo' => $item->cod_ati_int_soc ?? $item->cod_ati_int_socio,
+                'descricao' => $item->desc_ati_int_soc ?? $item->desc_ati_int_socio,
+                'eixo' => 'socioemocional',
+            ];
+        }
 
 $socioemocional_frequencias = [];
 foreach ($socioemocional_agrupado as $item) {
@@ -501,6 +505,12 @@ foreach ($comportamento_agrupado as $item) {
 
 // Contar atividades de Interação Socioemocional (excluindo EIS01)
 // (Se necessário, coloque o foreach correto aqui, dentro do método monitoramentoAluno)
+        // Calcula totais por eixo para os logs
+        $total_comunicacao_linguagem = count($comunicacao_atividades_ordenadas);
+        $total_comportamento = count($comportamento_atividades_ordenadas);
+        $total_socioemocional = count($socioemocional_atividades_ordenadas);
+        $total_eixos = $total_comunicacao_linguagem + $total_comportamento + $total_socioemocional;
+        
         // --- NORMALIZAÇÃO GLOBAL DAS ATIVIDADES DOS 3 EIXOS ---
         // Junta todas as atividades dos três eixos em um único array
         $todas_atividades = [];
@@ -547,40 +557,123 @@ foreach ($comportamento_agrupado as $item) {
         // Fator arredondado igual à planilha: 1 casa decimal
         $fator = $total_atividades > 0 ? round($total_atividades / 40, 1) : 1;
 
-        // --- NORMALIZAÇÃO EXATA DA PLANILHA: fator = total_atividades / 40, round igual Excel ---
-        $soma_normalizados = 0;
+        // --- SOLUÇÃO EXATAMENTE IGUAL À PLANILHA ---
+        
+        // Calcula o fator determinante (X) como na planilha
+        // Na planilha: 99/40 = 2,475 que foi arredondado para 2,5
+        $fator_determinante = round($total_atividades / 40, 1);
+        Log::info('Fator determinante (X) = ' . $fator_determinante);
+        
+        // Aplica o fator determinante para cada atividade, exatamente como na planilha
         foreach ($atividades_agrupadas as $i => $atv) {
-            $normalizado = $atv['total'] / $fator;
-            // O Excel usa arredondamento padrão (round), não floor!
-            $atividades_agrupadas[$i]['aplicacoes'] = round($normalizado, 0, PHP_ROUND_HALF_UP);
-            $soma_normalizados += $atividades_agrupadas[$i]['aplicacoes'];
+            // Divide a somatória pelo fator determinante
+            $valor_normalizado = $atv['total'] / $fator_determinante;
+            
+            // Arredonda para o inteiro mais próximo com função de arredondamento específica
+            // Para replicar exatamente o comportamento do Excel
+            $atividades_agrupadas[$i]['aplicacoes'] = $this->arredondarExcel($valor_normalizado);
+            $atividades_agrupadas[$i]['valor_exato'] = $valor_normalizado; // Para debug
         }
-        // Ajuste final: se a soma for diferente de 40, corrige para garantir soma exata
-        if ($soma_normalizados !== 40) {
-            // Se passou de 40, tira 1 dos maiores normalizados; se ficou abaixo, soma 1 nos maiores
-            $diff = 40 - $soma_normalizados;
-            // Ordena pelo valor decimal original para ajuste proporcional
-            $ajuste = [];
-            foreach ($atividades_agrupadas as $i => $atv) {
-                $ajuste[$i] = ($atv['total'] / $fator) - round($atv['total'] / $fator, 0, PHP_ROUND_HALF_UP);
-            }
+        
+        // Verificar se a soma é exatamente 40
+        $soma_final = 0;
+        foreach ($atividades_agrupadas as $atv) {
+            $soma_final += $atv['aplicacoes'];
+        }
+        
+        // Log para debug
+        Log::info('NORMALIZAÇÃO - SOMA APÓS ARREDONDAMENTO = ' . $soma_final . ' (deve ser 40)');
+        
+        // GARANTIA ABSOLUTA - Ajuste obrigatório para total exato de 40
+        if ($soma_final != 40) {
+            Log::warning('AJUSTE FINAL NECESSÁRIO: ' . (40 - $soma_final));
+            $diff = 40 - $soma_final;
+            
+            // Primeira estratégia: ajustar pelos valores originais
             if ($diff > 0) {
-                arsort($ajuste); // maiores restos positivos
-                $indices = array_keys($ajuste);
-                for ($j = 0; $j < $diff; $j++) {
-                    $atividades_agrupadas[$indices[$j]]['aplicacoes'] += 1;
+                // Adicionar pontos restantes aos itens com maiores valores originais
+                $indices_por_total = [];
+                foreach ($atividades_agrupadas as $i => $atv) {
+                    $indices_por_total[$i] = $atv['total'];
                 }
-            } elseif ($diff < 0) {
-                asort($ajuste); // menores restos negativos
-                $indices = array_keys($ajuste);
-                for ($j = 0; $j < abs($diff); $j++) {
-                    if ($atividades_agrupadas[$indices[$j]]['aplicacoes'] > 0) {
-                        $atividades_agrupadas[$indices[$j]]['aplicacoes'] -= 1;
+                arsort($indices_por_total);
+                
+                $i = 0;
+                foreach ($indices_por_total as $idx => $total) {
+                    if ($i < $diff) {
+                        $atividades_agrupadas[$idx]['aplicacoes'] += 1;
+                        $i++;
+                    } else {
+                        break;
+                    }
+                }
+            } else if ($diff < 0) {
+                // Remover pontos excedentes dos itens com menores valores originais
+                $indices_por_total = [];
+                foreach ($atividades_agrupadas as $i => $atv) {
+                    $indices_por_total[$i] = $atv['total'];
+                }
+                asort($indices_por_total); // Ordem crescente
+                
+                foreach ($indices_por_total as $idx => $total) {
+                    if ($diff < 0 && $atividades_agrupadas[$idx]['aplicacoes'] > 0) {
+                        $quanto_tirar = min(abs($diff), $atividades_agrupadas[$idx]['aplicacoes']);
+                        $atividades_agrupadas[$idx]['aplicacoes'] -= $quanto_tirar;
+                        $diff += $quanto_tirar;
+                        if ($diff == 0) break;
                     }
                 }
             }
         }
-        // Agora a soma dos 3 eixos é exatamente 40, igual ao Excel.
+        
+        // VERIFICAÇÃO FINAL RIGOROSA - Se ainda não está 40, força o ajuste
+        // Verificamos novamente se chegamos exatamente a 40
+        $soma_final = 0;
+        foreach ($atividades_agrupadas as $atv) {
+            $soma_final += $atv['aplicacoes'];
+        }
+        
+        if ($soma_final != 40) {
+            Log::error('FORÇANDO AJUSTE FINAL. Soma atual = ' . $soma_final);
+            $diff = 40 - $soma_final;
+            
+            if ($diff > 0) {
+                // Adicionar os pontos faltantes diretamente aos primeiros itens
+                $i = 0;
+                foreach ($atividades_agrupadas as $idx => $atv) {
+                    if ($i < $diff) {
+                        $atividades_agrupadas[$idx]['aplicacoes'] += 1;
+                        $i++;
+                    } else {
+                        break;
+                    }
+                }
+            } else if ($diff < 0) {
+                // Retirar pontos diretamente dos últimos itens
+                $i = count($atividades_agrupadas) - 1;
+                while ($diff < 0 && $i >= 0) {
+                    if ($atividades_agrupadas[$i]['aplicacoes'] > 0) {
+                        $atividades_agrupadas[$i]['aplicacoes'] -= 1;
+                        $diff++;
+                    }
+                    $i--;
+                }
+            }
+        }
+        
+        // Verificação final - deve ser exatamente 40
+        $soma_final = array_sum(array_column($atividades_agrupadas, 'aplicacoes'));
+        Log::info('NORMALIZAÇÃO - SOMA FINAL VERIFICADA = ' . $soma_final . ' (DEVE SER EXATAMENTE 40)');
+        
+        // Log detalhado final
+        $log_detalhes = [];
+        $soma_verificacao = 0;
+        foreach ($atividades_agrupadas as $atv) {
+            $soma_verificacao += $atv['aplicacoes'];
+            $log_detalhes[] = ["codigo" => $atv['codigo'], "total" => $atv['total'], "aplicacoes" => $atv['aplicacoes']];
+        }
+        Log::info('NORMALIZAÇÃO - SOMA FINAL VERIFICADA = ' . $soma_verificacao, $log_detalhes);
+        // Agora a soma dos 3 eixos é exatamente 40, igual ao Excel/manual.
 
         // Separa novamente por eixo para exibir na view
         $atividades_normalizadas_comunicacao = [];
@@ -605,7 +698,7 @@ foreach ($comportamento_agrupado as $item) {
         $debug_normalizacao['soma_normalizados_total'] = $debug_normalizacao['soma_normalizados_comunicacao'] + $debug_normalizacao['soma_normalizados_comportamento'] + $debug_normalizacao['soma_normalizados_socioemocional'];
 
         $debug_info = json_encode($debug_normalizacao, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
-        \Log::info('Debug Normalização GLOBAL:', $debug_normalizacao);
+        Log::info('Debug Normalização GLOBAL:', $debug_normalizacao);
 
         // Retorna para a view com todas as variáveis necessárias
         return view('rotina_monitoramento.monitoramento_aluno', [
@@ -624,15 +717,46 @@ foreach ($comportamento_agrupado as $item) {
             'total_comunicacao' => $total_comunicacao_linguagem,
             'total_comportamento' => $total_comportamento,
             'total_socioemocional' => $total_socioemocional,
-            'comunicacao_resultados' => $comunicacao_resultados ?? [],
-            'comportamento_resultados' => $comportamento_resultados ?? [],
-            'socioemocional_resultados' => $socioemocional_resultados ?? [],
-            'data_inicial_com_lin' => $data_inicial_com_lin ?? null,
-            'detalhe' => $detalhe ?? null,
+            'comunicacao_resultados' => isset($comunicacao_resultados) ? $comunicacao_resultados : [],
+            'comportamento_resultados' => isset($comportamento_resultados) ? $comportamento_resultados : [],
+            'socioemocional_resultados' => isset($socioemocional_resultados) ? $socioemocional_resultados : [],
+            'data_inicial_com_lin' => isset($data_inicial_com_lin) ? $data_inicial_com_lin : null,
+            'detalhe' => isset($detalhe) ? $detalhe : null,
             'debug_info' => $debug_info,
             'debug_normalizacao' => $debug_normalizacao
         ]);
     } // FIM DO MÉTODO monitoramentoAluno
+
+// Método para arredondar valores exatamente como o Excel faz
+/**
+ * Arredonda um valor usando a mesma lógica de arredondamento do Excel.
+ * O Excel segue o padrão de arredondamento "Banker's Rounding"/"Round Half to Even":
+ * - Se a parte decimal for menor que 0.5, arredonda para baixo
+ * - Se a parte decimal for maior que 0.5, arredonda para cima
+ * - Se a parte decimal for EXATAMENTE 0.5, arredonda para o valor par mais próximo
+ * 
+ * @param float $valor O valor a ser arredondado
+ * @return int O valor arredondado como inteiro
+ */
+protected function arredondarExcel($valor) 
+{
+    // Para validar cada resultado, adicionamos log detalhado
+    $parteInteira = floor($valor);
+    $parteDecimal = $valor - $parteInteira;
+    
+    // Caso 1: parte decimal < 0.5 => arredonda para baixo
+    if ($parteDecimal < 0.5) {
+        return (int)$parteInteira;
+    }
+    // Caso 2: parte decimal > 0.5 => arredonda para cima
+    else if ($parteDecimal > 0.5) {
+        return (int)($parteInteira + 1);
+    }
+    // Caso 3: parte decimal = 0.5 => arredonda para o valor par mais próximo
+    else {
+        return (int)(($parteInteira % 2 == 0) ? $parteInteira : $parteInteira + 1);
+    }
+}
 
 // Outros métodos do controller permanecem abaixo
 
