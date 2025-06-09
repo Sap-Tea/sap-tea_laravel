@@ -7,153 +7,9 @@
     
     <!-- Importando CSS no Laravel -->
     <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
-    
-    <style>
-        .container {
-            position: relative;
-        }
 
-        /* Estilos para a tabela de profissionais */
-        .profissionais-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 20px;
-        }
 
-        .profissional-row {
-            display: flex;
-            gap: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
 
-        .profissional-row:nth-child(even) {
-            background-color: #ffffff;
-        }
-
-        .profissional-row label {
-            color: #333;
-            font-weight: bold;
-        }
-
-        .profissional-row input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-top: 5px;
-        }
-
-        .profissional-field {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .profissional-field label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .profissional-field input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        /* Estilos para a paginação em abas */
-        .step-tabs {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            position: relative;
-            z-index: 2; /* Acima de tudo */
-        }
-        
-        .step-tab {
-            padding: 10px 15px;
-            background-color: #e0e0e0;
-            border-radius: 5px 5px 0 0;
-            cursor: pointer;
-            font-weight: bold;
-            text-align: center;
-            min-width: 100px;
-            margin-right: 5px;
-        }
-        
-        .step-tab.active {
-            background-color: #d35400;
-            color: white;
-        }
-        
-        /* Estilos para os conteúdos das etapas */
-        .step-content {
-            display: none;
-            position: relative;
-            z-index: 1; /* Na frente das imagens */
-        }
-        
-        .step-content.active {
-            display: block;
-        }
-        
-        /* Botões de navegação */
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            position: relative;
-            z-index: 2; /* Acima de tudo */
-        }
-        
-        .prev-btn, .next-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .prev-btn {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-        
-        .next-btn {
-            background-color: #d35400;
-            color: white;
-        }
-        
-        .prev-btn:hover, .next-btn:hover {
-            opacity: 0.8;
-        }
-        
-        /* Barra de progresso */
-        .progress-container {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin: 20px 0;
-            position: relative;
-            z-index: 2; /* Acima de tudo */
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: #d35400;
-            border-radius: 4px;
-            width: 0%;
-            transition: width 0.3s;
-        }
-    </style>
 </head>
 
 <body>
@@ -573,76 +429,9 @@
         </form>
     </div>
 
-    <style>
-        .step-navigation {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            margin-top: 30px;
-            border-top: 1px solid #ddd;
-            background-color: #f8f9fa;
-            gap: 20px;
-            width: 100%;
-        }
-        .navigation-group, .action-group {
-            display: flex;
-            gap: 10px;
-        }
-        .prev-btn, .next-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            background-color: #6c757d;
-            color: white;
-        }
-        .prev-btn:hover, .next-btn:hover {
-            background-color: #5a6268;
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        .prev-btn i, .next-btn i {
-            margin: 0 5px;
-        }
-        .finish-btn, .btn-danger {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .finish-btn {
-            background-color: #4CAF50;
-            color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .finish-btn:hover {
-            background-color: #45a049;
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        .finish-btn i {
-            margin: 0 5px;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        .btn-danger:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        .btn-danger i {
-            margin: 0 5px;
-        }
-    </style>
-    
     <!-- Adicionar Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
 
     <script>
     // Função para confirmar o envio do formulário
@@ -703,16 +492,16 @@
             
             // Mantém a lógica original de visibilidade dos botões
             if (stepNumber === 1) {
-                prevBtn.style.display = prevBtn.style.display || 'none';
-                nextBtn.style.display = nextBtn.style.display || 'block';
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'block';
                 if (finishBtn) finishBtn.style.display = 'none';
             } else if (stepNumber === totalSteps) {
-                prevBtn.style.display = prevBtn.style.display || 'block';
+                prevBtn.style.display = 'block';
                 nextBtn.style.display = 'none';
                 if (finishBtn) finishBtn.style.display = 'block';
             } else {
-                prevBtn.style.display = prevBtn.style.display || 'block';
-                nextBtn.style.display = nextBtn.style.display || 'block';
+                prevBtn.style.display = 'block';
+                nextBtn.style.display = 'block';
                 if (finishBtn) finishBtn.style.display = 'none';
             }
             
