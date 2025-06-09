@@ -252,27 +252,34 @@ public function index_inventario(Request $request)
     ]);
 }
 
- 
-        public function mostrar($id)
-        {
-            // Busca o aluno pelo ID no banco de dados
-            $aluno = Aluno::findOrFail($id);
+public function mostrar($id)
+{
+    // Busca o aluno com detalhes completos pelo ID no banco de dados
+    $aluno = Aluno::findOrFail($id);
+    $alunoDetalhado = Aluno::getAlunosDetalhados($id);
     
-            // Calcula a idade com base na data de nascimento
-            $idade = Carbon::parse($aluno->alu_dtnasc)->age;
-    
-            // Retorna a view com os dados do aluno e a idade
-            return view('alunos.perfil_estudante', compact('aluno', 'idade'));
-        }
+    // getAlunosDetalhados retorna uma coleção, mas precisamos do primeiro item
+    $alunoInfo = !empty($alunoDetalhado) ? $alunoDetalhado[0] : null;
 
-        public function mostra_aluno_eixo($id)
-        {
-            $aluno = Aluno::findOrFail($id);
-            $_eixo = Carbon::parse($aluno->alu_dtnasc)->age;
-            //$alunos = Aluno::all(); // Busca todos os alunos no banco de dados
-    
-            return view('alunos.imprime_aluno_eixo', compact('alunos','idade_eixo'));
-        }
+    // Calcula a idade com base na data de nascimento
+    $idade = Carbon::parse($aluno->alu_dtnasc)->age;
+
+    // Retorna a view com os dados do aluno e a idade
+    return view('alunos.perfil_estudante', [
+        'aluno' => $aluno,
+        'alunoDetalhado' => $alunoInfo,
+        'idade' => $idade
+    ]);
+}
+
+public function mostra_aluno_eixo($id)
+{
+    $aluno = Aluno::findOrFail($id);
+    $_eixo = Carbon::parse($aluno->alu_dtnasc)->age;
+    //$alunos = Aluno::all(); // Busca todos os alunos no banco de dados
+
+    return view('alunos.imprime_aluno_eixo', compact('alunos','idade_eixo'));
+}
         
     public function rotina_monitoramento_inicial()
     {

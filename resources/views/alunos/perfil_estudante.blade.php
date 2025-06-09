@@ -20,12 +20,10 @@
             <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
             
             <h2>Perfil do Estudante</h2>
-            
             <!-- Barra de progresso -->
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
-            
             <!-- Abas de etapas -->
             <div class="step-tabs">
                 <button class="step-tab" data-step="1">Dados Pessoais</button>
@@ -35,375 +33,436 @@
                 <button class="step-tab" data-step="5">Informações da Família</button>
                 <button class="step-tab" data-step="6">Profissionais</button>
             </div>
+
             
             <!-- Etapa 1: Dados Pessoais -->
             <div class="step-content active" data-step="1">
-                <h2>I - Perfil do Estudante</h2>
-                
-                <div class="form-group">
-                    <label>Nome do Aluno:</label>
-                    <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
-                </div>
-                
-                <div class="row">
-                    <div class="form-group">
-                        <label>Ano/Série:</label>
-                        <input type="text" value="{{$aluno->desc_modalidade.'-'.  $aluno->desc_modalidade}}" readonly>
+                <div class="section-title">Dados Pessoais do Aluno</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-6">
+                        <label>Nome do Aluno:</label>
+                        <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly class="form-control">
                     </div>
-                    
-                    <div class="form-group">
+                    <div class="form-group col-md-3">
+                        <label>RA do Aluno:</label>
+                        <input type="text" name="ra_aluno" value="{{ $aluno->alu_ra }}" readonly class="form-control" style="min-width:80px;max-width:140px;">
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-4">
                         <label>Data de Nascimento:</label>
-                        <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly>
+                        <input type="text" name="alu_dtnasc_display" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly class="form-control">
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Idade do aluno:</label>
-                        <input type="text" name="alu_nasc" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Nome do Professor:</label>
-                    <input type="text" name="nome_professor" value="{{ $aluno->func_nome }}" readonly>
-                </div>
-                
-                <div class="form-group">
-                    <label>Possui diagnóstico/laudo?</label>
-                    <select name="diag_laudo">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
-                </div>
-                
-                <div class="row">
-                    <div class="form-group">
-                        <label>CID:</label>
-                        <input type="text" name="cid">
-                    </div>
-                    <div class="form-group">
-                        <label>Médico:</label>
-                        <input type="text" name="nome_medico">
-                    </div>
-                    <div class="form-group">
-                        <label>Data do Laudo:</label>
-                        <input type="date" name="data_laudo">
+                    <div class="form-group col-md-2">
+                        <label>Idade:</label>
+                        <input type="text" name="alu_idade_display" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }}" readonly class="form-control" style="min-width:55px;max-width:80px;">
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Nível suporte</label>
-                    <select name="nivel_suporte">
-                        <option value="1">Nível 1 - Exige pouco apoio </option>
-                        <option value="2">Nível 2 - Exige apoio substancial</option>
-                        <option value="3">Nível 3 - Exige apoio muito substancial</option>
-                    </select>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-6">
+                        <label>Escola:</label>
+                        <input type="text" name="escola_nome" value="{{ $aluno->esc_razao_social ?? '' }}" readonly class="form-control">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Órgão:</label>
+                        <input type="text" name="orgao_nome" value="{{ $aluno->org_razaosocial ?? '' }}" readonly class="form-control">
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Faz uso de medicamento?</label>
-                    <select name="uso_medicamento">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-3">
+                        <label>Ano / Série:</label>
+                        <input type="text" name="ano_serie" value="{{ $alunoDetalhado->serie_desc ?? '' }}" readonly class="form-control">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Turma:</label>
+                        <input type="text" name="turma" value="{{ $alunoDetalhado->fk_cod_valor_turma ?? '' }}" readonly class="form-control">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Modalidade:</label>
+                        <input type="text" name="modalidade" value="{{ $alunoDetalhado->desc_modalidade ?? '' }}" readonly class="form-control">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Período:</label>
+                        <input type="text" name="periodo" value="{{ $aluno->alu_periodo ?? '' }}" readonly class="form-control">
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Quais?</label>
-                    <input type="text" name="quais_medicamento">
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Nome do Professor:</label>
+                        <input type="text" name="nome_professor" value="{{ $alunoDetalhado->func_nome ?? '' }}" readonly class="form-control">
+                    </div>
+                </div>
+                <div class="section-title" style="background-color: #ff8c00; margin-top: 15px;">DADOS DO RESPONSÁVEL</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-8">
+                        <label>Nome do Responsável:</label>
+                        <input type="text" name="nome_responsavel" value="{{ $aluno->alu_nome_resp ?? '' }}" readonly class="form-control">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Tipo de Parentesco:</label>
+                        <input type="text" name="tipo_parentesco" value="{{ $aluno->alu_tipo_parentesco ?? '' }}" readonly class="form-control">
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-6">
+                        <label>Telefone:</label>
+                        <input type="text" name="telefone_responsavel" value="{{ $aluno->alu_tel_resp ?? '' }}" readonly class="form-control">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>E-mail:</label>
+                        <input type="text" name="email_responsavel" value="{{ $aluno->alu_email_resp ?? '' }}" readonly class="form-control">
+                    </div>
                 </div>
             </div>
             
             <!-- Etapa 2: Mais Dados Pessoais -->
             <div class="step-content" data-step="2">
-                <h2>I - Perfil do Estudante (Continuação)</h2>
-                
-                <div class="row">
-                    <div class="form-group">
-                        <label>Necessita de profissional de apoio em sala?</label>
-                        <select name="nec_pro_apoio">
+                <div class="section-title">Perfil do Estudante</div>
+                <!-- Diagnóstico/Laudo -->
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-4">
+                        <label>Possui diagnóstico/laudo?</label>
+                        <select name="diag_laudo" class="form-control">
+                            <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
+                        <label>Data do Laudo</label>
+                        <input type="date" name="data_laudo" class="form-control">
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-4">
+                        <label>CID</label>
+                        <input type="text" name="cid" class="form-control">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Médico</label>
+                        <input type="text" name="nome_medico" class="form-control">
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                     <div class="form-group col-md-4">
+                        <label>Nível Suporte</label>
+                        <select name="nivel_suporte" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="1">Nível 1 - Exige pouco apoio</option>
+                            <option value="2">Nível 2 - Exige apoio substancial</option>
+                            <option value="3">Nível 3 - Exige apoio muito substancial</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-4">
+                        <label>Faz uso de medicamento?</label>
+                        <select name="uso_medicamento" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Quais?</label>
+                        <input type="text" name="quais_medicamento" class="form-control">
+                    </div>
+                </div>
+
+                <!-- Apoio e AEE -->
+                <div class="section-title">Apoio e AEE</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-6">
+                        <label>Necessita de profissional de apoio em sala?</label>
+                        <select name="nec_pro_apoio" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
                         <label>O estudante conta com profissional de apoio?</label>
-                        <select name="loc_01">
+                        <select name="conta_pro_apoio" class="form-control">
+                            <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label>Em quais momentos da rotina esse profissional se faz necessário?</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" name="locomocao"><label for="locomocao">Locomoção</label>
-                        <input type="checkbox" name="higiene"><label for="higiene">Higiene</label>
-                        <input type="checkbox" name="alimentacao"><label for="alimentacao">Alimentação</label>
-                        <input type="checkbox" name="comunicacao"><label for="comunicacao">Comunicação</label>
-                        <input type="checkbox" name="outros"><label for="outros">Outros momentos</label>
+                        <input type="checkbox" id="momento_locomocao" name="momentos_apoio[]" value="locomocao"><label for="momento_locomocao">Locomoção</label>
+                        <input type="checkbox" id="momento_higiene" name="momentos_apoio[]" value="higiene"><label for="momento_higiene">Higiene</label>
+                        <input type="checkbox" id="momento_alimentacao" name="momentos_apoio[]" value="alimentacao"><label for="momento_alimentacao">Alimentação</label>
+                        <input type="checkbox" id="momento_comunicacao" name="momentos_apoio[]" value="comunicacao"><label for="momento_comunicacao">Comunicação</label>
+                        <input type="checkbox" id="momento_outros" name="momentos_apoio[]" value="outros"><label for="momento_outros">Outros momentos</label>
                     </div>
-                    <input type="text" name="out_momentos" placeholder="Quais?">
+                    <input type="text" name="outros_momentos_apoio" placeholder="Quais outros momentos?" class="form-control" style="margin-top: 5px;">
                 </div>
-                
-                <div class="form-group">
-                    <label>O estudante conta com Atendimento Educacional Especializado?</label>
-                    <select name="at_especializado">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-6">
+                        <label>O estudante conta com Atendimento Educacional Especializado (AEE)?</label>
+                        <select name="at_especializado" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Nome do profissional do AEE:</label>
+                        <input type="text" name="nome_prof_AEE" class="form-control">
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Nome do profissional do AEE:</label>
-                    <input type="text" name="nome_prof_AEE">
-                </div>
-                
-                <h2>II - Personalidade</h2>
-                
-                <div class="form-group">
-                    <label>Principais características:</label>
-                    <textarea rows="3" name="caracteristicas"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Principais áreas de interesse (brinquedos, jogos, temas, etc.):</label>
-                    <textarea rows="3" name="areas_interesse"></textarea>
-                </div>
+
+
             </div>
             
             <!-- Etapa 3: Personalidade e Comunicação -->
             <div class="step-content" data-step="3">
-                <h2>II - Personalidade (Continuação)</h2>
-                
-                <div class="form-group">
-                    <label>Gosta de fazer no tempo livre:</label>
-                    <textarea rows="3" name="atividades_livre"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Deixa o estudante muito feliz:</label>
-                    <textarea rows="3" name="feliz"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Deixa o estudante muito triste ou desconfortável:</label>
-                    <textarea rows="3" name="triste"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Objeto de apego? Qual?</label>
-                    <textarea rows="3" name="objeto_apego"></textarea>
-                </div>
-                
-                <h2 class="comunicacao-section">III - Comunicação</h2>
-                
-                <div class="form-group">
-                    <label>Precisa de comunicação alternativa para expressar-se?</label>
-                    <select name="precisa_comunicacao">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Entende instruções dadas de forma verbal?</label>
-                    <select name="entende_instrucao">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Caso não, como você recomenda dar instruções?</label>
-                    <textarea rows="3" name="recomenda_instrucao"></textarea>
-                </div>
-            </div>
-            
-            <!-- Etapa 4: Preferências -->
-            <div class="step-content" data-step="4">
-                <h2>IV - Preferências, sensibilidade e dificuldades</h2>
-                
-                <div class="form-group">
-                    <label>Apresenta sensibilidade:</label>
-                    <div class="checkbox-group">
-                        <input type="checkbox" name="s_auditiva"><label for="s_auditiva">Auditiva</label>
-                        <input type="checkbox" name="s_visual"><label for="s_visual">Visual</label>
-                        <input type="checkbox" name="s_tatil"><label for="s_tatil">Tátil</label>
-                        <input type="checkbox" name="s_outros"><label for="s_outros">Outros estímulos</label>
+                <div class="section-title">II - Personalidade</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Principais características:</label>
+                        <textarea rows="3" name="principais_caracteristicas" class="form-control"></textarea>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Caso sim, como manejar em sala de aula</label>
-                    <textarea rows="3" name="manejo_sensibilidade"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Principais áreas de interesse (brinquedos, jogos, temas, etc.):</label>
+                        <textarea rows="3" name="areas_interesse" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Apresenta seletividade alimentar?</label>
-                    <select name="seletividade_alimentar">
-                        <option value="1">Sim</option>
-                        <option value="0">Não</option>
-                    </select>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>O que gosta de fazer no tempo livre?</label>
+                        <textarea rows="3" name="atividades_livre" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Alimentos preferidos:</label>
-                    <textarea rows="3" name="alimentos_preferidos"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>O que deixa o estudante muito feliz?</label>
+                        <textarea rows="3" name="feliz" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Alimentos que evita:</label>
-                    <textarea rows="3" name="alimentos_evita"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>O que deixa o estudante muito triste ou desconfortável?</label>
+                        <textarea rows="3" name="triste" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Com quem tem mais afinidade na escola (professores, colegas)? Identifique</label>
-                    <textarea rows="3" name="afinidade_escola"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Objeto de apego? Qual?</label>
+                        <textarea rows="3" name="objeto_apego" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Como reage no contato com novas pessoas ou situações</label>
-                    <textarea rows="3" name="reacao_contato"></textarea>
+                <div class="section-title">III - Comunicação</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Precisa de comunicação alternativa para expressar-se?</label>
+                        <select name="precisa_comunicacao" class="form-control">
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Entende instruções dadas de forma verbal?</label>
+                        <select name="entende_instrucao" class="form-control">
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Caso não, como você recomenda dar instruções?</label>
+                        <textarea rows="3" name="recomenda_instrucao" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!-- Etapa 4: Preferências -->
+            <div class="step-content" data-step="4">
+                <div class="section-title">IV - Preferências, sensibilidade e dificuldades</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Apresenta sensibilidade:</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="s_auditiva"><label for="s_auditiva">Auditiva</label>
+                            <input type="checkbox" name="s_visual"><label for="s_visual">Visual</label>
+                            <input type="checkbox" name="s_tatil"><label for="s_tatil">Tátil</label>
+                            <input type="checkbox" name="s_outros"><label for="s_outros">Outros estímulos</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Caso sim, como manejar em sala de aula?</label>
+                        <textarea rows="3" name="manejo_sensibilidade" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Apresenta seletividade alimentar?</label>
+                        <select name="seletividade_alimentar" class="form-control">
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Alimentos preferidos:</label>
+                        <textarea rows="3" name="alimentos_preferidos" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Alimentos que evita:</label>
+                        <textarea rows="3" name="alimentos_evita" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Com quem tem mais afinidade na escola (professores, colegas)? Identifique</label>
+                        <textarea rows="3" name="afinidade_escola" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Como reage no contato com novas pessoas ou situações?</label>
+                        <textarea rows="3" name="reacao_contato" class="form-control"></textarea>
+                    </div>
                 </div>
             </div>
             
             <!-- Etapa 5: Preferências (continuação) e Família -->
             <div class="step-content" data-step="5">
-                <h2>IV - Preferências (Continuação)</h2>
-                
-                <div class="form-group">
-                    <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?</label>
-                    <textarea rows="3" name="interacao_escola"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
-                    <textarea rows="3" name="interesse_atividade"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Como o(a) estudante aprende melhor?</label>
-                    <div class="checkbox-group">
-                        <input type="checkbox" name="r_visual"><label for="r_visual">Recurso visual</label>
-                        <input type="checkbox" name="r_auditivo"><label for="r_auditivo">Recurso auditivo</label>
-                        <input type="checkbox" name="m_concreto"><label for="m_concreto">Material concreto</label>
-                        <input type="checkbox" name="o_outro"><label for="o_outro">Outro - identificar</label>
+                <div class="section-title">IV - Preferências (Continuação)</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>O que ajuda a sua interação na escola? O que dificulta a sua interação na escola?</label>
+                        <textarea rows="3" name="interacao_escola" class="form-control"></textarea>
                     </div>
-                    
-                    <div class="form-group">
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
+                        <textarea rows="3" name="interesse_atividade" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Como o(a) estudante aprende melhor?</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="r_visual"><label for="r_visual">Recurso visual</label>
+                            <input type="checkbox" name="r_auditivo"><label for="r_auditivo">Recurso auditivo</label>
+                            <input type="checkbox" name="m_concreto"><label for="m_concreto">Material concreto</label>
+                            <input type="checkbox" name="o_outro"><label for="o_outro">Outro - identificar</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
                         <label></label>
-                        <textarea rows="3" name="outro_identificar"></textarea>
+                        <textarea rows="3" name="outro_identificar" class="form-control"></textarea>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
-                    <textarea rows="3" name="atividades_grupo"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
+                        <textarea rows="3" name="atividades_grupo" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Quais estratégias são utilizadas e se mostram eficazes?</label>
-                    <textarea rows="3" name="estrategias_eficazes"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Quais estratégias são utilizadas e se mostram eficazes?</label>
+                        <textarea rows="3" name="estrategias_eficazes" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>O que desperta seu interesse para realizar uma tarefa/atividade</label>
-                    <textarea rows="3" name="interesse_tarefa"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>O que desperta seu interesse para realizar uma tarefa/atividade?</label>
+                        <textarea rows="3" name="interesse_tarefa" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <h2 class="comunicacao-section">V - Informações da família</h2>
-                
-                <div class="form-group">
-                    <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
-                    <textarea rows="3" name="expectativas_familia"></textarea>
+                <div class="section-title">V - Informações da família</div>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
+                        <textarea rows="3" name="expectativas_familia" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Existe alguma estratégia utilizada no contexto familiar que pode ser reaplicada na escola?</label>
-                    <textarea rows="3" name="estrategias_familia"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Existe alguma estratégia utilizada no contexto familiar que pode ser reaplicada na escola?</label>
+                        <textarea rows="3" name="estrategias_familia" class="form-control"></textarea>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Como a família lida com situações de crise ou estresse do estudante?</label>
-                    <textarea rows="3" name="crise_estresse"></textarea>
+                <div class="row custom-row-gap align-items-end">
+                    <div class="form-group col-md-12">
+                        <label>Como a família lida com situações de crise ou estresse do estudante?</label>
+                        <textarea rows="3" name="crise_estresse" class="form-control"></textarea>
+                    </div>
                 </div>
             </div>
-
+            
             <!-- Etapa 6: Cadastro de Profissionais -->
             <div class="step-content" data-step="6">
-                <h2>Cadastro de Profissionais</h2>
-                <div class="profissionais-container">
-                    <div class="profissional-row">
-                        <div class="profissional-field">
-                            <label>Nome do Profissional</label>
-                            <input type="text" placeholder="Nome do Profissional">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Especialidade/Área</label>
-                            <input type="text" placeholder="Especialidade/Área">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Observações</label>
-                            <input type="text" placeholder="Observações">
-                        </div>
-                    </div>
-                    <div class="profissional-row">
-                        <div class="profissional-field">
-                            <label>Nome do Profissional</label>
-                            <input type="text" placeholder="Nome do Profissional">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Especialidade/Área</label>
-                            <input type="text" placeholder="Especialidade/Área">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Observações</label>
-                            <input type="text" placeholder="Observações">
-                        </div>
-                    </div>
-                    <div class="profissional-row">
-                        <div class="profissional-field">
-                            <label>Nome do Profissional</label>
-                            <input type="text" placeholder="Nome do Profissional">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Especialidade/Área</label>
-                            <input type="text" placeholder="Especialidade/Área">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Observações</label>
-                            <input type="text" placeholder="Observações">
-                        </div>
-                    </div>
-                    <div class="profissional-row">
-                        <div class="profissional-field">
-                            <label>Nome do Profissional</label>
-                            <input type="text" placeholder="Nome do Profissional">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Especialidade/Área</label>
-                            <input type="text" placeholder="Especialidade/Área">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Observações</label>
-                            <input type="text" placeholder="Observações">
-                        </div>
-                    </div>
-                    <div class="profissional-row">
-                        <div class="profissional-field">
-                            <label>Nome do Profissional</label>
-                            <input type="text" placeholder="Nome do Profissional">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Especialidade/Área</label>
-                            <input type="text" placeholder="Especialidade/Área">
-                        </div>
-                        <div class="profissional-field">
-                            <label>Observações</label>
-                            <input type="text" placeholder="Observações">
-                        </div>
-                    </div>
+                <div class="section-title">Cadastro de Profissionais</div>
+                <div style="margin-bottom: 15px;">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr style="background-color: #0d6efd;">
+                                <th colspan="3" style="color: white; text-align: center; padding: 8px; font-weight: bold;">Profissionais que atendem o estudante</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="margin-top: 0;">
+                        <thead>
+                            <tr style="background-color: #e9ecef;">
+                                <th width="33%" style="text-align: center; padding: 8px; font-weight: bold; border: 1px solid #dee2e6;">Nome do Profissional</th>
+                                <th width="33%" style="text-align: center; padding: 8px; font-weight: bold; border: 1px solid #dee2e6;">Especialidade/Área</th>
+                                <th width="33%" style="text-align: center; padding: 8px; font-weight: bold; border: 1px solid #dee2e6;">Observações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Linha 1 -->
+                            <tr style="background-color: #e6f2ff;">
+                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                            </tr>
+                            <!-- Linha 2 -->
+                            <tr style="background-color: #e6f2ff;">
+                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                            </tr>
+                            <!-- Linha 3 -->
+                            <tr style="background-color: #e6f2ff;">
+                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                            </tr>
+                            <!-- Linha 4 -->
+                            <tr style="background-color: #e6f2ff;">
+                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                            </tr>
+                            <!-- Linha 5 -->
+                            <tr style="background-color: #e6f2ff;">
+                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
