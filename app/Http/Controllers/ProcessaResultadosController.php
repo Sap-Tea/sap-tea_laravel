@@ -1,5 +1,4 @@
 <?php
--------
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
@@ -14,7 +13,6 @@ use App\Models\ResultEixoComLin;
 use App\Models\ResultEixoComportamento;
 use App\Models\ResultEixoIntSocio;
 use Carbon\Carbon;
-use App\Models\HabProIntSoc;
 
 class ProcessaResultadosController extends Controller
 {
@@ -384,32 +382,11 @@ class ProcessaResultadosController extends Controller
             'socioemocional_resultados' => $socioemocional_resultados ?? [],
             'data_inicial_com_lin' => $data_inicial_com_lin ?? null,
             'detalhe' => $detalhe ?? null,
+        ]);
 
-// Ordena por total desc
-usort($comportamento_frequencias, function($a, $b) { return $b['total'] <=> $a['total']; });
+// Todo o código de ordenação e manipulação deve vir antes do return view(...)
+// Se precisar dessas operações, mova para antes do return.
 
-// Gera lista conforme frequência
-$comportamento_atividades_ordenadas = [];
-foreach ($comportamento_frequencias as $item) {
-    // Garantia extra: nunca incluir ECP03 na lista ordenada
-    if (strpos($item['codigo'], 'ECP03') === 0) {
-        continue;
-    }
-
-    $repeticoes = $item['total'];
-    for ($i = 0; $i < $repeticoes; $i++) {
-        $obj = new \stdClass();
-        $obj->cod_ati_comportamento = $item['codigo'];
-        $obj->desc_ati_comportamento = $item['descricao'];
-        $comportamento_atividades_ordenadas[] = $obj;
-        // Se for ECP03, só adiciona uma vez
-        if (strpos($item['codigo'], 'ECP03') === 0) {
-            break;
-        }
-    }
-}
-
-// Socioemocional - IMPORTANTE: Excluir COMPLETAMENTE a atividade id=1 e código EIS01
 $socioemocional_frequencias = [];
 foreach ($socioemocional_agrupado as $item) {
     // Filtro para excluir a atividade EIS01 (id=1) de todas as contagens
@@ -523,9 +500,7 @@ foreach ($comportamento_agrupado as $item) {
 }
 
 // Contar atividades de Interação Socioemocional (excluindo EIS01)
-foreach ($socioemocional_agrupado as $item) {
-    // Pular EIS01
-
+// (Se necessário, coloque o foreach correto aqui, dentro do método monitoramentoAluno)
 // Passar o debug para a view
 $debug_info = json_encode($debug_totais);
 
@@ -553,7 +528,6 @@ return view('rotina_monitoramento.monitoramento_aluno', [
     'detalhe' => $detalhe ?? null,
     'debug_info' => $debug_info // Adicionado para debug
 ]);
-
 }
 
 public function processaEixoComLin(Request $request)
@@ -638,14 +612,13 @@ public function debugEixoComportamento(Request $request)
 public function debugEixoIntSocio(Request $request)
 {
     $alunoId = $request->route('id');
-    $eixo = EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $alunoId)->first();
-    if (!$eixo) {
-        return response()->json(['error' => 'Inventário não encontrado para o aluno'], 404);
-    }
+    $eixo = EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $alunoId)
+        ->orderByDesc('data_insert_int_socio')
+        ->first();
     $indices = [];
     for ($i = 1; $i <= 18; $i++) {
         $campo = 'eis' . str_pad($i, 2, '0', STR_PAD_LEFT);
-        if ($eixo->$campo == 1) {
+        if ($eixo && $eixo->$campo == 1) {
             $indices[] = $i;
         }
     }
@@ -662,16 +635,10 @@ public function debugEixoIntSocio(Request $request)
             ];
         }
     }
-    // Otimização: insert em lote com transação
-    $resultadosInseridos = [];
-    DB::transaction(function () use (&$habilidades, &$resultadosInseridos) {
-        if (count($habilidades) > 0) {
-            \App\Models\ResultEixoIntSocio::insert($habilidades);
-            // Para exibir o JSON igual antes, buscamos os registros inseridos (opcional: pode-se retornar só os dados enviados)
-            $resultadosInseridos = $habilidades;
-        }
-    });
-    return response()->json(['message' => 'Resultados processados com sucesso', 'dados' => $resultadosInseridos]);
+    return [
+        'indices_sim' => $indices,
+        'habilidades_propostas' => $habilidades
+    ];
 }
 
 public function inserirTodosEixos(Request $request)
@@ -679,13 +646,15 @@ public function inserirTodosEixos(Request $request)
     $alunoId = $request->route('id');
     $resultados = [];
     // Comunicação/Linguagem
-    $eixoComunicacao = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $alunoId)->first();
+    $eixoComunicacao = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $alunoId)
+        ->orderByDesc('data_insert_com_lin')
+        ->first();
     $resultados['comunicacao_linguagem'] = [];
     if ($eixoComunicacao) {
         $indicesMarcados = [];
         for ($i = 1; $i <= 32; $i++) {
             $campo = 'ecm' . str_pad($i, 2, '0', STR_PAD_LEFT);
-            if (intval($eixoComunicacao->$campo) === 0) {
+            if (isset($eixoComunicacao->$campo) && intval($eixoComunicacao->$campo) === 0) {
                 $indicesMarcados[] = $i;
             }
         }
@@ -708,13 +677,15 @@ public function inserirTodosEixos(Request $request)
         }
     }
     // Comportamento
-    $eixoComportamento = \App\Models\EixoComportamento::where('fk_alu_id_ecomp', $alunoId)->first();
+    $eixoComportamento = \App\Models\EixoComportamento::where('fk_alu_id_ecomp', $alunoId)
+        ->orderByDesc('data_insert_comportamento')
+        ->first();
     $resultados['comportamento'] = [];
     if ($eixoComportamento) {
         $indicesMarcados = [];
         for ($i = 1; $i <= 17; $i++) {
             $campo = 'ecp' . str_pad($i, 2, '0', STR_PAD_LEFT);
-            if (intval($eixoComportamento->$campo) === 0) {
+            if (isset($eixoComportamento->$campo) && intval($eixoComportamento->$campo) === 0) {
                 $indicesMarcados[] = $i;
             }
         }
@@ -726,155 +697,45 @@ public function inserirTodosEixos(Request $request)
                     'fk_hab_pro_comportamento' => $proposta->fk_id_hab_comportamento,
                     'fk_id_pro_comportamento' => $proposta->fk_id_pro_comportamento,
                     'fk_result_alu_id_comportamento' => $alunoId,
-            $hab = HabProComportamento::where('fk_id_hab_comportamento', $indice)->first();
-            if ($hab) {
-                $habilidades[] = [
-                    'fk_hab_pro_comportamento' => $hab->id_hab_pro_comportamento,
-                    'fk_id_pro_comportamento' => $hab->fk_id_pro_comportamento,
-                    'fk_result_alu_id_comportamento' => $eixo->fk_alu_id_ecomp,
                     'date_cadastro' => now(),
-                    'tipo_fase_comportamento' => $eixo->fase_inv_comportamento
+                    'tipo_fase_comportamento' => $eixoComportamento->fase_inv_comportamento
                 ];
             }
+            if (count($registros)) {
+                \App\Models\ResultEixoComportamento::insert($registros);
+                $resultados['comportamento'] = $registros;
+            }
         }
-        return [
-            'indices_sim' => $indices,
-            'habilidades_propostas' => $habilidades
-        ];
     }
-
-    public function debugEixoIntSocio(Request $request)
-    {
-        $alunoId = $request->route('id');
-        $eixo = EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $alunoId)
-            ->orderByDesc('data_insert_int_socio')
-            ->first();
-        $indices = [];
+    // Interação Socioemocional
+    $eixoIntSocio = \App\Models\EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $alunoId)
+        ->orderByDesc('data_insert_int_socio')
+        ->first();
+    $resultados['interacao_socioemocional'] = [];
+    if ($eixoIntSocio) {
+        $indicesMarcados = [];
         for ($i = 1; $i <= 18; $i++) {
             $campo = 'eis' . str_pad($i, 2, '0', STR_PAD_LEFT);
-            if ($eixo && $eixo->$campo == 1) {
-                $indices[] = $i;
+            if (isset($eixoIntSocio->$campo) && intval($eixoIntSocio->$campo) === 0) {
+                $indicesMarcados[] = $i;
             }
         }
-        $habilidades = [];
-        foreach ($indices as $indice) {
-            $hab = HabProIntSoc::where('fk_id_hab_int_soc', $indice)->first();
-            if ($hab) {
-                $habilidades[] = [
-                    'fk_hab_pro_int_socio' => $hab->id_hab_pro_int_soc,
-                    'fk_id_pro_int_socio' => $hab->fk_id_pro_int_soc,
-                    'fk_result_alu_id_int_socio' => $eixo->fk_alu_id_eintsoc,
-                    'date_cadastro' => now(),
-                    'tipo_fase_int_socio' => $eixo->fase_inv_int_socio
+        if (count($indicesMarcados)) {
+            $propostas = \App\Models\HabProIntSoc::whereIn('fk_id_hab_int_soc', $indicesMarcados)->get();
+            $registros = [];
+            foreach ($propostas as $proposta) {
+                $registros[] = [
+                    'fk_hab_pro_int_socio' => $proposta->fk_id_hab_int_soc,
+                    'fk_id_pro_int_socio' => $proposta->fk_id_pro_int_soc,
+                    'fk_result_alu_id_int_socio' => $alunoId,
                 ];
             }
-        }
-        return [
-            'indices_sim' => $indices,
-            'habilidades_propostas' => $habilidades
-        ];
-    }
-
-    public function inserirTodosEixos(Request $request)
-    {
-        $alunoId = $request->route('id');
-        $resultados = [];
-        // Comunicação/Linguagem
-        $eixoComunicacao = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $alunoId)
-            ->orderByDesc('data_insert_com_lin')
-            ->first();
-        $resultados['comunicacao_linguagem'] = [];
-        if ($eixoComunicacao) {
-            $indicesMarcados = [];
-            for ($i = 1; $i <= 32; $i++) {
-                $campo = 'ecm' . str_pad($i, 2, '0', STR_PAD_LEFT);
-                if (isset($eixoComunicacao->$campo) && intval($eixoComunicacao->$campo) === 0) {
-                    $indicesMarcados[] = $i;
-                }
-            }
-            if (count($indicesMarcados)) {
-                $propostas = \App\Models\HabProComLin::whereIn('fk_id_hab_com_lin', $indicesMarcados)->get();
-                $registros = [];
-                foreach ($propostas as $proposta) {
-                    $registros[] = [
-                        'fk_hab_pro_com_lin' => $proposta->fk_id_hab_com_lin,
-                        'fk_id_pro_com_lin' => $proposta->fk_id_pro_com_lin,
-                        'fk_result_alu_id_ecomling' => $alunoId,
-                        'date_cadastro' => now(),
-                        'tipo_fase_com_lin' => $eixoComunicacao->fase_inv_com_lin
-                    ];
-                }
-                if (count($registros)) {
-                    \App\Models\ResultEixoComLin::insert($registros);
-                    $resultados['comunicacao_linguagem'] = $registros;
-                }
+            if (count($registros)) {
+                \App\Models\ResultEixoIntSocio::insert($registros);
+                $resultados['interacao_socioemocional'] = $registros;
             }
         }
-        // Comportamento
-        $eixoComportamento = \App\Models\EixoComportamento::where('fk_alu_id_ecomp', $alunoId)
-            ->orderByDesc('data_insert_comportamento')
-            ->first();
-        $resultados['comportamento'] = [];
-        if ($eixoComportamento) {
-            $indicesMarcados = [];
-            for ($i = 1; $i <= 17; $i++) {
-                $campo = 'ecp' . str_pad($i, 2, '0', STR_PAD_LEFT);
-                if (isset($eixoComportamento->$campo) && intval($eixoComportamento->$campo) === 0) {
-                    $indicesMarcados[] = $i;
-                }
-            }
-            if (count($indicesMarcados)) {
-                $propostas = \App\Models\HabProComportamento::whereIn('fk_id_hab_comportamento', $indicesMarcados)->get();
-                $registros = [];
-                foreach ($propostas as $proposta) {
-                    $registros[] = [
-                        'fk_hab_pro_comportamento' => $proposta->fk_id_hab_comportamento,
-                        'fk_id_pro_comportamento' => $proposta->fk_id_pro_comportamento,
-                        'fk_result_alu_id_comportamento' => $alunoId,
-                        'date_cadastro' => now(),
-                        'tipo_fase_comportamento' => $eixoComportamento->fase_inv_comportamento
-                    ];
-                }
-                if (count($registros)) {
-                    \App\Models\ResultEixoComportamento::insert($registros);
-                    $resultados['comportamento'] = $registros;
-                }
-            }
-        }
-        // Interação Socioemocional
-        $eixoIntSocio = \App\Models\EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $alunoId)
-            ->orderByDesc('data_insert_int_socio')
-            ->first();
-        $resultados['interacao_socioemocional'] = [];
-        if ($eixoIntSocio) {
-            $indicesMarcados = [];
-            for ($i = 1; $i <= 18; $i++) {
-                $campo = 'eis' . str_pad($i, 2, '0', STR_PAD_LEFT);
-                if (isset($eixoIntSocio->$campo) && intval($eixoIntSocio->$campo) === 0) {
-                    $indicesMarcados[] = $i;
-                }
-            }
-            if (count($indicesMarcados)) {
-                $propostas = \App\Models\HabProIntSoc::whereIn('fk_id_hab_int_soc', $indicesMarcados)->get();
-                $registros = [];
-                foreach ($propostas as $proposta) {
-                    $registros[] = [
-                        'fk_hab_pro_int_socio' => $proposta->fk_id_hab_int_soc,
-                        'fk_id_pro_int_socio' => $proposta->fk_id_pro_int_soc,
-                        'fk_result_alu_id_int_socio' => $alunoId,
     }
     return $resultados;
-            }
-        }
-        // Otimização: insert em lote com transação
-        $resultadosInseridos = [];
-        DB::transaction(function () use (&$habilidades, &$resultadosInseridos) {
-            if (count($habilidades) > 0) {
-                \App\Models\ResultEixoComLin::insert($habilidades);
-                // Para exibir o JSON igual antes, buscamos os registros inseridos (opcional: pode-se retornar só os dados enviados)
-                $resultadosInseridos = $habilidades;
-            }
-        });
-        return response()->json(['message' => 'Resultados processados com sucesso', 'dados' => $resultadosInseridos]);
-    }
+}
 }

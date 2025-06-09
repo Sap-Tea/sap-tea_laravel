@@ -5,10 +5,23 @@
     <h2>Relação dos Alunos</h2>
 
     @if(isset($professor_nome))
-        <div class="alert alert-info" style="font-size:1.2em;">
-            <strong>Professor Responsável:</strong> {{ $professor_nome }}
-        </div>
-    @endif
+    <div class="alert alert-info" style="font-size:1.2em;">
+        <strong>Professor Responsável:</strong> {{ $professor_nome }}
+    </div>
+@endif
+
+{{-- DEBUG: Dados do professor autenticado --}}
+@if(Auth::guard('funcionario')->check())
+    @php
+        $prof = Auth::guard('funcionario')->user();
+    @endphp
+    <pre style="background:#f8f9fa;border:1px solid #ced4da;padding:8px;margin-bottom:10px;color:#222;font-size:1em;">
+        <strong>DEBUG PROFESSOR LOGADO:</strong>
+        ID: {{ $prof->func_id ?? 'N/A' }}
+        Nome: {{ $prof->func_nome ?? 'N/A' }}
+        Email: {{ $prof->func_email ?? 'N/A' }}
+    </pre>
+@endif
 
     <!-- Formulário de Pesquisa -->
     <form id = "pesquisaForm" method="POST" action="{{ route('inserir_perfil') }}">

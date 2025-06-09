@@ -13,6 +13,15 @@ class InserirEixoEstudanteController extends Controller
 {
     public function inserir_eixo_estudante(Request $request, $id = null)
     {
+        // Removeu o dd() para permitir inserção normalmente
+        // Corrige o parse da data para aceitar d-m-Y
+        $data_inventario = $request->input('data_inicio_inventario');
+        $fase_inventario = "In";
+        try {
+            $dataInventario_formatada = Carbon::createFromFormat('d-m-Y', $data_inventario)->format('Y-m-d');
+        } catch (\Exception $e) {
+            $dataInventario_formatada = date('Y-m-d'); // fallback para a data atual
+        }
         // Log detalhado para depuração
         \Log::info('=== INÍCIO DA REQUISIÇÃO DE INSERÇÃO DE INVENTÁRIO ===');
         \Log::info('Dados recebidos no formulário:', $request->all());
@@ -57,79 +66,79 @@ class InserirEixoEstudanteController extends Controller
         // Validação dos dados enviados pelo formulário
         $request->validate([
             // Validação para Eixo Comunicação e Linguagem
-            'ecm01' => 'required|in:1,0',
-            'ecm02' => 'required|in:1,0',
-            'ecm03' => 'required|in:1,0',
-            'ecm04' => 'required|in:1,0',
-            'ecm05' => 'required|in:1,0',
-            'ecm06' => 'required|in:1,0',
-            'ecm07' => 'required|in:1,0',
-            'ecm08' => 'required|in:1,0',
-            'ecm09' => 'required|in:1,0',
-            'ecm10' => 'required|in:1,0',
-            'ecm11' => 'required|in:1,0',
-            'ecm12' => 'required|in:1,0',
-            'ecm13' => 'required|in:1,0',
-            'ecm14' => 'required|in:1,0',
-            'ecm15' => 'required|in:1,0',
-            'ecm16' => 'required|in:1,0',
-            'ecm17' => 'required|in:1,0',
-            'ecm18' => 'required|in:1,0',
-            'ecm19' => 'required|in:1,0',
-            'ecm20' => 'required|in:1,0',
-            'ecm21' => 'required|in:1,0',
-            'ecm22' => 'required|in:1,0',
-            'ecm23' => 'required|in:1,0',
-            'ecm24' => 'required|in:1,0',
-            'ecm25' => 'required|in:1,0',
-            'ecm26' => 'required|in:1,0',
-            'ecm27' => 'required|in:1,0',
-            'ecm28' => 'required|in:1,0',
-            'ecm29' => 'required|in:1,0',
-            'ecm30' => 'required|in:1,0',
-            'ecm31' => 'required|in:1,0',
-            'ecm32' => 'required|in:1,0',
+            'ecm01' => 'in:1,0',
+            'ecm02' => 'in:1,0',
+            'ecm03' => 'in:1,0',
+            'ecm04' => 'in:1,0',
+            'ecm05' => 'in:1,0',
+            'ecm06' => 'in:1,0',
+            'ecm07' => 'in:1,0',
+            'ecm08' => 'in:1,0',
+            'ecm09' => 'in:1,0',
+            'ecm10' => 'in:1,0',
+            'ecm11' => 'in:1,0',
+            'ecm12' => 'in:1,0',
+            'ecm13' => 'in:1,0',
+            'ecm14' => 'in:1,0',
+            'ecm15' => 'in:1,0',
+            'ecm16' => 'in:1,0',
+            'ecm17' => 'in:1,0',
+            'ecm18' => 'in:1,0',
+            'ecm19' => 'in:1,0',
+            'ecm20' => 'in:1,0',
+            'ecm21' => 'in:1,0',
+            'ecm22' => 'in:1,0',
+            'ecm23' => 'in:1,0',
+            'ecm24' => 'in:1,0',
+            'ecm25' => 'in:1,0',
+            'ecm26' => 'in:1,0',
+            'ecm27' => 'in:1,0',
+            'ecm28' => 'in:1,0',
+            'ecm29' => 'in:1,0',
+            'ecm30' => 'in:1,0',
+            'ecm31' => 'in:1,0',
+            'ecm32' => 'in:1,0',
 
             // Validação para Eixo Comportamento
-            'ecp01' => 'required|in:1,0',
-            'ecp02' => 'required|in:1,0',
-            'ecp03' => 'required|in:1,0',
-            'ecp04' => 'required|in:1,0',
-            'ecp05' => 'required|in:1,0',
-            'ecp06' => 'required|in:1,0',
-            'ecp07' => 'required|in:1,0',
-            'ecp08' => 'required|in:1,0',
-            'ecp09' => 'required|in:1,0',
-            'ecp10' => 'required|in:1,0',
-            'ecp11' => 'required|in:1,0',
-            'ecp12' => 'required|in:1,0',
-            'ecp13' => 'required|in:1,0',
-            'ecp14' => 'required|in:1,0',
-            'ecp15' => 'required|in:1,0',
-            'ecp16' => 'required|in:1,0',
-            'ecp17' => 'required|in:1,0',
+            'ecp01' => 'in:1,0',
+            'ecp02' => 'in:1,0',
+            'ecp03' => 'in:1,0',
+            'ecp04' => 'in:1,0',
+            'ecp05' => 'in:1,0',
+            'ecp06' => 'in:1,0',
+            'ecp07' => 'in:1,0',
+            'ecp08' => 'in:1,0',
+            'ecp09' => 'in:1,0',
+            'ecp10' => 'in:1,0',
+            'ecp11' => 'in:1,0',
+            'ecp12' => 'in:1,0',
+            'ecp13' => 'in:1,0',
+            'ecp14' => 'in:1,0',
+            'ecp15' => 'in:1,0',
+            'ecp16' => 'in:1,0',
+            'ecp17' => 'in:1,0',
 
 
                 
                 //validando os campos de eixo interacao socio emocional
-                'eis01' => 'required|in:1,0',
-                'eis02' => 'required|in:1,0',
-                'eis03' => 'required|in:1,0',
-                'eis04' => 'required|in:1,0',
-                'eis05' => 'required|in:1,0',
-                'eis06' => 'required|in:1,0',
-                'eis07' => 'required|in:1,0',
-                'eis08' => 'required|in:1,0',
-                'eis09' => 'required|in:1,0',
-                'eis10' => 'required|in:1,0',
-                'eis11' => 'required|in:1,0',
-                'eis12' => 'required|in:1,0',
-                'eis13' => 'required|in:1,0',
-                'eis14' => 'required|in:1,0',
-                'eis15' => 'required|in:1,0',
-                'eis16' => 'required|in:1,0',
-                'eis17' => 'required|in:1,0',
-                'eis18' => 'required|in:1,0',
+                'eis01' => 'in:1,0',
+                'eis02' => 'in:1,0',
+                'eis03' => 'in:1,0',
+                'eis04' => 'in:1,0',
+                'eis05' => 'in:1,0',
+                'eis06' => 'in:1,0',
+                'eis07' => 'in:1,0',
+                'eis08' => 'in:1,0',
+                'eis09' => 'in:1,0',
+                'eis10' => 'in:1,0',
+                'eis11' => 'in:1,0',
+                'eis12' => 'in:1,0',
+                'eis13' => 'in:1,0',
+                'eis14' => 'in:1,0',
+                'eis15' => 'in:1,0',
+                'eis16' => 'in:1,0',
+                'eis17' => 'in:1,0',
+                'eis18' => 'in:1,0',
 
                 'responsavel'=> 'required|in:1,0',
                 'suporte'=> 'required|in:1,2,3',
@@ -245,7 +254,7 @@ class InserirEixoEstudanteController extends Controller
             // Gera o JSON de debug dos três eixos juntos e retorna ao usuário
             try {
                 $processaResultadosController = app(\App\Http\Controllers\ProcessaResultadosController::class);
-                $resultado = $processaResultadosController->inserirTodosEixos($alunoId);
+                $resultado = $processaResultadosController->inserirTodosEixos($request);
                 return redirect('sondagem/eixos-estudante')->with('success', 'Inventário salvo com sucesso! Aguarde, estamos gerando as atividades.');
             } catch (\Exception $e) {
                 \Log::error('Erro ao inserir resultados dos eixos: ' . $e->getMessage());

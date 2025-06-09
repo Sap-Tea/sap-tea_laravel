@@ -49,6 +49,10 @@ Route::get('/index', function () {
     return view('index');
 })->name('index');
 
+// Rota para inserir inventário
+use App\Http\Controllers\InserirEixoController;
+Route::post('/sondagem/inserir-inventario/{id}', [InserirEixoController::class, 'store'])->name('inserir_inventario');
+
 // Logout
 use Illuminate\Http\Request;
 Route::post('/logout', function (Request $request) {
@@ -58,6 +62,23 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('login')->with('status', 'Sessão encerrada com sucesso!');
 })->name('logout');
 
+// =========================
+// Rota protegida para dashboard (evita erro de view e mantém segurança)
+Route::middleware(['auth:funcionario'])->get('/dashboard', function () {
+    return view('dashboard'); // Crie a view se necessário
+})->name('dashboard');
+// =========================
+// TESTE POST SIMPLES
+Route::get('/formulario-teste', function () {
+    return view('formulario_teste');
+})->name('formulario.teste');
+
+Route::post('/formulario-teste', function (Illuminate\Http\Request $request) {
+    if ($request->filled(['nome', 'idade'])) {
+        return back()->with('success', 'Recebido: ' . $request->nome . ', idade: ' . $request->idade);
+    }
+    return back()->with('error', 'Preencha todos os campos!');
+})->name('formulario.teste.submit');
 // =========================
 // SONDAGEM
 // =========================
@@ -153,7 +174,8 @@ Route::middleware(['auth:funcionario', 'funcao.especial'])->prefix('sondagem')->
     Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'index_inventario'])->name('eixos.alunos');
 
     Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
-    Route::post('/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
+    // Route removida para evitar conflito de nome
+// Route::post('/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
 
     Route::get('/visualizar-inventario/{id}', [AlunoController::class, 'visualiza_aluno_inventario'])->name('visualizar.inventario');
     // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
