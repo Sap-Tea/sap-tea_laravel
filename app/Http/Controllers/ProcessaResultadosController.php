@@ -696,6 +696,12 @@ foreach ($comportamento_agrupado as $item) {
             'soma_normalizados_socioemocional' => array_sum(array_column($atividades_normalizadas_socioemocional, 'aplicacoes')),
         ];
         $debug_normalizacao['soma_normalizados_total'] = $debug_normalizacao['soma_normalizados_comunicacao'] + $debug_normalizacao['soma_normalizados_comportamento'] + $debug_normalizacao['soma_normalizados_socioemocional'];
+        
+        // Atualiza os totais por eixo para refletir os valores normalizados
+        $total_comunicacao_linguagem = $debug_normalizacao['soma_normalizados_comunicacao'];
+        $total_comportamento = $debug_normalizacao['soma_normalizados_comportamento'];
+        $total_socioemocional = $debug_normalizacao['soma_normalizados_socioemocional'];
+        $total_eixos = $debug_normalizacao['soma_normalizados_total']; // Deve ser exatamente 40
 
         $debug_info = json_encode($debug_normalizacao, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
         Log::info('Debug Normalização GLOBAL:', $debug_normalizacao);
