@@ -501,34 +501,140 @@ foreach ($comportamento_agrupado as $item) {
 
 // Contar atividades de Interação Socioemocional (excluindo EIS01)
 // (Se necessário, coloque o foreach correto aqui, dentro do método monitoramentoAluno)
-// Passar o debug para a view
-$debug_info = json_encode($debug_totais);
+        // --- NORMALIZAÇÃO GLOBAL DAS ATIVIDADES DOS 3 EIXOS ---
+        // Junta todas as atividades dos três eixos em um único array
+        $todas_atividades = [];
+        foreach ($comunicacao_atividades_ordenadas as $item) {
+            $todas_atividades[] = [
+                'codigo' => $item->cod_ati_com_lin,
+                'descricao' => $item->desc_ati_com_lin,
+                'eixo' => 'comunicacao',
+            ];
+        }
+        foreach ($comportamento_atividades_ordenadas as $item) {
+            $todas_atividades[] = [
+                'codigo' => $item->cod_ati_comportamento,
+                'descricao' => $item->desc_ati_comportamento,
+                'eixo' => 'comportamento',
+            ];
+        }
+        foreach ($socioemocional_atividades_ordenadas as $item) {
+            $todas_atividades[] = [
+                'codigo' => $item->cod_ati_int_soc ?? $item->cod_ati_int_socio,
+                'descricao' => $item->desc_ati_int_soc ?? $item->desc_ati_int_socio,
+                'eixo' => 'socioemocional',
+            ];
+        }
 
-// Log para depuração
-\Log::info('Debug Info no Controller:', ['debug_info' => $debug_info]);
+        // Agrupa e conta quantas vezes cada atividade aparece
+        $atividades_agrupadas = [];
+        foreach ($todas_atividades as $atv) {
+            $key = $atv['eixo'] . '|' . $atv['codigo'];
+            if (!isset($atividades_agrupadas[$key])) {
+                $atividades_agrupadas[$key] = [
+                    'codigo' => $atv['codigo'],
+                    'descricao' => $atv['descricao'],
+                    'eixo' => $atv['eixo'],
+                    'total' => 0
+                ];
+            }
+            $atividades_agrupadas[$key]['total']++;
+        }
+        $atividades_agrupadas = array_values($atividades_agrupadas);
 
-// Retorna para a view com todas as variáveis necessárias
-return view('rotina_monitoramento.monitoramento_aluno', [
-    'alunoDetalhado' => $aluno,
-    'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
-    'comportamento_agrupado' => $comportamento_agrupado,
-    'socioemocional_agrupado' => $socioemocional_agrupado,
-    'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
-    'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
-    'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
-    'total_eixos' => $total_eixos,
-    'total_atividades' => $total_atividades, // Adicionado o total de atividades
-    'total_comunicacao' => $total_comunicacao_linguagem,
-    'total_comportamento' => $total_comportamento,
-    'total_socioemocional' => $total_socioemocional,
-    'comunicacao_resultados' => $comunicacao_resultados ?? [],
-    'comportamento_resultados' => $comportamento_resultados ?? [],
-    'socioemocional_resultados' => $socioemocional_resultados ?? [],
-    'data_inicial_com_lin' => $data_inicial_com_lin ?? null,
-    'detalhe' => $detalhe ?? null,
-    'debug_info' => $debug_info // Adicionado para debug
-]);
-}
+        // Soma total de atividades para o fator de normalização
+        $total_atividades = array_sum(array_column($atividades_agrupadas, 'total'));
+        // Fator arredondado igual à planilha: 1 casa decimal
+        $fator = $total_atividades > 0 ? round($total_atividades / 40, 1) : 1;
+
+        // --- NORMALIZAÇÃO EXATA DA PLANILHA: fator = total_atividades / 40, round igual Excel ---
+        $soma_normalizados = 0;
+        foreach ($atividades_agrupadas as $i => $atv) {
+            $normalizado = $atv['total'] / $fator;
+            // O Excel usa arredondamento padrão (round), não floor!
+            $atividades_agrupadas[$i]['aplicacoes'] = round($normalizado, 0, PHP_ROUND_HALF_UP);
+            $soma_normalizados += $atividades_agrupadas[$i]['aplicacoes'];
+        }
+        // Ajuste final: se a soma for diferente de 40, corrige para garantir soma exata
+        if ($soma_normalizados !== 40) {
+            // Se passou de 40, tira 1 dos maiores normalizados; se ficou abaixo, soma 1 nos maiores
+            $diff = 40 - $soma_normalizados;
+            // Ordena pelo valor decimal original para ajuste proporcional
+            $ajuste = [];
+            foreach ($atividades_agrupadas as $i => $atv) {
+                $ajuste[$i] = ($atv['total'] / $fator) - round($atv['total'] / $fator, 0, PHP_ROUND_HALF_UP);
+            }
+            if ($diff > 0) {
+                arsort($ajuste); // maiores restos positivos
+                $indices = array_keys($ajuste);
+                for ($j = 0; $j < $diff; $j++) {
+                    $atividades_agrupadas[$indices[$j]]['aplicacoes'] += 1;
+                }
+            } elseif ($diff < 0) {
+                asort($ajuste); // menores restos negativos
+                $indices = array_keys($ajuste);
+                for ($j = 0; $j < abs($diff); $j++) {
+                    if ($atividades_agrupadas[$indices[$j]]['aplicacoes'] > 0) {
+                        $atividades_agrupadas[$indices[$j]]['aplicacoes'] -= 1;
+                    }
+                }
+            }
+        }
+        // Agora a soma dos 3 eixos é exatamente 40, igual ao Excel.
+
+        // Separa novamente por eixo para exibir na view
+        $atividades_normalizadas_comunicacao = [];
+        $atividades_normalizadas_comportamento = [];
+        $atividades_normalizadas_socioemocional = [];
+        foreach ($atividades_agrupadas as $atv) {
+            if ($atv['eixo'] === 'comunicacao') {
+                $atividades_normalizadas_comunicacao[] = $atv;
+            } elseif ($atv['eixo'] === 'comportamento') {
+                $atividades_normalizadas_comportamento[] = $atv;
+            } elseif ($atv['eixo'] === 'socioemocional') {
+                $atividades_normalizadas_socioemocional[] = $atv;
+            }
+        }
+
+        // --- DEBUG NORMALIZAÇÃO GLOBAL ---
+        $debug_normalizacao = [
+            'soma_normalizados_comunicacao' => array_sum(array_column($atividades_normalizadas_comunicacao, 'aplicacoes')),
+            'soma_normalizados_comportamento' => array_sum(array_column($atividades_normalizadas_comportamento, 'aplicacoes')),
+            'soma_normalizados_socioemocional' => array_sum(array_column($atividades_normalizadas_socioemocional, 'aplicacoes')),
+        ];
+        $debug_normalizacao['soma_normalizados_total'] = $debug_normalizacao['soma_normalizados_comunicacao'] + $debug_normalizacao['soma_normalizados_comportamento'] + $debug_normalizacao['soma_normalizados_socioemocional'];
+
+        $debug_info = json_encode($debug_normalizacao, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
+        \Log::info('Debug Normalização GLOBAL:', $debug_normalizacao);
+
+        // Retorna para a view com todas as variáveis necessárias
+        return view('rotina_monitoramento.monitoramento_aluno', [
+            'alunoDetalhado' => $aluno,
+            'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
+            'comportamento_agrupado' => $comportamento_agrupado,
+            'socioemocional_agrupado' => $socioemocional_agrupado,
+            'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
+            'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
+            'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
+            'atividades_normalizadas_comunicacao' => $atividades_normalizadas_comunicacao,
+            'atividades_normalizadas_comportamento' => $atividades_normalizadas_comportamento,
+            'atividades_normalizadas_socioemocional' => $atividades_normalizadas_socioemocional,
+            'total_eixos' => $total_eixos,
+            'total_atividades' => $total_atividades,
+            'total_comunicacao' => $total_comunicacao_linguagem,
+            'total_comportamento' => $total_comportamento,
+            'total_socioemocional' => $total_socioemocional,
+            'comunicacao_resultados' => $comunicacao_resultados ?? [],
+            'comportamento_resultados' => $comportamento_resultados ?? [],
+            'socioemocional_resultados' => $socioemocional_resultados ?? [],
+            'data_inicial_com_lin' => $data_inicial_com_lin ?? null,
+            'detalhe' => $detalhe ?? null,
+            'debug_info' => $debug_info,
+            'debug_normalizacao' => $debug_normalizacao
+        ]);
+    } // FIM DO MÉTODO monitoramentoAluno
+
+// Outros métodos do controller permanecem abaixo
 
 public function processaEixoComLin(Request $request)
 {
