@@ -7,6 +7,7 @@ use App\Models\EixoInteracaoSocEmocional;
 use App\Models\PreenchimentoInventario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class InserirEixoEstudanteController extends Controller
@@ -148,6 +149,12 @@ class InserirEixoEstudanteController extends Controller
 
         ]);
 
+        // Debug específico para o campo ecp17
+        \Log::info('Valor do campo ecp17 recebido:', ['ecp17' => $request->input('ecp17')]);
+        \Log::info('Todos os campos ecp recebidos:', array_filter($request->all(), function($key) {
+            return strpos($key, 'ecp') === 0;
+        }, ARRAY_FILTER_USE_KEY));
+        
         try {
             // Inserção no EixoComunicaçãoLinguagem
             $eixoComunicacao = EixoComunicacaoLinguagem::create([
@@ -206,7 +213,7 @@ class InserirEixoEstudanteController extends Controller
                 'ecp14' => $request->input('ecp14'),
                 'ecp15' => $request->input('ecp15'),
                 'ecp16' => $request->input('ecp16'),
-                'ecp17' => $request->input('ecp17'),
+                'ecp17' => $request->has('ecp17') ? $request->input('ecp17') : '0', // Garante que ecp17 tenha um valor padrão
                 'fk_alu_id_ecomp' => $alunoId,
                 'data_insert_comportamento'=> $dataInventario_formatada,
                 'fase_inv_comportamento'=> $fase_inventario

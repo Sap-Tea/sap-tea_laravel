@@ -97,8 +97,8 @@
                     @foreach ($Perguntas_eixo_comunicacao as $i_comunicacao => $comunicacao)
                     <tr style="background-color: #A1D9F6;">
                         <td>{{$comunicacao}}</td>
-                        <td><input type="radio" name="ecm{{ sprintf('%02d', $i_comunicacao + 1) }}" value="1"></td>
-                        <td><input type="radio" name="ecm{{ sprintf('%02d', $i_comunicacao + 1) }}" value="0"></td>
+                        <td><input type="radio" name="ecm{{ sprintf('%02d', $i_comunicacao + 1) }}" value="1" required></td>
+                        <td><input type="radio" name="ecm{{ sprintf('%02d', $i_comunicacao + 1) }}" value="0" required></td>
                     </tr>
                 @endforeach
         </tbody>
@@ -115,8 +115,8 @@
                     @foreach ($perguntas_eixo_comportamento as $i_comportamento => $comportamento)
                     <tr style="background-color: #FFEB3B;">
                         <td>{{$comportamento}}</td>
-                        <td><input type="radio" name="ecp{{ sprintf('%02d', $i_comportamento + 1) }}" value="1"></td>
-                        <td><input type="radio" name="ecp{{ sprintf('%02d', $i_comportamento + 1) }}" value="0"></td>
+                        <td><input type="radio" name="ecp{{ sprintf('%02d', $i_comportamento + 1) }}" value="1" required></td>
+                        <td><input type="radio" name="ecp{{ sprintf('%02d', $i_comportamento + 1) }}" value="0" required></td>
                     </tr>
                 @endforeach
         
@@ -134,8 +134,8 @@
                     @foreach ($eixo_int_socio_emocional as $i_int_emocional => $intemocional)
                     <tr style="background-color: #d7EAD9 !important;">
                         <td>{{$intemocional}}</td>
-                        <td><input type="radio" name="eis{{ sprintf('%02d', $i_int_emocional + 1) }}" value="1"></td>
-                        <td><input type="radio" name="eis{{ sprintf('%02d', $i_int_emocional + 1) }}" value="0"></td>
+                        <td><input type="radio" name="eis{{ sprintf('%02d', $i_int_emocional + 1) }}" value="1" required></td>
+                        <td><input type="radio" name="eis{{ sprintf('%02d', $i_int_emocional + 1) }}" value="0" required></td>
                     </tr>
                 @endforeach
         </tbody>
