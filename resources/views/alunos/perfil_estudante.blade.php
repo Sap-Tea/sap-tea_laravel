@@ -1,7 +1,49 @@
 @extends('index')
 
 @section('content')
-    <div class="container" style="max-width:1100px;">
+    <style>
+    .form-section {
+        border: 3px solid #d1d5db; /* Borda mais grossa */
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 100%;
+    }
+    .section-title {
+        background-color: #f8f9fa;
+        padding: 10px 15px;
+        margin: 0 -20px 20px -20px;
+        border-left: 4px solid #007bff;
+        font-weight: 600;
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 8px 12px;
+    }
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+    .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin: 10px 0;
+    }
+    .checkbox-group label {
+        margin-left: 5px;
+        font-weight: normal;
+    }
+</style>
+
+<div class="container" style="max-width: 1200px; width: 95%; margin: 30px auto; padding: 0 15px;">
         <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" onsubmit="return confirmSubmit(event)">
             @csrf
             <input type="hidden" name="is_confirmed" id="is_confirmed" value="0">
@@ -24,7 +66,7 @@
 
             
             <!-- Etapa 1: Dados Pessoais -->
-            <div class="step-content active" data-step="1">
+            <div class="step-content form-section active" data-step="1">
                 <div class="section-title">Dados Pessoais do Aluno</div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
@@ -98,7 +140,7 @@
             </div>
             
             <!-- Etapa 2: Mais Dados Pessoais -->
-            <div class="step-content" data-step="2">
+            <div class="step-content form-section" data-step="2">
                 <div class="section-title">Perfil do Estudante</div>
                 <!-- Diagnóstico/Laudo -->
                 <div class="row custom-row-gap align-items-end">
@@ -152,7 +194,7 @@
                 </div>
 
                 <!-- Apoio e AEE -->
-                <div class="section-title">Apoio e AEE</div>
+                <div class="section-title" style="margin-top: 25px;">Apoio e AEE</div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
                         <label>Necessita de profissional de apoio em sala?</label>
@@ -201,7 +243,7 @@
             </div>
             
             <!-- Etapa 3: Personalidade e Comunicação -->
-            <div class="step-content" data-step="3">
+            <div class="step-content form-section" data-step="3" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
                 <div class="section-title">II - Personalidade</div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
@@ -268,7 +310,7 @@
                 </div>
             </div>
             <!-- Etapa 4: Preferências -->
-            <div class="step-content" data-step="4">
+            <div class="step-content form-section" data-step="4">
                 <div class="section-title">IV - Preferências, sensibilidade e dificuldades</div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
@@ -324,7 +366,7 @@
             </div>
             
             <!-- Etapa 5: Preferências (continuação) e Família -->
-            <div class="step-content" data-step="5">
+            <div class="step-content form-section" data-step="5" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
                 <div class="section-title">IV - Preferências (Continuação)</div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
@@ -395,7 +437,7 @@
             </div>
             
             <!-- Etapa 6: Cadastro de Profissionais -->
-            <div class="step-content" data-step="6">
+            <div class="step-content form-section" data-step="6" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
                 <div class="section-title">Cadastro de Profissionais</div>
                 <div style="margin-bottom: 15px;">
                     <table class="table table-bordered">
@@ -418,33 +460,33 @@
                         <tbody>
                             <!-- Linha 1 -->
                             <tr style="background-color: #e6f2ff;">
-                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="nome_profissional_01" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional_01" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional_01" class="form-control"></td>
                             </tr>
                             <!-- Linha 2 -->
                             <tr style="background-color: #e6f2ff;">
-                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="nome_profissional_02" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional_02" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional_02" class="form-control"></td>
                             </tr>
                             <!-- Linha 3 -->
                             <tr style="background-color: #e6f2ff;">
-                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="nome_profissional_03" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional_03" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional_03" class="form-control"></td>
                             </tr>
                             <!-- Linha 4 -->
                             <tr style="background-color: #e6f2ff;">
-                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                                <td><input type="text" name="nome_profissional_04" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional_04" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional_04" class="form-control"></td>
                             </tr>
                             <!-- Linha 5 -->
-                            <tr style="background-color: #e6f2ff;">
-                                <td><input type="text" name="nome_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="especialidade_profissional[]" class="form-control"></td>
-                                <td><input type="text" name="observacoes_profissional[]" class="form-control"></td>
+                            <tr style="background-color: #e6f2ff;"> 
+                                <td><input type="text" name="nome_profissional_05" class="form-control"></td>
+                                <td><input type="text" name="especialidade_profissional_05" class="form-control"></td>
+                                <td><input type="text" name="observacoes_profissional_05" class="form-control"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -452,7 +494,7 @@
             </div>
             
             <!-- Navegação entre etapas -->
-            <div class="step-navigation">
+            <div class="step-navigation" style="margin-top: 30px;">
                 <div class="navigation-group">
                     <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
                         <i class="fas fa-arrow-left"></i> Anterior

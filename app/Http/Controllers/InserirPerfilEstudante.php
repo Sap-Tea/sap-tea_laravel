@@ -7,6 +7,7 @@ use App\Models\Comunicacao;
 use App\Models\Preferencia;
 use App\Models\PerfilFamilia;
 use App\Models\AlunoFlagPerfilEstudante;
+use App\Models\PerfilProfissional;
 use Illuminate\Support\Facades\DB;
 
 class InserirPerfilEstudante extends Controller
@@ -146,17 +147,13 @@ class InserirPerfilEstudante extends Controller
              $alunoId = $request->input('aluno_id');
 
         try {
+            // Iniciar transação para garantir a integridade dos dados
+            DB::beginTransaction();
+            
+            // Cria o perfil do estudante
             $perfilEstudante = PerfilEstudante::create([
                 'diag_laudo' => $request->input('diag_laudo'),
-                'cid' => $request->input('cid'),
-                'nome_medico' => $request->input('nome_medico'),
-                'data_laudo' => $request->input('data_laudo'),
-                'nivel_suporte'=> $request->input('nivel_suporte'),
-                 'uso_medicamento'=>$request->input('uso_medicamento'),
-                 'quais_medicamento'=>$request->input('quais_medicamento'),
-                 'nec_pro_apoio'=>$request->input('nec_pro_apoio'),
-                 'loc_01' => $loc_01,
-                 'hig_02'=>$hig_02,
+                'hig_02' => $hig_02,
                  'ali_03'=>$ali_03,
                  'com_04'=>$com_04,
                  'out_05'=>$out_05,
@@ -218,10 +215,17 @@ class InserirPerfilEstudante extends Controller
                     'fk_id_aluno'=>$alunoId 
 
                 ]);
+                // Atualiza a flag do aluno
                 DB::statement('UPDATE aluno SET flag_perfil = ? WHERE alu_id = ?', ['*', $alunoId]);
+                
+                // Salva os profissionais
+                $this->salvarProfissionais($request, $alunoId);
+                
+                // Confirma a transação
+                DB::commit();
 
-            // Retorne uma mensagem de sucesso
-            return redirect()->route('perfil.estudante')->with('message', 'Perfil criado com sucesso');
+                // Retorne uma mensagem de sucesso
+                return redirect()->route('perfil.estudante')->with('message', 'Perfil criado com sucesso');
 
         } catch (\Exception $e) {
             // Retorne uma mensagem de erro
@@ -229,16 +233,37 @@ class InserirPerfilEstudante extends Controller
         }
 
    
-
-
-
-
     }
-
-
-
-
-
-
-
+    
+    /**
+     * Salva os profissionais do aluno
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $alunoId
+     * @return void
+     */
+    private function salvarProfissionais($request, $alunoId)
+    {
+        // Remove profissionais existentes
+        PerfilProfissional::where('fk_id_aluno', $alunoId)->delete();
+        
+        // Processa cada linha de profissional (01 a 05)
+        for ($i = 1; $i <= 5; $i++) {
+            $numero = str_pad($i, 2, '0', STR_PAD_LEFT);
+            $nome = $request->input("nome_profissional_{$numero}");
+            $especialidade = $request->input("especialidade_profissional_{$numero}");
+            $observacoes = $request->input("observacoes_profissional_{$numero}");
+            
+            // Só cria o registro se o nome estiver preenchido
+            if (!empty($nome)) {
+                PerfilProfissional::create([
+                    'nome_profissional' => $nome,
+                    'especialidade_profissional' => $especialidade,
+                    'observacoes_profissional' => $observacoes,
+                    'fk_id_aluno' => $alunoId,
+                    'data_cadastro_profissional' => now()->toDateString()
+                ]);
+            }
+        }
+    }
 }
