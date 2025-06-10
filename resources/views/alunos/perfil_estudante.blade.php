@@ -654,20 +654,6 @@
             finishBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                // Verifica se todas as etapas foram visitadas
-                if (visitedSteps.size < totalSteps) {
-                    alert('Por favor, preencha todas as etapas antes de finalizar o cadastro.');
-                    // Vai para a primeira etapa não visitada
-                    for (let i = 1; i <= totalSteps; i++) {
-                        if (!visitedSteps.has(i)) {
-                            currentStep = i;
-                            showStep(currentStep);
-                            break;
-                        }
-                    }
-                    return;
-                }
-                
                 // Valida os campos da última etapa
                 if (!validateCurrentStep()) {
                     return;

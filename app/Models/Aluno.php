@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\PerfilEstudante;
+use App\Models\PerfilProfissional;
 
 class Aluno extends Model
 {
+    public $timestamps = false;
+    
     public function escola()
     {
         return $this->belongsTo(\App\Models\Escola::class, 'fk_escola_id', 'esc_id');
@@ -19,6 +23,22 @@ class Aluno extends Model
     public function matriculas()
     {
         return $this->hasMany(Matricula::class, 'fk_id_aluno', 'alu_id');
+    }
+    
+    /**
+     * Relacionamento com o perfil do estudante
+     */
+    public function perfilEstudante()
+    {
+        return $this->hasOne(PerfilEstudante::class, 'fk_id_aluno', 'alu_id');
+    }
+    
+    /**
+     * Relacionamento com os profissionais
+     */
+    public function profissionais()
+    {
+        return $this->hasMany(PerfilProfissional::class, 'fk_id_aluno', 'alu_id');
     }
 
     public static function getAlunosDetalhados($id)

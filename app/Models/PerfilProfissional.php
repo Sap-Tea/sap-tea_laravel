@@ -40,7 +40,7 @@ class PerfilProfissional extends Model
      */
     public function aluno()
     {
-        return $this->belongsTo(Aluno::class, 'fk_id_aluno', 'id_aluno');
+        return $this->belongsTo(Aluno::class, 'fk_id_aluno', 'alu_id');
     }
 
     /**

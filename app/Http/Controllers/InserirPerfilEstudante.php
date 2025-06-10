@@ -1,238 +1,238 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\PerfilEstudante;
 use App\Models\PersonalidadeAluno;
 use App\Models\Comunicacao;
 use App\Models\Preferencia;
 use App\Models\PerfilFamilia;
-use App\Models\AlunoFlagPerfilEstudante;
 use App\Models\PerfilProfissional;
+use App\Models\Aluno;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class InserirPerfilEstudante extends Controller
 {
+    /**
+     * Valida os dados do formulário de perfil do estudante
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array|\Illuminate\Http\JsonResponse
+     */
+    protected function validarDados(Request $request)
+    {
+        // Define valores padrão para campos opcionais
+        $dadosPadrao = [
+            'diag_laudo' => 0,
+            'nivel_suporte' => 1,
+            'uso_medicamento' => 0,
+            'nec_pro_apoio' => 0,
+            'conta_pro_apoio' => 0,
+        ];
+
+        // Valida os dados fornecidos
+        $dados = $request->validate([
+            'aluno_id' => 'required|integer|exists:aluno,alu_id',
+            'diag_laudo' => 'nullable|in:0,1',
+            'data_laudo' => 'nullable|date',
+            'cid' => 'nullable|string|max:20',
+            'nome_medico' => 'nullable|string|max:255',
+            'nivel_suporte' => 'nullable|in:1,2,3',
+            'uso_medicamento' => 'nullable|in:0,1',
+            'quais_medicamento' => 'nullable|string|max:255',
+            'nec_pro_apoio' => 'nullable|in:0,1',
+            'conta_pro_apoio' => 'nullable|in:0,1',
+            'at_especializado' => 'nullable|string|max:255',
+            'outros' => 'nullable|string|max:255',
+            'locomocao' => 'nullable|in:on',
+            'higiene' => 'nullable|in:on',
+            'alimentacao' => 'nullable|in:on',
+            'comunicacao' => 'nullable|in:on',
+        ]);
+
+        // Aplica valores padrão para campos não fornecidos
+        foreach ($dadosPadrao as $campo => $valor) {
+            if (!isset($dados[$campo]) || $dados[$campo] === null) {
+                $dados[$campo] = $valor;
+            }
+        }
+
+        return $dados;
+    }
+
+    /**
+     * Processa os dados do formulário e salva no banco de dados
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function inserir_perfil_estudante(Request $request)
     {
-        if (!$request->has('diag_laudo') || !in_array($request->input('diag_laudo'), [0, 1])) {
-            return response()->json(['message' => 'Valor inválido para diag_laudo. Deve ser 0 ou 1'], 400);
-        }
-        
-        if (!$request->has('uso_medicamento') || !in_array($request->input('uso_medicamento'), [0, 1])) {
-            return response()->json(['message' => 'Valor inválido para diag_laudo. Deve ser 0 ou 1'], 400);
-        }
-
-    
-        if (!$request->has('nivel_suporte') || !in_array($request->input('nivel_suporte'), [1, 2, 3])) {
-            return response()->json(['message' => 'Valor inválido para o nivel de suporte. Deve ser 1,2,3'], 400);
-        }
-
-        if (!$request->has('nec_pro_apoio') || !in_array($request->input('nec_pro_apoio'), [0, 1])) {
-            return response()->json(['message' => 'Valor inválido para o nivel de suporte. Deve ser 1,2,3'], 400);
-        }
-
-        //validacao de comunicacao
-
-        if (!$request->has('precisa_comunicacao') || !in_array($request->input('precisa_comunicacao'), [0, 1])) {
-            return response()->json(['message' => 'Valor inválido para precisa_comunicacao. Deve ser 0 ou 1'], 400);
-        }
-        if (!$request->has('entende_instrucao') || !in_array($request->input('entende_instucao'), [0, 1])) {
-            return response()->json(['message' => 'Valor inválido para entende_instrucao. Deve ser 0 ou 1'], 400);
-        }
-
-
-          $loc_01 =0;
-          $hig_02 =0;
-          $ali_03 =0;
-          $com_04 = 0;
-          $out_05 = 0;
-
-
-       if(isset($_POST['locomocao']))
-            {
-                $loc_01 = 1;
-            }
-         if(isset($_POST['higiene']))
-            {
-                $hig_02 = 1;
-            }
-            if(isset($_POST['alimentacao']))
-            {
-                $ali_03 = 1;
-            }
-            if(isset($_POST['comunicacao']))
-            {
-                $com_04 = 1;
-            }
-            if(isset($_POST['outros']))
-            {
-                $out_05 = 1;
-            }
-            
-            //Validando campos preferencia
-            
-            
-            if(isset($_POST['s_auditiva'])){
-               $auditivo_04 = 1;
-            }
-            else
-            {
-                $auditivo_04 = 0;
-            }
-                       
-            if(isset($_POST['s_visual'])){
-                $visual_04 = 1;
-             }
-             else
-             {
-                 $visual_04 = 0;
-             }
-                         
-             if(isset($_POST['s_tatil'])){
-                $tatil_04 = 1;
-             }
-             else
-             {
-                 $tatil_04 = 0;
-             }
-        
-             if(isset($_POST['s_outros'])){
-                $s_outros = 1;
-             }
-             else
-             {
-                 $s_outros = 0;
-             }
-
-             if (!$request->has('seletividade_alimentar') || !in_array($request->input('seletividade_alimentar'), [0, 1])) {
-                return response()->json(['message' => 'Valor inválido para seletividade alimentar. Deve ser 0 ou 1'], 400);
-            }
-         
-            //validando checkbos preferencia
-            
-            if(isset($_POST['r_visual'])){
-                $aprende_visual_04 = 1;
-             }
-             else
-             {
-                 $aprende_visual_04 = 0;
-             }
-                        
-             if(isset($_POST['r_auditivo'])){
-                 $recurso_auditivo_04 = 1;
-              }
-              else
-              {
-                  $recurso_auditivo_04 = 0;
-              }
-                          
-              if(isset($_POST['m_concreto'])){
-                 $material_concreto_04 = 1;
-              }
-              else
-              {
-                $material_concreto_04 = 0;
-              }
-         
-              if(isset($_POST['o_outro'])){
-                $outro_identificar_04 = 1;
-              }
-              else
-              {
-                $outro_identificar_04 = 0;
-
-              }
-         
-             //carregando o alu_id do aluno para todas as tabelas do perfil do estudante
-             $alunoId = $request->input('aluno_id');
-
         try {
-            // Iniciar transação para garantir a integridade dos dados
+            // Valida os dados do formulário
+            $dados = $this->validarDados($request);
+            $alunoId = $dados['aluno_id'];
+
+            // Verifica se já existe um perfil para este aluno
+            $perfilExistente = PerfilEstudante::where('fk_id_aluno', $alunoId)->first();
+            
+            // Se existir, atualiza em vez de retornar erro
+            if ($perfilExistente) {
+                Log::info('Atualizando perfil existente para o aluno', ['aluno_id' => $alunoId]);
+            }
+
+            // Verifica se o aluno existe
+            $aluno = Aluno::find($alunoId);
+            if (!$aluno) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aluno não encontrado.'
+                ], 404);
+            }
+
+            // Processa os checkboxes com valores padrão
+            $dadosPerfil = [
+                'diag_laudo' => $dados['diag_laudo'] ?? 0,
+                'data_laudo' => $dados['data_laudo'] ?? null,
+                'cid' => $dados['cid'] ?? null,
+                'nome_medico' => $dados['nome_medico'] ?? null,
+                'nivel_suporte' => $dados['nivel_suporte'] ?? 1,
+                'uso_medicamento' => $dados['uso_medicamento'] ?? 0,
+                'quais_medicamento' => $dados['quais_medicamento'] ?? null,
+                'nec_pro_apoio' => $dados['nec_pro_apoio'] ?? 0,
+                'prof_apoio' => $dados['conta_pro_apoio'] ?? 0,
+                'loc_01' => $request->has('locomocao') ? 1 : 0,
+                'hig_02' => $request->has('higiene') ? 1 : 0,
+                'ali_03' => $request->has('alimentacao') ? 1 : 0,
+                'com_04' => $request->has('comunicacao') ? 1 : 0,
+                'out_05' => $request->has('outros') ? 1 : 0,
+                'out_momentos' => $request->input('outros_momentos_apoio'),
+                'at_especializado' => $dados['at_especializado'] ?? null,
+                'fk_id_aluno' => $alunoId
+            ];
+         
+            // Inicia a transação
             DB::beginTransaction();
-            
-            // Cria o perfil do estudante
-            $perfilEstudante = PerfilEstudante::create([
-                'diag_laudo' => $request->input('diag_laudo'),
-                'hig_02' => $hig_02,
-                 'ali_03'=>$ali_03,
-                 'com_04'=>$com_04,
-                 'out_05'=>$out_05,
-                 'out_momentos'=>$request->input('outros'),
-                 'at_especializado'=>$request->input('at_especializado'),
-                 'fk_id_aluno'=>$alunoId
-            ]);
-            
-            $personalidade = PersonalidadeAluno::create([
-                'carac_principal'=>$request->input('caracteristicas'),
-                'inter_princ_carac'=>$request->input('areas_interesse'),
-                'livre_gosta_fazer'=>$request->input('atividades_livre'),
-                'feliz_est'=>$request->input('feliz'),
-               'trist_est'=>$request->input('triste'),
-                'obj_apego'=>$request->input('objeto_apego'),
-                'fk_id_aluno'=>$alunoId
 
-            ]);
-                $comunicacao = Comunicacao::create([
-                    'precisa_comunicacao'=>$request->input('precisa_comunicacao'),
-                    'entende_instrucao'=>$request->input('entende_instrucao'),
-                    'recomenda_instrucao'=>$request->input('recomenda_instrucao'),
-                    'fk_id_aluno'=>$alunoId
-                ]);
-                    
-                $preferencia = Preferencia::create([
-                'auditivo_04'=>$auditivo_04,
-                'visual_04'=>$visual_04,
-                'tatil_04'=>$tatil_04,
-                'outros_04'=>$s_outros,
-                'maneja_04'=>$request->input('manejo_sensibilidade'),
-                'asa_04'=>$request->input('seletividade_alimentar'),
-                'alimentos_pref_04'=>$request->input('alimentos_preferidos'),
-                'alimento_evita_04'=>$request->input('alimentos_evita'),
+            try {
+                // Cria ou atualiza o perfil do estudante
+                $perfilExistente = PerfilEstudante::where('fk_id_aluno', $alunoId)->first();
+                $perfilEstudante = PerfilEstudante::criarPerfil($dadosPerfil, true);
 
-                'contato_pc_04'=>$request->input('afinidade_escola'),
-                'reage_contato'=>$request->input('reacao_contato'),
-                'interacao_escola_04'=>$request->input('interacao_escola'),
-                'interesse_atividade_04'=>$request->input('interesse_atividade'),
-
-                 'aprende_visual_04'=>$aprende_visual_04,
-                 'recurso_auditivo_04'=>$recurso_auditivo_04,
-                'material_concreto_04'=>$material_concreto_04,
-                'outro_identificar_04'=>$outro_identificar_04,
-                'descricao_outro_identificar_04'=>$request->input('outro_identificar'),
-                'prefere_ts_04'=>$request->input('atividades_grupo'),
-                'mostram_eficazes_04'=>$request->input('estrategias_eficazes'),
-                'realiza_tarefa_04'=>$request->input('interesse_tarefa'),
-                'fk_id_aluno'=>$alunoId
-
-
-                ]);        
-
-                $PerfilFamilia = PerfilFamilia::create([
-                     'expectativa_05' =>$request->input('expectativas_familia'),
-                     'estrategia_05' => $request->input('estrategias_familia'),
-                     'crise_esta_05'=>$request->input('crise_estresse') ,
-                     
-                    'fk_id_aluno'=>$alunoId 
-
-                ]);
                 // Atualiza a flag do aluno
-                DB::statement('UPDATE aluno SET flag_perfil = ? WHERE alu_id = ?', ['*', $alunoId]);
+                $aluno->flag_perfil = '*';
+                $aluno->save();
                 
-                // Salva os profissionais
-                $this->salvarProfissionais($request, $alunoId);
+                // Se estivermos atualizando um perfil existente, removemos os registros antigos
+                if ($perfilExistente) {
+                    // Removemos os registros antigos de comunicação, preferência e personalidade
+                    // Eles serão recriados nos métodos específicos
+                    \App\Models\Comunicacao::where('fk_id_aluno', $alunoId)->delete();
+                    \App\Models\Preferencia::where('fk_id_aluno', $alunoId)->delete();
+                    \App\Models\PersonalidadeAluno::where('fk_id_aluno', $alunoId)->delete();
+                    
+                    Log::info('Registros antigos removidos para atualização', [
+                        'aluno_id' => $alunoId
+                    ]);
+                }
+
+                // Tenta salvar os profissionais se necessário
+                try {
+                    if (($dados['nec_pro_apoio'] ?? 0) == 1) {
+                        $this->salvarProfissionais($request, $alunoId);
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Erro ao salvar profissionais, mas continuando o processo', [
+                        'erro' => $e->getMessage(),
+                        'aluno_id' => $alunoId
+                    ]);
+                }
                 
+                // Salva os dados de comunicação
+                try {
+                    $this->salvarComunicacao($request, $alunoId);
+                } catch (\Exception $e) {
+                    Log::warning('Erro ao salvar comunicação, mas continuando o processo', [
+                        'erro' => $e->getMessage(),
+                        'aluno_id' => $alunoId
+                    ]);
+                }
+                
+                // Salva os dados de preferência
+                try {
+                    $this->salvarPreferencia($request, $alunoId);
+                } catch (\Exception $e) {
+                    Log::warning('Erro ao salvar preferências, mas continuando o processo', [
+                        'erro' => $e->getMessage(),
+                        'aluno_id' => $alunoId
+                    ]);
+                }
+                
+                // Salva os dados de personalidade
+                try {
+                    $this->salvarPersonalidade($request, $alunoId);
+                } catch (\Exception $e) {
+                    Log::warning('Erro ao salvar personalidade, mas continuando o processo', [
+                        'erro' => $e->getMessage(),
+                        'aluno_id' => $alunoId
+                    ]);
+                }
+
                 // Confirma a transação
                 DB::commit();
 
-                // Retorne uma mensagem de sucesso
-                return redirect()->route('perfil.estudante')->with('message', 'Perfil criado com sucesso');
+                Log::info('Perfil do estudante criado com sucesso', [
+                    'perfil_id' => $perfilEstudante->id_perfil,
+                    'aluno_id' => $alunoId
+                ]);
 
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Perfil do estudante criado com sucesso!',
+                    'perfil' => $perfilEstudante
+                ]);
+
+            } catch (\Exception $e) {
+                // Desfaz a transação em caso de erro
+                DB::rollBack();
+                
+                // Registra o erro completo no log
+                $errorMessage = 'Erro ao criar perfil do estudante: ' . $e->getMessage();
+                $errorContext = [
+                    'aluno_id' => $alunoId,
+                    'dados' => $dadosPerfil,
+                    'erro' => [
+                        'mensagem' => $e->getMessage(),
+                        'arquivo' => $e->getFile(),
+                        'linha' => $e->getLine(),
+                        'codigo' => $e->getCode(),
+                        'trace' => $e->getTraceAsString()
+                    ]
+                ];
+                
+                Log::error($errorMessage, $errorContext);
+
+                // Retorna uma mensagem genérica para o usuário, mas com um ID de rastreamento
+                $errorId = uniqid('ERR', true);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erro ao processar a solicitação. Código: ' . $errorId,
+                    'error_id' => $errorId
+                ], 500);
+            }
         } catch (\Exception $e) {
-            // Retorne uma mensagem de erro
-            return response()->json(['message' => 'Erro ao criar perfil: ' . $e->getMessage()], 500);
+            Log::error('Erro na requisição de inserção de perfil: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao processar a requisição. Por favor, tente novamente.'
+            ], 500);
         }
-
-   
     }
     
     /**
@@ -241,29 +241,219 @@ class InserirPerfilEstudante extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $alunoId
      * @return void
+     * @throws \Exception
      */
     private function salvarProfissionais($request, $alunoId)
     {
-        // Remove profissionais existentes
-        PerfilProfissional::where('fk_id_aluno', $alunoId)->delete();
-        
-        // Processa cada linha de profissional (01 a 05)
-        for ($i = 1; $i <= 5; $i++) {
-            $numero = str_pad($i, 2, '0', STR_PAD_LEFT);
-            $nome = $request->input("nome_profissional_{$numero}");
-            $especialidade = $request->input("especialidade_profissional_{$numero}");
-            $observacoes = $request->input("observacoes_profissional_{$numero}");
+        try {
+            // Remove profissionais existentes
+            $removidos = PerfilProfissional::where('fk_id_aluno', $alunoId)->delete();
             
-            // Só cria o registro se o nome estiver preenchido
-            if (!empty($nome)) {
-                PerfilProfissional::create([
-                    'nome_profissional' => $nome,
-                    'especialidade_profissional' => $especialidade,
-                    'observacoes_profissional' => $observacoes,
-                    'fk_id_aluno' => $alunoId,
-                    'data_cadastro_profissional' => now()->toDateString()
-                ]);
+            Log::info('Profissionais removidos', [
+                'quantidade' => $removidos,
+                'aluno_id' => $alunoId
+            ]);
+            
+            $profissionaisSalvos = 0;
+            
+            // Processa cada linha de profissional (01 a 05)
+            for ($i = 1; $i <= 5; $i++) {
+                $numero = str_pad($i, 2, '0', STR_PAD_LEFT);
+                $nome = trim($request->input("nome_profissional_{$numero}", ''));
+                
+                // Só processa se o nome estiver preenchido
+                if (!empty($nome)) {
+                    $dadosProfissional = [
+                        'nome_profissional' => $nome,
+                        'especialidade_profissional' => $request->input("especialidade_profissional_{$numero}", null),
+                        'observacoes_profissional' => $request->input("observacoes_profissional_{$numero}", null),
+                        'fk_id_aluno' => $alunoId,
+                        'data_cadastro_profissional' => now()->toDateString()
+                    ];
+                    
+                    // Valida os dados antes de salvar
+                    $validador = \Validator::make($dadosProfissional, [
+                        'nome_profissional' => 'required|string|max:255',
+                        'especialidade_profissional' => 'nullable|string|max:255',
+                        'observacoes_profissional' => 'nullable|string',
+                        'fk_id_aluno' => 'required|integer|exists:aluno,alu_id',
+                        'data_cadastro_profissional' => 'required|date'
+                    ]);
+                    
+                    if ($validador->fails()) {
+                        Log::warning('Dados inválidos para profissional', [
+                            'erros' => $validador->errors(),
+                            'dados' => $dadosProfissional
+                        ]);
+                        continue; // Pula para o próximo profissional em caso de erro
+                    }
+                    
+                    // Cria o registro do profissional
+                    PerfilProfissional::create($dadosProfissional);
+                    $profissionaisSalvos++;
+                }
             }
+            
+            Log::info('Profissionais salvos com sucesso', [
+                'quantidade' => $profissionaisSalvos,
+                'aluno_id' => $alunoId
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao salvar profissionais', [
+                'erro' => $e->getMessage(),
+                'aluno_id' => $alunoId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            // Não lança a exceção para não interromper o fluxo principal
+            // Apenas registra o erro no log
+        }
+    }
+    
+    /**
+     * Salva os dados de comunicação do aluno
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $alunoId
+     * @return void
+     */
+    private function salvarComunicacao($request, $alunoId)
+    {
+        try {
+            // Remove comunicação existente
+            \App\Models\Comunicacao::where('fk_id_aluno', $alunoId)->delete();
+            
+            // Prepara os dados
+            $dadosComunicacao = [
+                'precisa_comunicacao' => $request->input('precisa_comunicacao'),
+                'entende_instrucao' => $request->input('entende_instrucao'),
+                'recomenda_instrucao' => $request->input('recomenda_instrucao'),
+                'fk_id_aluno' => $alunoId
+            ];
+            
+            // Valida os dados
+            $validador = \Validator::make($dadosComunicacao, [
+                'precisa_comunicacao' => 'nullable|in:0,1',
+                'entende_instrucao' => 'nullable|in:0,1',
+                'recomenda_instrucao' => 'nullable|string|max:255',
+                'fk_id_aluno' => 'required|integer|exists:aluno,alu_id'
+            ]);
+            
+            if ($validador->fails()) {
+                Log::warning('Dados inválidos para comunicação', [
+                    'erros' => $validador->errors(),
+                    'dados' => $dadosComunicacao
+                ]);
+                return;
+            }
+            
+            // Cria o registro de comunicação
+            \App\Models\Comunicacao::create($dadosComunicacao);
+            
+            Log::info('Dados de comunicação salvos com sucesso', [
+                'aluno_id' => $alunoId
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao salvar dados de comunicação', [
+                'erro' => $e->getMessage(),
+                'aluno_id' => $alunoId,
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    }
+    
+    /**
+     * Salva os dados de preferência do aluno
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $alunoId
+     * @return void
+     */
+    private function salvarPreferencia($request, $alunoId)
+    {
+        try {
+            // Remove preferência existente
+            \App\Models\Preferencia::where('fk_id_aluno', $alunoId)->delete();
+            
+            // Prepara os dados
+            $dadosPreferencia = [
+                'auditivo_04' => $request->input('auditivo_04', 0),
+                'visual_04' => $request->input('visual_04', 0),
+                'tatil_04' => $request->input('tatil_04', 0),
+                'outros_04' => $request->input('outros_04', 0),
+                'maneja_04' => $request->input('maneja_04'),
+                'asa_04' => $request->input('asa_04', 0),
+                'alimentos_pref_04' => $request->input('alimentos_pref_04'),
+                'alimento_evita_04' => $request->input('alimento_evita_04'),
+                'contato_pc_04' => $request->input('contato_pc_04'),
+                'reage_contato' => $request->input('reage_contato'),
+                'interacao_escola_04' => $request->input('interacao_escola_04'),
+                'interesse_atividade_04' => $request->input('interesse_atividade_04'),
+                'aprende_visual_04' => $request->input('aprende_visual_04', 0),
+                'recurso_auditivo_04' => $request->input('recurso_auditivo_04', 0),
+                'material_concreto_04' => $request->input('material_concreto_04', 0),
+                'outro_identificar_04' => $request->input('outro_identificar_04', 0),
+                'descricao_outro_identificar_04' => $request->input('descricao_outro_identificar_04'),
+                'realiza_tarefa_04' => $request->input('realiza_tarefa_04'),
+                'mostram_eficazes_04' => $request->input('mostram_eficazes_04'),
+                'prefere_ts_04' => $request->input('prefere_ts_04'),
+                'fk_id_aluno' => $alunoId
+            ];
+            
+            // Cria o registro de preferência
+            \App\Models\Preferencia::create($dadosPreferencia);
+            
+            Log::info('Dados de preferência salvos com sucesso', [
+                'aluno_id' => $alunoId
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao salvar dados de preferência', [
+                'erro' => $e->getMessage(),
+                'aluno_id' => $alunoId,
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    }
+    
+    /**
+     * Salva os dados de personalidade do aluno
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $alunoId
+     * @return void
+     */
+    private function salvarPersonalidade($request, $alunoId)
+    {
+        try {
+            // Remove personalidade existente
+            \App\Models\PersonalidadeAluno::where('fk_id_aluno', $alunoId)->delete();
+            
+            // Prepara os dados
+            $dadosPersonalidade = [
+                'carac_principal' => $request->input('principais_caracteristicas'),
+                'inter_princ_carac' => $request->input('areas_interesse'),
+                'livre_gosta_fazer' => $request->input('atividades_livre'),
+                'feliz_est' => $request->input('feliz'),
+                'trist_est' => $request->input('triste'),
+                'obj_apego' => $request->input('objeto_apego'),
+                'fk_id_aluno' => $alunoId
+            ];
+            
+            // Cria o registro de personalidade
+            \App\Models\PersonalidadeAluno::create($dadosPersonalidade);
+            
+            Log::info('Dados de personalidade salvos com sucesso', [
+                'aluno_id' => $alunoId
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao salvar dados de personalidade', [
+                'erro' => $e->getMessage(),
+                'aluno_id' => $alunoId,
+                'trace' => $e->getTraceAsString()
+            ]);
         }
     }
 }

@@ -1,37 +1,123 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use App\Models\Aluno;
 
 class PerfilEstudante extends Model
 {
+    /**
+     * Nome da tabela no banco de dados
+     *
+     * @var string
+     */
+    protected $table = 'perfil_estudante';
+
+    /**
+     * Chave primária da tabela
+     * 
+     * @var string
+     */
     protected $primaryKey = 'id_perfil';
 
-    protected $table = 'perfil_estudante';
+    /**
+     * Campos que podem ser preenchidos em massa
+     *
+     * @var array
+     */
     protected $fillable = [
-        'diag_laudo', 'cid', 'nome_medico', 'data_laudo', 'nivel_suporte', 
-        'uso_medicamento', 'quais_medicamento', 'nec_pro_apoio', 'prof_apoio', 
-        'loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05', 'out_momentos', 
-        'at_especializado', 'nome_prof_AEE', 'fk_id_aluno', 'update_count',
-        // Campos de personalidade
-        'carac_principal', 'inter_princ_carac', 'livre_gosta_fazer', 'feliz_est', 
-        'trist_est', 'obj_apego',
-        // Campos de comunicação
-        'precisa_comunicacao', 'entende_instrucao', 'recomenda_instrucao',
-        // Campos de sensibilidade
-        's_auditiva', 's_visual', 's_tatil', 's_outros', 'maneja_04',
-        // Campos de alimentação
-        'asa_04', 'alimentos_pref_04', 'alimento_evita_04',
-        // Campos de interação e contato
-        'contato_pc_04', 'reage_contato', 'interacao_escola_04',
-        // Campos de aprendizado
-        'interesse_atividade_04', 'aprende_visual_04', 'recurso_auditivo_04', 
-        'material_concreto_04', 'outro_identificar_04', 'descricao_outro_identificar_04',
-        'realiza_tarefa_04', 'mostram_eficazes_04', 'prefere_ts_04',
-        // Campos da família
-        'expectativa_05', 'estrategia_05', 'crise_esta_05'
+        'diag_laudo', 
+        'data_laudo',
+        'cid', 
+        'nome_medico',
+        'nivel_suporte', 
+        'uso_medicamento', 
+        'quais_medicamento', 
+        'nec_pro_apoio',
+        'prof_apoio',
+        'loc_01', 
+        'hig_02', 
+        'ali_03', 
+        'com_04', 
+        'out_05', 
+        'out_momentos', 
+        'at_especializado',
+        'fk_id_aluno'
     ];
-    public $timestamps = false; // Desabilita o uso de timestamps
+
+    /**
+     * Indica se o modelo deve ser timestamped
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
+     * Relacionamento com o modelo Aluno
+     */
+    public function aluno()
+    {
+        return $this->belongsTo(Aluno::class, 'fk_id_aluno', 'alu_id');
+    }
+
+    /**
+     * Cria ou atualiza um perfil do estudante
+     *
+     * @param array $dados
+     * @return self
+     * @throws \Exception
+     */
+    public static function criarPerfil(array $dados, $atualizarExistente = false)
+    {
+        try {
+            Log::info('Tentando criar/atualizar perfil do estudante', ['dados' => $dados]);
+            
+            // Verifica se o aluno existe
+            $aluno = Aluno::find($dados['fk_id_aluno']);
+            if (!$aluno) {
+                throw new \Exception('Aluno não encontrado com o ID: ' . $dados['fk_id_aluno']);
+            }
+            
+            // Verifica se já existe um perfil para este aluno
+            $perfil = self::where('fk_id_aluno', $dados['fk_id_aluno'])->first();
+            
+            if ($perfil) {
+                if (!$atualizarExistente) {
+                    throw new \Exception('Já existe um perfil cadastrado para este aluno');
+                }
+                // Atualiza o perfil existente
+                Log::info('Atualizando perfil existente', ['id_perfil' => $perfil->id_perfil]);
+                $perfil->fill($dados);
+                $perfil->save();
+                Log::info('Perfil atualizado com sucesso', ['id_perfil' => $perfil->id_perfil]);
+                return $perfil;
+            }
+            
+            // Cria um novo perfil
+            $perfil = new self();
+            $perfil->fill($dados);
+            $perfil->save();
+            
+            Log::info('Perfil criado com sucesso', ['id_perfil' => $perfil->id_perfil]);
+            
+            return $perfil;
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao criar/atualizar perfil do estudante: ' . $e->getMessage(), [
+                'dados' => $dados,
+                'erro' => [
+                    'mensagem' => $e->getMessage(),
+                    'arquivo' => $e->getFile(),
+                    'linha' => $e->getLine(),
+                    'codigo' => $e->getCode(),
+                    'trace' => $e->getTraceAsString()
+                ]
+            ]);
+            throw $e;
+        }
+    }
 
 
 
