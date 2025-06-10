@@ -1,19 +1,7 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil do Estudante</title>
-    
-    <!-- Importando CSS no Laravel -->
-    <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
+@extends('index')
 
-
-
-</head>
-
-<body>
-    <div class="container">
+@section('content')
+    <div class="container" style="max-width:1100px;">
         <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" onsubmit="return confirmSubmit(event)">
             @csrf
             <input type="hidden" name="is_confirmed" id="is_confirmed" value="0">
@@ -25,13 +13,13 @@
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <!-- Abas de etapas -->
-            <div class="step-tabs">
-                <button class="step-tab" data-step="1">Dados Pessoais</button>
-                <button class="step-tab" data-step="2">Perfil do Estudante</button>
-                <button class="step-tab" data-step="3">Personalidade</button>
-                <button class="step-tab" data-step="4">Preferências</button>
-                <button class="step-tab" data-step="5">Informações da Família</button>
-                <button class="step-tab" data-step="6">Profissionais</button>
+            <div class="step-tabs" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;">
+                <button class="step-tab active" data-step="1" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Dados Pessoais</button>
+                <button class="step-tab" data-step="2" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Perfil do Estudante</button>
+                <button class="step-tab" data-step="3" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Personalidade</button>
+                <button class="step-tab" data-step="4" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Preferências</button>
+                <button class="step-tab" data-step="5" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Informações da Família</button>
+                <button class="step-tab" data-step="6" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Profissionais</button>
             </div>
 
             
@@ -41,76 +29,70 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
                         <label>Nome do Aluno:</label>
-                        <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly class="form-control">
+                        <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly class="form-control" style="min-width:300px;max-width:100%;">
                     </div>
                     <div class="form-group col-md-3">
                         <label>RA do Aluno:</label>
-                        <input type="text" name="ra_aluno" value="{{ $aluno->alu_ra }}" readonly class="form-control" style="min-width:80px;max-width:140px;">
+                        <input type="text" name="ra_aluno" value="{{ $aluno->alu_ra }}" readonly class="form-control" style="min-width:200px;max-width:100%;">
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-4">
                         <label>Data de Nascimento:</label>
-                        <input type="text" name="alu_dtnasc_display" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly class="form-control">
+                        <input type="text" name="alu_dtnasc_display" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}" readonly class="form-control"style="min-width:150px;max-width:100%;">
                     </div>
                     <div class="form-group col-md-2">
                         <label>Idade:</label>
-                        <input type="text" name="alu_idade_display" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }}" readonly class="form-control" style="min-width:55px;max-width:80px;">
+                        <input type="text" name="alu_idade_display" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age." Anos" }}" readonly class="form-control" style="min-width:150px;max-width:100%;">
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
                         <label>Escola:</label>
-                        <input type="text" name="escola_nome" value="{{ $aluno->esc_razao_social ?? '' }}" readonly class="form-control">
+                        <input type="text" name="escola_nome" value="{{ $aluno->esc_razao_social ?? '' }}" readonly class="form-control" style="min-width:450px;max-width:100%;">
                     </div>
                     <div class="form-group col-md-6">
                         <label>Órgão:</label>
-                        <input type="text" name="orgao_nome" value="{{ $aluno->org_razaosocial ?? '' }}" readonly class="form-control">
+                        <input type="text" name="orgao_nome" value="{{ $aluno->org_razaosocial ?? '' }}" readonly class="form-control" style="min-width:450px;max-width:100%;">
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-3">
-                        <label>Ano / Série:</label>
-                        <input type="text" name="ano_serie" value="{{ $alunoDetalhado->serie_desc ?? '' }}" readonly class="form-control">
-                    </div>
+                    
                     <div class="form-group col-md-3">
                         <label>Turma:</label>
-                        <input type="text" name="turma" value="{{ $alunoDetalhado->fk_cod_valor_turma ?? '' }}" readonly class="form-control">
+                        <input type="text" name="turma" value="{{ $aluno->fk_cod_valor_turma ?? '' }}" readonly class="form-control" style="min-width:200px;max-width:100%;">
                     </div>
                     <div class="form-group col-md-3">
                         <label>Modalidade:</label>
-                        <input type="text" name="modalidade" value="{{ $alunoDetalhado->desc_modalidade ?? '' }}" readonly class="form-control">
+                        <input type="text" name="modalidade" value="{{ $aluno->desc_modalidade ?? '' }}" readonly class="form-control" style="min-width:250px;max-width:100%;">
                     </div>
-                    <div class="form-group col-md-3">
-                        <label>Período:</label>
-                        <input type="text" name="periodo" value="{{ $aluno->alu_periodo ?? '' }}" readonly class="form-control">
-                    </div>
+                    
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Nome do Professor:</label>
-                        <input type="text" name="nome_professor" value="{{ $alunoDetalhado->func_nome ?? '' }}" readonly class="form-control">
+                        <input type="text" name="nome_professor" value="{{ $aluno->func_nome ?? '' }}" readonly class="form-control" style="min-width:300px;max-width:100%;">
                     </div>
                 </div>
                 <div class="section-title" style="background-color: #ff8c00; margin-top: 15px;">DADOS DO RESPONSÁVEL</div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-8">
                         <label>Nome do Responsável:</label>
-                        <input type="text" name="nome_responsavel" value="{{ $aluno->alu_nome_resp ?? '' }}" readonly class="form-control">
+                        <input type="text" name="nome_responsavel" value="{{ $aluno->alu_nome_resp ?? '' }}" readonly class="form-control" style="min-width:300px;max-width:100%;">
                     </div>
                     <div class="form-group col-md-4">
                         <label>Tipo de Parentesco:</label>
-                        <input type="text" name="tipo_parentesco" value="{{ $aluno->alu_tipo_parentesco ?? '' }}" readonly class="form-control">
+                        <input type="text" name="tipo_parentesco" value="{{ $aluno->alu_tipo_parentesco ?? '' }}" readonly class="form-control" style="min-width:250px;max-width:100%;">
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
                         <label>Telefone:</label>
-                        <input type="text" name="telefone_responsavel" value="{{ $aluno->alu_tel_resp ?? '' }}" readonly class="form-control">
+                        <input type="text" name="telefone_responsavel" value="{{ $aluno->alu_tel_resp ?? '' }}" readonly class="form-control" style="min-width:200px;max-width:150%;">
                     </div>
                     <div class="form-group col-md-6">
                         <label>E-mail:</label>
-                        <input type="text" name="email_responsavel" value="{{ $aluno->alu_email_resp ?? '' }}" readonly class="form-control">
+                        <input type="text" name="email_responsavel" value="{{ $aluno->alu_email_resp ?? '' }}" readonly class="form-control" style="min-width:300px;max-width:100%;">
                     </div>
                 </div>
             </div>
@@ -122,7 +104,7 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-4">
                         <label>Possui diagnóstico/laudo?</label>
-                        <select name="diag_laudo" class="form-control">
+                        <select name="diag_laudo" class="form-control" >
                             <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
@@ -130,23 +112,23 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label>Data do Laudo</label>
-                        <input type="date" name="data_laudo" class="form-control">
+                        <input type="date" name="data_laudo" class="form-control" style="min-width:200px;width:100%;">
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-4">
                         <label>CID</label>
-                        <input type="text" name="cid" class="form-control">
+                        <input type="text" name="cid" class="form-control" style="min-width:350px;width:100%;">
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-12">
                         <label>Médico</label>
-                        <input type="text" name="nome_medico" class="form-control">
+                        <input type="text" name="nome_medico" class="form-control" style="width:100%;min-width:350px;">
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                      <div class="form-group col-md-4">
                         <label>Nível Suporte</label>
-                        <select name="nivel_suporte" class="form-control">
+                        <select name="nivel_suporte" class="form-control" style="min-width:350px;width:100%;">
                             <option value="">Selecione</option>
                             <option value="1">Nível 1 - Exige pouco apoio</option>
                             <option value="2">Nível 2 - Exige apoio substancial</option>
@@ -157,15 +139,15 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-4">
                         <label>Faz uso de medicamento?</label>
-                        <select name="uso_medicamento" class="form-control">
+                        <select name="uso_medicamento" class="form-control" style="width:150px;max-width:100%;">
                             <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-12">
                         <label>Quais?</label>
-                        <input type="text" name="quais_medicamento" class="form-control">
+                        <input type="text" name="quais_medicamento" class="form-control" style="width:100%;min-width:350px;">
                     </div>
                 </div>
 
@@ -174,7 +156,7 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
                         <label>Necessita de profissional de apoio em sala?</label>
-                        <select name="nec_pro_apoio" class="form-control">
+                        <select name="nec_pro_apoio" class="form-control" style="width:150px;max-width:100%;">
                             <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
@@ -182,7 +164,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label>O estudante conta com profissional de apoio?</label>
-                        <select name="conta_pro_apoio" class="form-control">
+                        <select name="conta_pro_apoio" class="form-control" style="width:150px;max-width:100%;">
                             <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
@@ -198,12 +180,12 @@
                         <input type="checkbox" id="momento_comunicacao" name="momentos_apoio[]" value="comunicacao"><label for="momento_comunicacao">Comunicação</label>
                         <input type="checkbox" id="momento_outros" name="momentos_apoio[]" value="outros"><label for="momento_outros">Outros momentos</label>
                     </div>
-                    <input type="text" name="outros_momentos_apoio" placeholder="Quais outros momentos?" class="form-control" style="margin-top: 5px;">
+                    <input type="text" name="outros_momentos_apoio" placeholder="Quais outros momentos?" class="form-control" style="width:100%;min-width:500px;margin-top: 5px;">
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
                         <label>O estudante conta com Atendimento Educacional Especializado (AEE)?</label>
-                        <select name="at_especializado" class="form-control">
+                        <select name="at_especializado" class="form-control" style="width:150px;max-width:100%;">
                             <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
@@ -211,7 +193,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label>Nome do profissional do AEE:</label>
-                        <input type="text" name="nome_prof_AEE" class="form-control">
+                        <input type="text" name="nome_prof_AEE" class="form-control" style="width:100%;min-width:500px;">
                     </div>
                 </div>
 
@@ -261,7 +243,8 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Precisa de comunicação alternativa para expressar-se?</label>
-                        <select name="precisa_comunicacao" class="form-control">
+                        <select name="precisa_comunicacao" class="form-control" style="width:150px;max-width:100%;">
+                            <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
@@ -270,8 +253,9 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Entende instruções dadas de forma verbal?</label>
-                        <select name="entende_instrucao" class="form-control">
-                            <option value="1">Sim</option>
+                        <select name="entende_instrucao" class="form-control" style="width:150px;max-width:100%;">
+                        <option value="">Selecione</option>    
+                        <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
                     </div>
@@ -306,7 +290,8 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Apresenta seletividade alimentar?</label>
-                        <select name="seletividade_alimentar" class="form-control">
+                        <select name="seletividade_alimentar" class="form-control"  style="width:150px;max-width:100%;">
+                            <option value="">Selecione</option>
                             <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
@@ -688,9 +673,8 @@
             });
         });
         
-        // Carrega o estado salvo
-        const savedStep = sessionStorage.getItem('currentStep');
-        showStep(savedStep ? parseInt(savedStep) : 1);
+        // Sempre inicia na primeira etapa ao carregar a página
+        showStep(1);
     }
 
     // Inicializa o formulário quando o DOM estiver pronto
@@ -702,5 +686,4 @@
     </script>
     
 
-</body>
-</html>
+@endsection

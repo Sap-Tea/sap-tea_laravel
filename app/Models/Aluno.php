@@ -30,6 +30,10 @@ class Aluno extends Model
                       alu.alu_ra,
                       mat.numero_matricula,
                       esc.esc_inep, 
+                      alu.alu_nome_resp,
+                      alu.alu_tipo_parentesco,
+                      alu.alu_tel_resp,
+                      alu.alu_email_resp,
                       esc.esc_razao_social,
                       tm.desc_modalidade, -- Corrigido para buscar da tabela tipo_modalidade
                       ser.serie_desc,

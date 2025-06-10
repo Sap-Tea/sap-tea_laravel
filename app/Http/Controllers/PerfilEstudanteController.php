@@ -258,6 +258,7 @@ public function mostrar($id)
     $aluno = Aluno::findOrFail($id);
     $alunoDetalhado = Aluno::getAlunosDetalhados($id);
     
+    
     // getAlunosDetalhados retorna uma coleção, mas precisamos do primeiro item
     $alunoInfo = !empty($alunoDetalhado) ? $alunoDetalhado[0] : null;
 
