@@ -180,6 +180,16 @@ class InserirPerfilEstudante extends Controller
                         'aluno_id' => $alunoId
                     ]);
                 }
+                
+                // Salva os dados do perfil da família
+                try {
+                    $this->salvarPerfilFamilia($request, $alunoId);
+                } catch (\Exception $e) {
+                    Log::warning('Erro ao salvar perfil da família, mas continuando o processo', [
+                        'erro' => $e->getMessage(),
+                        'aluno_id' => $alunoId
+                    ]);
+                }
 
                 // Confirma a transação
                 DB::commit();
@@ -311,59 +321,6 @@ class InserirPerfilEstudante extends Controller
     }
     
     /**
-     * Salva os dados de comunicação do aluno
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $alunoId
-     * @return void
-     */
-    private function salvarComunicacao($request, $alunoId)
-    {
-        try {
-            // Remove comunicação existente
-            \App\Models\Comunicacao::where('fk_id_aluno', $alunoId)->delete();
-            
-            // Prepara os dados
-            $dadosComunicacao = [
-                'precisa_comunicacao' => $request->input('precisa_comunicacao'),
-                'entende_instrucao' => $request->input('entende_instrucao'),
-                'recomenda_instrucao' => $request->input('recomenda_instrucao'),
-                'fk_id_aluno' => $alunoId
-            ];
-            
-            // Valida os dados
-            $validador = \Validator::make($dadosComunicacao, [
-                'precisa_comunicacao' => 'nullable|in:0,1',
-                'entende_instrucao' => 'nullable|in:0,1',
-                'recomenda_instrucao' => 'nullable|string|max:255',
-                'fk_id_aluno' => 'required|integer|exists:aluno,alu_id'
-            ]);
-            
-            if ($validador->fails()) {
-                Log::warning('Dados inválidos para comunicação', [
-                    'erros' => $validador->errors(),
-                    'dados' => $dadosComunicacao
-                ]);
-                return;
-            }
-            
-            // Cria o registro de comunicação
-            \App\Models\Comunicacao::create($dadosComunicacao);
-            
-            Log::info('Dados de comunicação salvos com sucesso', [
-                'aluno_id' => $alunoId
-            ]);
-            
-        } catch (\Exception $e) {
-            Log::error('Erro ao salvar dados de comunicação', [
-                'erro' => $e->getMessage(),
-                'aluno_id' => $alunoId,
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
-    }
-    
-    /**
      * Salva os dados de preferência do aluno
      *
      * @param  \Illuminate\Http\Request  $request
@@ -401,6 +358,39 @@ class InserirPerfilEstudante extends Controller
                 'fk_id_aluno' => $alunoId
             ];
             
+            // Valida os dados
+            $validador = \Validator::make($dadosPreferencia, [
+                'auditivo_04' => 'nullable|integer',
+                'visual_04' => 'nullable|integer',
+                'tatil_04' => 'nullable|integer',
+                'outros_04' => 'nullable|integer',
+                'maneja_04' => 'nullable|string|max:255',
+                'asa_04' => 'nullable|integer',
+                'alimentos_pref_04' => 'nullable|string',
+                'alimento_evita_04' => 'nullable|string',
+                'contato_pc_04' => 'nullable|string|max:255',
+                'reage_contato' => 'nullable|string|max:255',
+                'interacao_escola_04' => 'nullable|string',
+                'interesse_atividade_04' => 'nullable|string',
+                'aprende_visual_04' => 'nullable|integer',
+                'recurso_auditivo_04' => 'nullable|integer',
+                'material_concreto_04' => 'nullable|integer',
+                'outro_identificar_04' => 'nullable|integer',
+                'descricao_outro_identificar_04' => 'nullable|string|max:255',
+                'realiza_tarefa_04' => 'nullable|string',
+                'mostram_eficazes_04' => 'nullable|string',
+                'prefere_ts_04' => 'nullable|string|max:255',
+                'fk_id_aluno' => 'required|integer|exists:aluno,alu_id'
+            ]);
+            
+            if ($validador->fails()) {
+                Log::warning('Dados inválidos para preferência', [
+                    'erros' => $validador->errors(),
+                    'dados' => $dadosPreferencia
+                ]);
+                return;
+            }
+            
             // Cria o registro de preferência
             \App\Models\Preferencia::create($dadosPreferencia);
             
@@ -414,6 +404,92 @@ class InserirPerfilEstudante extends Controller
                 'aluno_id' => $alunoId,
                 'trace' => $e->getTraceAsString()
             ]);
+        }
+    }
+    
+    /**
+     * Salva os dados de personalidade do aluno
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $alunoId
+     * @return void
+     */
+    /**
+     * Salva os dados de comunicação do aluno
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $alunoId
+     * @return void
+     */
+    private function salvarComunicacao($request, $alunoId)
+    {
+        try {
+            // Remove comunicação existente
+            \App\Models\Comunicacao::where('fk_id_aluno', $alunoId)->delete();
+            
+            // Prepara os dados
+            $dadosComunicacao = [
+                'como_comunica' => $request->input('como_comunica'),
+                'compreende_ordens' => $request->input('compreende_ordens'),
+                'comunica_necessidades' => $request->input('comunica_necessidades'),
+                'comunica_dor' => $request->input('comunica_dor'),
+                'comunica_forma' => $request->input('comunica_forma'),
+                'comunica_recados' => $request->input('comunica_recados'),
+                'comunica_escolha' => $request->input('comunica_escolha'),
+                'comunica_nao_verbal' => $request->input('comunica_nao_verbal'),
+                'comunica_gestos' => $request->input('comunica_gestos'),
+                'comunica_expressoes' => $request->input('comunica_expressoes'),
+                'comunica_sons' => $request->input('comunica_sons'),
+                'comunica_palavras' => $request->input('comunica_palavras'),
+                'comunica_frases' => $request->input('comunica_frases'),
+                'comunica_outros' => $request->input('comunica_outros'),
+                'comunica_outros_descricao' => $request->input('comunica_outros_descricao'),
+                'fk_id_aluno' => $alunoId
+            ];
+            
+            // Valida os dados
+            $validador = \Validator::make($dadosComunicacao, [
+                'como_comunica' => 'nullable|string|max:255',
+                'compreende_ordens' => 'nullable|string|max:255',
+                'comunica_necessidades' => 'nullable|string|max:255',
+                'comunica_dor' => 'nullable|string|max:255',
+                'comunica_forma' => 'nullable|string|max:255',
+                'comunica_recados' => 'nullable|string|max:255',
+                'comunica_escolha' => 'nullable|string|max:255',
+                'comunica_nao_verbal' => 'nullable|integer',
+                'comunica_gestos' => 'nullable|integer',
+                'comunica_expressoes' => 'nullable|integer',
+                'comunica_sons' => 'nullable|integer',
+                'comunica_palavras' => 'nullable|integer',
+                'comunica_frases' => 'nullable|integer',
+                'comunica_outros' => 'nullable|integer',
+                'comunica_outros_descricao' => 'nullable|string|max:255',
+                'fk_id_aluno' => 'required|integer|exists:aluno,alu_id'
+            ]);
+            
+            if ($validador->fails()) {
+                Log::warning('Dados inválidos para comunicação', [
+                    'erros' => $validador->errors(),
+                    'dados' => $dadosComunicacao
+                ]);
+                return;
+            }
+            
+            // Cria o registro de comunicação
+            \App\Models\Comunicacao::create($dadosComunicacao);
+            
+            Log::info('Dados de comunicação salvos com sucesso', [
+                'aluno_id' => $alunoId
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao salvar dados de comunicação', [
+                'erro' => $e->getMessage(),
+                'aluno_id' => $alunoId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            // Não lança a exceção para não interromper o fluxo principal
+            // Apenas registra o erro no log
         }
     }
     
@@ -454,6 +530,59 @@ class InserirPerfilEstudante extends Controller
                 'aluno_id' => $alunoId,
                 'trace' => $e->getTraceAsString()
             ]);
+        }
+    }
+    
+    /**
+     * Salva os dados do perfil da família do aluno
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $alunoId
+     * @return void
+     */
+    private function salvarPerfilFamilia($request, $alunoId)
+    {
+        try {
+            // Remove perfil de família existente
+            \App\Models\PerfilFamilia::where('fk_id_aluno', $alunoId)->delete();
+            
+            // Prepara os dados
+            $dadosFamilia = [
+                'expectativa_05' => $request->input('expectativas_familia'),
+                'estrategia_05' => $request->input('estrategias_familia'),
+                'crise_esta_05' => $request->input('crise_estresse'),
+                'fk_id_aluno' => $alunoId
+            ];
+            
+            // Valida os dados
+            $validador = \Validator::make($dadosFamilia, [
+                'expectativa_05' => 'nullable|string',
+                'estrategia_05' => 'nullable|string',
+                'crise_esta_05' => 'nullable|string',
+                'fk_id_aluno' => 'required|integer|exists:aluno,alu_id'
+            ]);
+            
+            if ($validador->fails()) {
+                Log::warning('Dados inválidos para perfil da família', [
+                    'erros' => $validador->errors(),
+                    'dados' => $dadosFamilia
+                ]);
+                return;
+            }
+            
+            // Cria o registro de perfil da família
+            \App\Models\PerfilFamilia::create($dadosFamilia);
+            
+            Log::info('Dados do perfil da família salvos com sucesso', ['aluno_id' => $alunoId]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao salvar perfil da família', [
+                'erro' => $e->getMessage(),
+                'aluno_id' => $alunoId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            // Não lança a exceção para não interromper o fluxo principal
+            // Apenas registra o erro no log
         }
     }
 }

@@ -308,6 +308,8 @@
                         <textarea rows="3" name="recomenda_instrucao" class="form-control"></textarea>
                     </div>
                 </div>
+                    </div>
+                </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Como é o contato com o PC?</label>
@@ -350,55 +352,6 @@
                     <div class="form-group col-md-12">
                         <label>Com quem tem mais afinidade na escola (professores, colegas)? Identifique</label>
                         <textarea rows="3" name="afinidade_escola" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como reage no contato com novas pessoas ou situações?</label>
-                        <textarea rows="3" name="reage_contato" class="form-control"></textarea>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Etapa 4: Preferências -->
-            <div class="step-content form-section" data-step="4" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-                <div class="section-title">IV - Preferências</div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Apresenta sensibilidade auditiva, visual ou tátil (ASA)?</label>
-                        <select name="asa_04" class="form-control" style="width:150px;max-width:100%;">
-                            <option value="">Selecione</option>
-                            <option value="1">Sim</option>
-                            <option value="0">Não</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Apresenta seletividade alimentar?</label>
-                        <select name="seletividade_alimentar" class="form-control" style="width:150px;max-width:100%;">
-                            <option value="">Selecione</option>
-                            <option value="1">Sim</option>
-                            <option value="0">Não</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Alimentos preferidos:</label>
-                        <textarea rows="3" name="alimentos_pref_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Alimentos que evita:</label>
-                        <textarea rows="3" name="alimento_evita_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como é o contato com o PC?</label>
-                        <textarea rows="3" name="contato_pc_04" class="form-control"></textarea>
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
