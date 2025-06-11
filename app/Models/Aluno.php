@@ -98,6 +98,30 @@ public function preenchimento()
 }
 
     /**
+     * Relacionamento com as atividades de comunicação/linguagem
+     */
+    public function atividadesComunicacao()
+    {
+        return $this->hasMany(AtividadeComunicacao::class, 'aluno_id');
+    }
+    
+    /**
+     * Relacionamento com as atividades de comportamento
+     */
+    public function atividadesComportamento()
+    {
+        return $this->hasMany(AtividadeComportamento::class, 'aluno_id');
+    }
+    
+    /**
+     * Relacionamento com as atividades socioemocionais
+     */
+    public function atividadesSocioemocionais()
+    {
+        return $this->hasMany(AtividadeSocioemocional::class, 'aluno_id');
+    }
+
+    /**
      * Scope para filtrar alunos que estejam em turmas de um determinado professor (funcionario).
      * Uso: Aluno::porProfessor($funcId)->get();
      */

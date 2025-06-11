@@ -493,15 +493,22 @@ if ($total_atividades_geral > 0) {
         $qtd = $norm_atividades[$key] ?? 0;
     @endphp
     @for($q=0; $q<$qtd; $q++)
-      <tr>
-        <td>{{ $linha->cod_ati_com_lin }}</td>
-        <td>{{ $linha->desc_ati_com_lin }}</td>
-        <td><input type="date" name="linguagem[{{$idx}}][data_inicial]" style="width:100%"></td>
-        <td><input type="checkbox" name="linguagem[{{$idx}}][sim_inicial]" value="1"></td>
-        <td><input type="checkbox" name="linguagem[{{$idx}}][nao_inicial]" value="1"></td>
-        <td><input type="text" name="linguagem[{{$idx}}][observacoes]" style="width:100%"></td>
-      </tr>
-      @php $idx++; @endphp
+        <tr data-eixo="comunicacao" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_com_lin }}">
+            <td>
+                {{ $linha->cod_ati_com_lin }}
+                <input type="hidden" name="comunicacao[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_com_lin }}">
+            </td>
+            <td>{{ $linha->desc_ati_com_lin }}</td>
+            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control"></td>
+            <td class="text-center">
+                <input type="checkbox" name="comunicacao[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
+            </td>
+            <td class="text-center">
+                <input type="checkbox" name="comunicacao[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
+            </td>
+            <td><textarea name="comunicacao[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+        </tr>
+        @php $idx++; @endphp
     @endfor
 @endforeach
     </tbody>
@@ -527,27 +534,34 @@ if ($total_atividades_geral > 0) {
     </thead>
     <tbody>
       @php $idx = 0; @endphp
-@foreach($comportamento_agrupado as $linha)
-  {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
-  @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
-    @continue
-  @endif
-  @php
-    $key = 'comp_' . $linha->cod_ati_comportamento;
-    $qtd = $norm_atividades[$key] ?? 0;
-  @endphp
-  @for($q=0; $q<$qtd; $q++)
-    <tr>
-      <td>{{ $linha->cod_ati_comportamento }}</td>
-      <td>{{ $linha->desc_ati_comportamento }}</td>
-      <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" style="width:100%"></td>
-      <td><input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1"></td>
-      <td><input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1"></td>
-      <td><input type="text" name="comportamento[{{$idx}}][observacoes]" style="width:100%"></td>
-    </tr>
-    @php $idx++; @endphp
-  @endfor
-@endforeach
+      @foreach($comportamento_agrupado as $linha)
+          {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
+          @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
+              @continue
+          @endif
+          @php
+              $key = 'comp_' . $linha->cod_ati_comportamento;
+              $qtd = $norm_atividades[$key] ?? 0;
+          @endphp
+          @for($q=0; $q<$qtd; $q++)
+              <tr data-eixo="comportamento" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_comportamento }}">
+                  <td>
+                      {{ $linha->cod_ati_comportamento }}
+                      <input type="hidden" name="comportamento[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_comportamento }}">
+                  </td>
+                  <td>{{ $linha->desc_ati_comportamento }}</td>
+                  <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" class="form-control"></td>
+                  <td class="text-center">
+                      <input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
+                  </td>
+                  <td class="text-center">
+                      <input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
+                  </td>
+                  <td><textarea name="comportamento[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+              </tr>
+              @php $idx++; @endphp
+          @endfor
+      @endforeach
     </tbody>
   </table>
 </div>
@@ -571,69 +585,144 @@ if ($total_atividades_geral > 0) {
     </thead>
     <tbody>
       @if(isset($socioemocional_atividades_ordenadas) && count($socioemocional_atividades_ordenadas) > 0)
-        @php $idx = 0; @endphp
-        @foreach($socioemocional_agrupado as $linha)
-    @if(
-        (isset($linha->cod_ati_int_soc) && $linha->cod_ati_int_soc === 'EIS01') ||
-        (isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01') ||
-        (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
-    )
-        @continue
-    @endif
-    @php
-        $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
-        $key = 'soc_' . $cod;
-        $qtd = $norm_atividades[$key] ?? 0;
-    @endphp
-    @for($q=0; $q<$qtd; $q++)
-        <tr>
-            <td>{{ $cod ?? 'N/A' }}</td>
-            <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
-            <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" style="width:100%"></td>
-            <td><input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1"></td>
-            <td><input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1"></td>
-            <td><input type="text" name="socioemocional[{{$idx}}][observacoes]" style="width:100%"></td>
-        </tr>
-        @php $idx++; @endphp
-    @endfor
-@endforeach
+          @php $idx = 0; @endphp
+          @foreach($socioemocional_agrupado as $linha)
+              @if(
+                  (isset($linha->cod_ati_int_soc) && $linha->cod_ati_int_soc === 'EIS01') ||
+                  (isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01') ||
+                  (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
+              )
+                  @continue
+              @endif
+              @php
+                  $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
+                  $key = 'soc_' . $cod;
+                  $qtd = $norm_atividades[$key] ?? 0;
+              @endphp
+              @for($q=0; $q<$qtd; $q++)
+                  <tr data-eixo="socioemocional" data-idx="{{$idx}}" data-cod-atividade="{{ $cod }}">
+                      <td>
+                          {{ $cod ?? 'N/A' }}
+                          <input type="hidden" name="socioemocional[{{$idx}}][cod_atividade]" value="{{ $cod }}">
+                      </td>
+                      <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
+                      <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" class="form-control"></td>
+                      <td class="text-center">
+                          <input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
+                      </td>
+                      <td class="text-center">
+                          <input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
+                      </td>
+                      <td><textarea name="socioemocional[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+                  </tr>
+                  @php $idx++; @endphp
+              @endfor
+          @endforeach
       @else
-        <tr>
-          <td colspan="6" style="text-align: center;">Nenhuma atividade socioemocional encontrada.</td>
-        </tr>
+          <tr>
+              <td colspan="6" class="text-center">Nenhuma atividade socioemocional encontrada.</td>
+          </tr>
       @endif
     </tbody>
   </table>
 </div>
 
-    <!-- OBSERVAÇÕES FINAIS -->
-    <div class="observations">
-      <strong>Observações Finais:</strong><br><br>
-      <textarea placeholder="Digite aqui quaisquer observações adicionais..."></textarea>
-    </div>
-
-    <!-- ASSINATURAS -->
-    <div class="signatures">
-      <div class="sign-box">
-        <div class="line"></div>
-        Professor(a) Responsável
-      </div>
-      <div class="sign-box">
-        <div class="line"></div>
-        Coordenação
-      </div>
-      <div class="sign-box">
-        <div class="line"></div>
-        Direção
-      </div>
-    </div>
-    <div class="button-group">
-        <button type="button" class="pdf-button btn btn-primary">Gerar PDF</button>
-
+    <form id="monitoramentoForm" method="POST" action="{{ route('monitoramento.salvar') }}">
+        @csrf
+        <input type="hidden" name="aluno_id" value="{{ $alunoId ?? '' }}">
         
-        <a href="{{ route('index') }}" class="btn btn-primary">Salvar</a>
-    <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
+        <div class="observations">
+            <strong>Observações Finais:</strong><br><br>
+            <textarea name="observacoes_gerais" placeholder="Digite aqui quaisquer observações adicionais..."></textarea>
+        </div>
+
+        <!-- ASSINATURAS -->
+        <div class="signatures">
+            <div class="sign-box">
+                <div class="line"></div>
+                Professor(a) Responsável
+            </div>
+            <div class="sign-box">
+                <div class="line"></div>
+                Coordenação
+            </div>
+            <div class="sign-box">
+                <div class="line"></div>
+                Direção
+            </div>
+        </div>
         
+        <!-- Mensagens de feedback -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div id="mensagem-sucesso" class="alert alert-success d-none" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span>Dados salvos com sucesso!</span>
+                </div>
+                <div id="mensagem-erro" class="alert alert-danger d-none" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span>Ocorreu um erro ao salvar os dados. Por favor, tente novamente.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="row mt-4 mb-5">
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-salvar">
+                    <i class="fas fa-save me-2"></i>
+                    <span class="btn-text">Salvar</span>
+                    <span id="loading-icon" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de carregamento -->
+<div class="modal fade" id="carregandoModal" tabindex="-1" aria-labelledby="carregandoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-5">
+        <div class="spinner-grow text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Carregando...</span>
+        </div>
+        <h5 class="mt-3 fw-bold">Salvando dados do monitoramento</h5>
+        <p class="text-muted">Por favor, aguarde enquanto processamos as informações...</p>
+        <div class="progress mt-4" style="height: 6px;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de sucesso -->
+<div class="modal fade" id="sucessoModal" tabindex="-1" aria-labelledby="sucessoModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="sucessoModalLabel"><i class="fas fa-check-circle me-2"></i> Sucesso!</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body text-center p-4">
+        <div class="d-flex justify-content-center">
+          <div class="circle-success mb-4">
+            <i class="fas fa-check fa-3x text-white"></i>
+          </div>
+        </div>
+        <h4>Dados salvos com sucesso!</h4>
+        <p class="text-muted">Os dados do monitoramento foram gravados corretamente no sistema.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">Voltar à página anterior</button>
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+          <i class="fas fa-check me-2"></i>Continuar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -641,14 +730,557 @@ if ($total_atividades_geral > 0) {
 @endsection
 
 @section('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<!-- Dados do monitoramento para preenchimento automático -->
 <script>
+    // Passar os dados do monitoramento para o JavaScript
+    var dadosMonitoramento = @json($dadosMonitoramento ?? []);
+</script>
+<script src="{{ asset('js/validacao_monitoramento.js') }}"></script>
+<script>
+// Função para carregar os dados salvos do monitoramento
+async function carregarDadosMonitoramento(alunoId) {
+    if (!alunoId) {
+        console.error('ID do aluno não fornecido');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/monitoramento/carregar/${alunoId}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao carregar os dados');
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message || 'Erro ao processar os dados');
+        }
+
+        // Função auxiliar para preencher os campos de um eixo
+        const preencherEixo = (eixo, dadosEixo) => {
+            if (!dadosEixo) return;
+
+            // Itera sobre cada atividade do eixo
+            Object.entries(dadosEixo).forEach(([codAtividade, dados]) => {
+                if (!dados) return;
+                
+                // Encontra a linha correspondente ao código da atividade
+                const linha = document.querySelector(`.${eixo}-linha[data-cod-atividade="${codAtividade}"]`);
+                if (!linha) return;
+
+                // Preenche os campos da linha
+                const dataInput = linha.querySelector('input[type="date"]');
+                const simInput = linha.querySelector('input[type="checkbox"][name$="[sim_inicial]"]');
+                const naoInput = linha.querySelector('input[type="checkbox"][name$="[nao_inicial]"]');
+                const obsInput = linha.querySelector('input[type="text"][name$="[observacoes]"]');
+
+                // Formata a data para o formato YYYY-MM-DD
+                if (dataInput && dados.data_aplicacao) {
+                    const data = new Date(dados.data_aplicacao);
+                    if (!isNaN(data.getTime())) {
+                        dataInput.value = data.toISOString().split('T')[0];
+                    }
+                }
+
+                // Define os checkboxes de sim/não
+                if (simInput && naoInput) {
+                    simInput.checked = dados.realizado === true || dados.realizado === 1;
+                    naoInput.checked = dados.realizado === false || dados.realizado === 0;
+                }
+                
+                // Preenche as observações
+                if (obsInput && dados.observacoes) {
+                    obsInput.value = dados.observacoes;
+                }
+            });
+        };
+
+        // Preenche os dados de cada eixo
+        preencherEixo('comunicacao', data.data?.comunicacao);
+        preencherEixo('comportamento', data.data?.comportamento);
+        preencherEixo('socioemocional', data.data?.socioemocional);
+
+        console.log('Dados carregados com sucesso!');
+        return true;
+    } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        showMessage(error.message || 'Erro ao carregar os dados salvos', 'danger');
+        return false;
+    }
+}
+
+// Função para formatar os dados do formulário para envio
+function formatarDadosFormulario() {
+    const formData = new FormData();
+    const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
+    
+    if (!alunoId) {
+        console.error('ID do aluno não encontrado');
+        return null;
+    }
+    
+    formData.append('aluno_id', alunoId);
+    
+    // Coletar dados de comunicação/linguagem
+    const dadosComunicacao = [];
+    document.querySelectorAll('input[name^="comunicacao["]').forEach(input => {
+        const match = input.name.match(/comunicacao\[(\d+)\]\[(\w+)\]/);
+        if (match) {
+            const idx = match[1];
+            const campo = match[2];
+            
+            if (!dadosComunicacao[idx]) {
+                dadosComunicacao[idx] = { cod_atividade: '' };
+            }
+            
+            if (campo === 'cod_atividade') {
+                dadosComunicacao[idx].cod_atividade = input.value;
+            } else if (input.type === 'checkbox') {
+                dadosComunicacao[idx][campo] = input.checked ? 1 : 0;
+            } else {
+                dadosComunicacao[idx][campo] = input.value;
+            }
+        }
+    });
+    
+    // Coletar dados de comportamento
+    const dadosComportamento = [];
+    document.querySelectorAll('input[name^="comportamento["]').forEach(input => {
+        const match = input.name.match(/comportamento\[(\d+)\]\[(\w+)\]/);
+        if (match) {
+            const idx = match[1];
+            const campo = match[2];
+            
+            if (!dadosComportamento[idx]) {
+                dadosComportamento[idx] = { cod_atividade: '' };
+            }
+            
+            if (campo === 'cod_atividade') {
+                dadosComportamento[idx].cod_atividade = input.value;
+            } else if (input.type === 'checkbox') {
+                dadosComportamento[idx][campo] = input.checked ? 1 : 0;
+            } else {
+                dadosComportamento[idx][campo] = input.value;
+            }
+        }
+    });
+    
+    // Coletar dados socioemocionais
+    const dadosSocioemocional = [];
+    document.querySelectorAll('input[name^="socioemocional["]').forEach(input => {
+        const match = input.name.match(/socioemocional\[(\d+)\]\[(\w+)\]/);
+        if (match) {
+            const idx = match[1];
+            const campo = match[2];
+            
+            if (!dadosSocioemocional[idx]) {
+                dadosSocioemocional[idx] = { cod_atividade: '' };
+            }
+            
+            if (campo === 'cod_atividade') {
+                dadosSocioemocional[idx].cod_atividade = input.value;
+            } else if (input.type === 'checkbox') {
+                dadosSocioemocional[idx][campo] = input.checked ? 1 : 0;
+            } else {
+                dadosSocioemocional[idx][campo] = input.value;
+            }
+        }
+    });
+    
+    // Remover índices vazios dos arrays
+    const comunicacaoFiltrado = dadosComunicacao.filter(item => item && item.cod_atividade);
+    const comportamentoFiltrado = dadosComportamento.filter(item => item && item.cod_atividade);
+    const socioemocionalFiltrado = dadosSocioemocional.filter(item => item && item.cod_atividade);
+    
+    // Adicionar os dados ao formData
+    formData.append('comunicacao', JSON.stringify(comunicacaoFiltrado));
+    formData.append('comportamento', JSON.stringify(comportamentoFiltrado));
+    formData.append('socioemocional', JSON.stringify(socioemocionalFiltrado));
+    
+    return formData;
+}
+
+// Função para enviar os dados do formulário
+function enviarDadosFormulario() {
+    const formData = formatarDadosFormulario();
+    if (!formData) return;
+    
+    const botaoSalvar = document.getElementById('btn-salvar');
+    const loadingIcon = document.getElementById('loading-icon');
+    const mensagemSucesso = document.getElementById('mensagem-sucesso');
+    const mensagemErro = document.getElementById('mensagem-erro');
+    
+    // Desabilitar botão e mostrar ícone de carregamento
+    botaoSalvar.disabled = true;
+    if (loadingIcon) loadingIcon.style.display = 'inline-block';
+    if (mensagemSucesso) mensagemSucesso.style.display = 'none';
+    if (mensagemErro) mensagemErro.style.display = 'none';
+    
+    // Enviar requisição AJAX
+    fetch('/monitoramento/salvar', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Dados salvos com sucesso!');
+            if (mensagemSucesso) {
+                mensagemSucesso.textContent = 'Dados salvos com sucesso!';
+                mensagemSucesso.style.display = 'block';
+                
+                // Esconder a mensagem após 5 segundos
+                setTimeout(() => {
+                    mensagemSucesso.style.display = 'none';
+                }, 5000);
+            }
+        } else {
+            console.error('Erro ao salvar dados:', data.message);
+            if (mensagemErro) {
+                mensagemErro.textContent = data.message || 'Ocorreu um erro ao salvar os dados. Por favor, tente novamente.';
+                mensagemErro.style.display = 'block';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Erro na requisição:', error);
+        if (mensagemErro) {
+            mensagemErro.textContent = 'Erro ao conectar ao servidor. Verifique sua conexão e tente novamente.';
+            mensagemErro.style.display = 'block';
+        }
+    })
+    .finally(() => {
+        // Reabilitar botão e esconder ícone de carregamento
+        botaoSalvar.disabled = false;
+        if (loadingIcon) loadingIcon.style.display = 'none';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Carregar dados salvos ao iniciar a página
+    const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
+    if (alunoId) {
+        carregarDadosMonitoramento(alunoId);
+    }
+    
+    // Configurar evento de clique no botão salvar
+    const btnSalvar = document.getElementById('btn-salvar');
+    if (btnSalvar) {
+        btnSalvar.addEventListener('click', function(e) {
+            e.preventDefault();
+            enviarDadosFormulario();
+        });
+    }
+    
+    // Código para gerenciar checkboxes mutuamente exclusivos
+    document.querySelectorAll('.sim-checkbox, .nao-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const eixo = this.dataset.eixo;
+            const idx = this.dataset.idx;
+            const isSim = this.classList.contains('sim-checkbox');
+            
+            // Encontra o checkbox oposto
+            const outroCheckbox = document.querySelector(`.${isSim ? 'nao' : 'sim'}-checkbox[data-eixo="${eixo}"][data-idx="${idx}"]`);
+            
+            // Se este checkbox foi marcado, desmarca o oposto
+            if (this.checked && outroCheckbox) {
+                outroCheckbox.checked = false;
+            }
+            
+            // Se este checkbox foi desmarcado e o outro também, marca o oposto (se for o caso)
+            if (!this.checked && outroCheckbox && !outroCheckbox.checked) {
+                outroCheckbox.checked = true;
+            }
+        });
+    });
+    
+    // Código para o PDF
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
     let y = 15;
+    
     // ... código do PDF ...
+    
+    // Função para formatar data para o input type="date" (YYYY-MM-DD)
+    function formatarDataParaInput(dataString) {
+        if (!dataString) return '';
+        const data = new Date(dataString);
+        if (isNaN(data)) return '';
+        return data.toISOString().split('T')[0];
+    }
+    
+    // Função auxiliar para definir valores de formulário
+    function setFormValue(name, value) {
+        if (value === null || value === undefined) return;
+        const element = document.querySelector(`[name="${name}"]`);
+        if (element) {
+            element.value = value;
+        }
+    }
+    
+    // Função auxiliar para definir valores de checkbox
+    function setCheckboxValue(name, checked) {
+        const element = document.querySelector(`[name="${name}"]`);
+        if (element) {
+            element.checked = checked;
+        }
+    }
+    
+    // Função para formatar os dados do formulário para o formato esperado pelo backend
+    function formatarDadosFormulario() {
+        const formData = new FormData();
+        
+        // Adiciona o ID do aluno e o token CSRF
+        const alunoId = '{{ $alunoId ?? '' }}';
+        formData.append('aluno_id', alunoId);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+        
+        // Formata os dados de cada eixo
+        const dados = {
+            comunicacao: formatarDadosEixo('comunicacao'),
+            comportamento: formatarDadosEixo('comportamento'),
+            socioemocional: formatarDadosEixo('socioemocional')
+        };
+        
+        // Adiciona os dados de cada eixo ao FormData como JSON
+        Object.entries(dados).forEach(([eixo, dadosEixo]) => {
+            formData.append(eixo, JSON.stringify(dadosEixo));
+        });
+        
+        return formData;
+    }
+    
+    // Função auxiliar para formatar os dados de um eixo específico
+    function formatarDadosEixo(eixo) {
+        const dados = [];
+        const linhas = document.querySelectorAll(`.${eixo}-linha`);
+        
+        linhas.forEach(linha => {
+            const codAtividade = linha.querySelector('input[name$="[cod_atividade]"]')?.value;
+            if (!codAtividade) return;
+            
+            const dataAplicacao = linha.querySelector('input[type="date"]')?.value || '';
+            const simInicial = linha.querySelector('input[type="checkbox"][name$="[sim_inicial]"]')?.checked || false;
+            const naoInicial = linha.querySelector('input[type="checkbox"][name$="[nao_inicial]"]')?.checked || false;
+            const observacoes = linha.querySelector('input[type="text"][name$="[observacoes]"]')?.value || '';
+            
+            // Determina o valor de 'realizado' baseado nos checkboxes
+            let realizado = null;
+            if (simInicial && !naoInicial) realizado = 1;
+            else if (!simInicial && naoInicial) realizado = 0;
+            // Se ambos marcados ou ambos desmarcados, não envia realizado
+            
+            // Adiciona à lista apenas se houver algum dado preenchido
+            if (dataAplicacao || realizado !== null || observacoes) {
+                dados.push({
+                    cod_atividade: codAtividade,
+                    data_inicial: dataAplicacao,
+                    realizado: realizado,
+                    observacoes: observacoes
+                });
+            }
+        });
+        
+        return dados;
+    }
+    
+    // Função para exibir mensagem de feedback ao usuário
+    function showMessage(message, type = 'success') {
+        // Remove mensagens anteriores
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+        
+        // Cria a nova mensagem
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        `;
+        
+        // Adiciona a mensagem antes do formulário
+        const form = document.getElementById('monitoramentoForm');
+        form.parentNode.insertBefore(alertDiv, form);
+        
+        // Remove a mensagem após 5 segundos
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }, 5000);
+    }
+    
+// Script para garantir checkbox exclusivos e botão salvar funcionando
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Iniciando script de monitoramento');
+
+    // CORREÇÃO 1: APLICAR EXCLUSIVIDADE NOS CHECKBOXES
+    function aplicarExclusividadeCheckboxes() {
+        console.log('Aplicando exclusividade nos checkboxes');
+        
+        // Selecionar todos os checkboxes sim e não
+        const simCheckboxes = document.querySelectorAll('.sim-checkbox');
+        const naoCheckboxes = document.querySelectorAll('.nao-checkbox');
+        
+        console.log('Sim checkboxes encontrados:', simCheckboxes.length);
+        console.log('Não checkboxes encontrados:', naoCheckboxes.length);
+        
+        // Remover eventos antigos (se existirem) para evitar duplicação
+        simCheckboxes.forEach(checkbox => {
+            checkbox.removeEventListener('click', handleSimClick);
+            checkbox.addEventListener('click', handleSimClick);
+        });
+        
+        naoCheckboxes.forEach(checkbox => {
+            checkbox.removeEventListener('click', handleNaoClick);
+            checkbox.addEventListener('click', handleNaoClick);
+        });
+    }
+    
+    // Função manipuladora para checkbox SIM
+    function handleSimClick(e) {
+        const checkbox = e.target;
+        const eixo = checkbox.getAttribute('data-eixo');
+        const idx = checkbox.getAttribute('data-idx');
+        
+        console.log(`Clique em SIM: eixo=${eixo}, idx=${idx}`);
+        
+        const naoCheckbox = document.querySelector(`.nao-checkbox[data-eixo="${eixo}"][data-idx="${idx}"]`);
+        if (naoCheckbox && checkbox.checked) {
+            console.log('Desmarcando checkbox NÃO correspondente');
+            naoCheckbox.checked = false;
+        }
+    }
+    
+    // Função manipuladora para checkbox NÃO
+    function handleNaoClick(e) {
+        const checkbox = e.target;
+        const eixo = checkbox.getAttribute('data-eixo');
+        const idx = checkbox.getAttribute('data-idx');
+        
+        console.log(`Clique em NÃO: eixo=${eixo}, idx=${idx}`);
+        
+        const simCheckbox = document.querySelector(`.sim-checkbox[data-eixo="${eixo}"][data-idx="${idx}"]`);
+        if (simCheckbox && checkbox.checked) {
+            console.log('Desmarcando checkbox SIM correspondente');
+            simCheckbox.checked = false;
+        }
+    }
+    
+    // CORREÇÃO 2: BOTÃO SALVAR FUNCIONANDO
+    const btnSalvar = document.getElementById('btn-salvar');
+    const form = document.getElementById('monitoramentoForm');
+    
+    if (btnSalvar && form) {
+        console.log('Botão salvar e formulário encontrados');
+        
+        btnSalvar.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Botão salvar clicado');
+            
+            if (confirm('Confirma o salvamento dos dados de monitoramento?')) {
+                console.log('Salvamento confirmado, enviando formulário');
+                form.submit(); // MÉTODO SIMPLES E DIRETO
+            }
+        });
+    } else {
+        console.error('Botão salvar ou formulário não encontrados!');
+    }
+    
+    // Aplicar exclusividade imediatamente
+    aplicarExclusividadeCheckboxes();
+    
+    // Se já houver uma função de carregamento de dados, sobrescrever para configurar checkboxes após carregamento
+    if (typeof carregarDadosMonitoramento === 'function') {
+        const originalCarregar = carregarDadosMonitoramento;
+        window.carregarDadosMonitoramento = function(alunoId) {
+            console.log('Interceptando chamada de carregamento para ID:', alunoId);
+            const result = originalCarregar(alunoId);
+            
+            // Garantir exclusividade depois que os dados forem carregados
+            setTimeout(aplicarExclusividadeCheckboxes, 1000);
+            return result;
+        };
+    }
 });
 </script>
+<style>
+/* Estilos para o fluxo de cadastro */
+.spinner-border {
+    margin-right: 5px;
+}
+
+.circle-success {
+    width: 80px;
+    height: 80px;
+    background-color: #28a745;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+}
+
+/* Animações para o feedback visual */
+@keyframes pulseSuccess {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+}
+
+.circle-success {
+    animation: pulseSuccess 1.5s infinite;
+}
+
+/* Estilos para melhorar a aparência do formulário */
+.form-control:focus {
+    border-color: #176ca7;
+    box-shadow: 0 0 0 0.25rem rgba(23, 108, 167, 0.25);
+}
+
+.comunicacao-bg, .comportamento-bg, .socioemocional-bg {
+    transition: all 0.3s ease;
+}
+
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltips para melhor UX */
+.checkbox-tooltip {
+    position: relative;
+    cursor: pointer;
+}
+
+.checkbox-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+}
+</style>
 @endsection

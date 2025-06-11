@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ControllerPerfil;
 use App\Http\Controllers\SondagemController;
 use App\Http\Controllers\SondagemInicialController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MaterialController; // Importação para os materiais
 use App\Http\Controllers\GraficoMonitoramentoController;
+use App\Http\Controllers\MonitoramentoAtividadeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -247,6 +249,14 @@ Route::get('/emociometro', [SomeController::class, 'emociometro'])->name('emocio
 
 // Rota para "Minha Rede de Ajuda"
 Route::get('/minha-rede-de-ajuda', [SomeController::class, 'minhaRedeDeAjuda'])->name('minha-rede-de-ajuda');
+
+// Rotas para Monitoramento de Atividades
+Route::prefix('monitoramento')->group(function () {
+    // Rota para salvar os dados do monitoramento
+    Route::post('/salvar', [MonitoramentoAtividadeController::class, 'salvar'])->name('monitoramento.salvar');
+    // Rota para carregar os dados salvos do monitoramento
+    Route::get('/carregar/{alunoId}', [MonitoramentoAtividadeController::class, 'carregar'])->name('monitoramento.carregar');
+});
 
 // Rota para gerar PDF
 Route::post('/gerar-pdf', [GeneratePDFController::class, 'generatePDF'])->name('gerar.pdf');

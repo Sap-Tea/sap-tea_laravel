@@ -497,6 +497,10 @@ foreach ($socioemocional_agrupado as $item) {
     if (isset($item->total)) $total_eixos += (int)$item->total;
 }
 
+// Carregar dados de monitoramento já cadastrados
+$monitoramentoController = new \App\Http\Controllers\MonitoramentoAtividadeController();
+$dadosMonitoramento = $monitoramentoController->carregarParaView($id);
+
 return view('rotina_monitoramento.monitoramento_aluno', [
     'alunoDetalhado' => $alunoDetalhado,
     'professor_nome' => $professor->func_nome,
