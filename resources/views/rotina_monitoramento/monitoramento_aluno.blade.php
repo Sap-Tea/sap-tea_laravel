@@ -4,6 +4,39 @@
 
 @section('styles')
 <style>
+    .comunicacao-bg {
+        background: #A1D9F6 !important;
+    }
+    .comunicacao-bg .result-table,
+    .comunicacao-bg th,
+    .comunicacao-bg td,
+    .comunicacao-bg thead,
+    .comunicacao-bg tbody,
+    .comunicacao-bg tfoot {
+        background: #A1D9F6 !important;
+    }
+    .comportamento-bg {
+        background: #FFFF66 !important;
+    }
+    .comportamento-bg .result-table,
+    .comportamento-bg th,
+    .comportamento-bg td,
+    .comportamento-bg thead,
+    .comportamento-bg tbody,
+    .comportamento-bg tfoot {
+        background: #FFFF66 !important;
+    }
+    .socioemocional-bg {
+        background: #E6F4EA !important;
+    }
+    .socioemocional-bg .result-table,
+    .socioemocional-bg th,
+    .socioemocional-bg td,
+    .socioemocional-bg thead,
+    .socioemocional-bg tbody,
+    .socioemocional-bg tfoot {
+        background: #E6F4EA !important;
+    }
     .table-bordered td, .table-bordered th {
       background: white !important;
     }
@@ -424,8 +457,20 @@ if ($total_atividades_geral > 0) {
 
     <!-- TABELA DE ATIVIDADES -->
     {{-- EIXO COMUNICAÇÃO/LINGUAGEM (PADRÃO VISUAL) --}}
-<div style="background: #FFF182; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
-  <div class="table-title" style="font-size:20px; color:#b28600; text-align:center; margin-bottom:15px;">Eixo Comunicação/Linguagem</div>
+<div class="comunicacao-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:15px;"
+    ><div class="table-title" style="font-size:20px; color:#b28600; text-align:center;">Eixo Comunicação/Linguagem</div>
+    @php
+        // Determina o ID do aluno de forma segura
+        $alunoId = null;
+        if (is_array($alunoDetalhado) && isset($alunoDetalhado[0]) && isset($alunoDetalhado[0]->alu_id)) {
+            $alunoId = $alunoDetalhado[0]->alu_id;
+        } elseif (is_object($alunoDetalhado) && isset($alunoDetalhado->alu_id)) {
+            $alunoId = $alunoDetalhado->alu_id;
+        }
+    @endphp
+    <a href="{{ route('grafico.comunicacao', ['alunoId' => $alunoId]) }}" class="btn btn-primary d-none" style="background-color: #b28600; border-color: #b28600;"><i class="fas fa-chart-bar"></i> Ver Gráfico</a>
+  </div>
   <table class="result-table" style="background: #fff;">
     <thead>
       <tr style="background: #ffe066;">
@@ -464,7 +509,7 @@ if ($total_atividades_geral > 0) {
 </div>
 
     {{-- EIXO COMPORTAMENTO (PADRÃO VISUAL) --}}
-<div style="background: #A1D9F6; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+<div class="comportamento-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
   <div class="table-title" style="font-size:20px; color:#176ca7; text-align:center; margin-bottom:15px;">Eixo Comportamento</div>
   <table class="result-table" style="background: #fff;">
     <thead>
@@ -508,7 +553,7 @@ if ($total_atividades_geral > 0) {
 </div>
 
     {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (PADRÃO VISUAL) --}}
-<div style="background: #D7EAD9; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+<div class="socioemocional-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
   <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
   <table class="result-table" style="background: #fff;">
     <thead>

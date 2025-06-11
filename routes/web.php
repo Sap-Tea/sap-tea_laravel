@@ -27,6 +27,7 @@ use App\Http\Controllers\SobreNosController;
 use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MaterialController; // Importação para os materiais
+use App\Http\Controllers\GraficoMonitoramentoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +94,10 @@ Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
     Route::post('/sondagem/processa-resultados/{alunoId}', [\App\Http\Controllers\ProcessaResultadosController::class, 'processaTodosEixos'])->name('processa_resultados');
     Route::get('/sondagem/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
     Route::post('/sondagem/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
+    Route::get('/sondagem/alunoturma/{id}', [InserirEixoEstudanteController::class, 'aluno_turma'])->name('aluno.turma');
+    Route::get('/sondagem/inventario/{id}', [InserirEixoEstudanteController::class, 'inventario_parametro'])->name('perfil.inventario');
+    // Rotas para os gráficos de monitoramento
+    Route::get('/grafico/comunicacao/{alunoId}', [GraficoMonitoramentoController::class, 'graficoEixoComunicacao'])->name('grafico.comunicacao');
     Route::get('/sondagem/visualizar-inventario/{id}', [AlunoController::class, 'visualiza_aluno_inventario'])->name('visualizar.inventario');
     Route::get('/sondagem/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
     Route::get('/sondagem/continuada1', [SondagemInicialController::class, 'continuada1'])->name('sondagem.continuada1');
