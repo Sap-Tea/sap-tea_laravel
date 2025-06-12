@@ -18,11 +18,7 @@ class MonitoramentoAtividadeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function obterFaseAtual()
-    {
-        // Sempre retorna 'In' para a fase inicial
-        return 'In';
-    }
+    // Método obterFaseAtual já definido abaixo
     
     public function salvar(Request $request)
     {
@@ -227,8 +223,11 @@ class MonitoramentoAtividadeController extends Controller
         try {
             // Validar se o ID do aluno é válido
             if (!is_numeric($alunoId) || $alunoId <= 0) {
+                Log::info("ID de aluno inválido: {$alunoId}");
                 return [];
             }
+            
+            Log::info("Carregando dados de monitoramento para o aluno ID: {$alunoId}");
             
             // Carregar os dados de cada eixo
             $dados = [];
@@ -239,26 +238,63 @@ class MonitoramentoAtividadeController extends Controller
             ];
             
             foreach ($eixos as $tipo => $modelClass) {
+                $fase = $this->obterFaseAtual();
+                Log::info("Buscando registros do eixo {$tipo} para aluno {$alunoId} na fase {$fase}");
+                
                 $registros = $modelClass::where('aluno_id', $alunoId)
-                    ->where('fase_cadastro', $this->obterFaseAtual())
+                    ->where('fase_cadastro', $fase)
                     ->get();
+                
+                Log::info("Encontrados " . count($registros) . " registros para o eixo {$tipo}");
                 
                 $dados[$tipo] = [];
                 foreach ($registros as $registro) {
+                    // Garantir que o registro tenha um código de atividade válido
+                    if (empty($registro->cod_atividade)) {
+                        Log::warning("Registro sem código de atividade encontrado para o eixo {$tipo}");
+                        continue;
+                    }
+                    
+                    Log::info("Processando registro de atividade {$registro->cod_atividade} do eixo {$tipo}");
+                    
+                    // Formatar a data no formato YYYY-MM-DD para o input type="date"
+                    $dataAplicacao = $registro->data_aplicacao;
+                    if ($dataAplicacao && strpos($dataAplicacao, '/') !== false) {
+                        $partes = explode('/', $dataAplicacao);
+                        if (count($partes) === 3) {
+                            $dataAplicacao = $partes[2] . '-' . $partes[1] . '-' . $partes[0];
+                        }
+                    }
+                    
                     $dados[$tipo][$registro->cod_atividade] = [
-                        'data_inicial' => $registro->data_aplicacao,
-                        'sim_inicial' => $registro->realizado ? '1' : '0',
-                        'nao_inicial' => $registro->realizado ? '0' : '1',
-                        'observacoes' => $registro->observacoes
+                        'data_inicial' => $dataAplicacao,
+                        'sim_inicial' => $registro->realizado == 1 ? '1' : '0',
+                        'nao_inicial' => $registro->realizado == 0 ? '1' : '0',
+                        'observacoes' => $registro->observacoes,
+                        'cod_atividade' => $registro->cod_atividade
                     ];
+                    
+                    Log::info("Dados formatados para {$registro->cod_atividade}: " . json_encode($dados[$tipo][$registro->cod_atividade]));
                 }
             }
             
+            Log::info("Dados de monitoramento carregados com sucesso: " . json_encode($dados));
             return $dados;
         } catch (\Exception $e) {
             Log::error('Erro ao carregar dados para view: ' . $e->getMessage());
             return [];
         }
+    }
+    
+    /**
+     * Obtém a fase atual do monitoramento (In = Inicial)
+     * 
+     * @return string Código da fase atual
+     */
+    protected function obterFaseAtual()
+    {
+        // Por padrão, usamos a fase inicial (In)
+        return 'In';
     }
     
     public function carregar($alunoId)

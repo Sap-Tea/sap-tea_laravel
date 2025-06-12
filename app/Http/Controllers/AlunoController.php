@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Aluno;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AlunoController extends Controller
 {
@@ -66,6 +67,7 @@ class AlunoController extends Controller
             'Realiza, em sua rotina, ações de autocuidado com autonomia?',
             'Reconhece e identifica alimentos que lhe são oferecidos?',
             'Responde a comandos de ordem direta?'
+            
         ];
 
         $this->eixo_int_socio_emocional = [
@@ -114,19 +116,19 @@ class AlunoController extends Controller
         'preenchimento'
     ])->findOrFail($id);
 
-    // Remove a ECP03 (id=3, índice 2) do array antes de enviar para a view
+    // Usa o array completo de perguntas do eixo comportamento
     $perguntas_eixo_comportamento_filtrado = $this->perguntas_eixo_comportamento;
-    if (isset($perguntas_eixo_comportamento_filtrado[2])) {
-        unset($perguntas_eixo_comportamento_filtrado[2]);
-        $perguntas_eixo_comportamento_filtrado = array_values($perguntas_eixo_comportamento_filtrado); // Reindexa
-    }
-    return view('sondagem.inventarios', [
-        'aluno' => $aluno, // Objeto Eloquent com relacionamentos
-        'alunoDetalhado' => $alunoDetalhado, // Dados da query customizada
-        'Perguntas_eixo_comunicacao' => $this->Perguntas_eixo_comunicacao,
-        'perguntas_eixo_comportamento' => $perguntas_eixo_comportamento_filtrado,
-        'eixo_int_socio_emocional' => $this->eixo_int_socio_emocional
-    ]);
+        // Log para depuração
+        Log::info('Perguntas do eixo comportamento:', $perguntas_eixo_comportamento_filtrado);
+        Log::info('Total de perguntas do eixo comportamento:', ['total' => count($perguntas_eixo_comportamento_filtrado)]);
+        
+        return view('sondagem.inventarios', [
+            'aluno' => $aluno, // Objeto Eloquent com relacionamentos
+            'alunoDetalhado' => $alunoDetalhado, // Dados da query customizada
+            'Perguntas_eixo_comunicacao' => $this->Perguntas_eixo_comunicacao,
+            'perguntas_eixo_comportamento' => $perguntas_eixo_comportamento_filtrado,
+            'eixo_int_socio_emocional' => $this->eixo_int_socio_emocional
+        ]);
 }
 
     

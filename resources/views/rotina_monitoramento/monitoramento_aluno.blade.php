@@ -7,6 +7,74 @@
     .comunicacao-bg {
         background: #A1D9F6 !important;
     }
+    
+    /* Estilos para o fluxo de cadastro */
+    .spinner-border {
+        margin-right: 5px;
+    }
+
+    .circle-success {
+        width: 80px;
+        height: 80px;
+        background-color: #28a745;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+    }
+
+    /* Animações para o feedback visual */
+    @keyframes pulseSuccess {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+
+    .circle-success {
+        animation: pulseSuccess 1.5s infinite;
+    }
+
+    /* Estilos para melhorar a aparência do formulário */
+    .form-control:focus {
+        border-color: #176ca7;
+        box-shadow: 0 0 0 0.25rem rgba(23, 108, 167, 0.25);
+    }
+
+    .comunicacao-bg, .comportamento-bg, .socioemocional-bg {
+        transition: all 0.3s ease;
+    }
+
+    .btn {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tooltips para melhor UX */
+    .checkbox-tooltip {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .checkbox-tooltip:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 10;
+    }
     .comunicacao-bg .result-table,
     .comunicacao-bg th,
     .comunicacao-bg td,
@@ -734,6 +802,50 @@ if ($total_atividades_geral > 0) {
 <script>
     // Passar os dados do monitoramento para o JavaScript
     var dadosMonitoramento = @json($dadosMonitoramento ?? []);
+    console.log('Dados de monitoramento recebidos:', dadosMonitoramento);
+    
+    // Garantir que os dados sejam carregados imediatamente
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM carregado, preenchendo formulário diretamente...');
+        if (dadosMonitoramento && Object.keys(dadosMonitoramento).length > 0) {
+            // Preencher os campos manualmente para garantir
+            Object.keys(dadosMonitoramento).forEach(function(eixo) {
+                Object.keys(dadosMonitoramento[eixo]).forEach(function(codAtividade) {
+                    const dados = dadosMonitoramento[eixo][codAtividade];
+                    console.log(`Preenchendo ${eixo} - ${codAtividade}:`, dados);
+                    
+                    // Encontrar todas as linhas com este código de atividade
+                    const linhas = document.querySelectorAll(`tr[data-cod-atividade="${codAtividade}"][data-eixo="${eixo}"]`);
+                    linhas.forEach(function(linha) {
+                        const idx = linha.getAttribute('data-idx');
+                        if (!idx) return;
+                        
+                        // Preencher data
+                        const inputData = linha.querySelector('input[type="date"]');
+                        if (inputData && dados.data_inicial) {
+                            inputData.value = dados.data_inicial;
+                        }
+                        
+                        // Marcar checkbox
+                        if (dados.sim_inicial === '1') {
+                            const simCheckbox = linha.querySelector(`.sim-checkbox`);
+                            if (simCheckbox) simCheckbox.checked = true;
+                        }
+                        if (dados.nao_inicial === '1') {
+                            const naoCheckbox = linha.querySelector(`.nao-checkbox`);
+                            if (naoCheckbox) naoCheckbox.checked = true;
+                        }
+                        
+                        // Preencher observações
+                        const textarea = linha.querySelector('textarea');
+                        if (textarea && dados.observacoes) {
+                            textarea.value = dados.observacoes;
+                        }
+                    });
+                });
+            });
+        }
+    });
 </script>
 <script src="{{ asset('js/validacao_monitoramento.js') }}"></script>
 <script>
@@ -1214,73 +1326,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<style>
-/* Estilos para o fluxo de cadastro */
-.spinner-border {
-    margin-right: 5px;
-}
-
-.circle-success {
-    width: 80px;
-    height: 80px;
-    background-color: #28a745;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
-}
-
-/* Animações para o feedback visual */
-@keyframes pulseSuccess {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-}
-
-.circle-success {
-    animation: pulseSuccess 1.5s infinite;
-}
-
-/* Estilos para melhorar a aparência do formulário */
-.form-control:focus {
-    border-color: #176ca7;
-    box-shadow: 0 0 0 0.25rem rgba(23, 108, 167, 0.25);
-}
-
-.comunicacao-bg, .comportamento-bg, .socioemocional-bg {
-    transition: all 0.3s ease;
-}
-
-.btn {
-    transition: all 0.2s ease-in-out;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Tooltips para melhor UX */
-.checkbox-tooltip {
-    position: relative;
-    cursor: pointer;
-}
-
-.checkbox-tooltip:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-size: 12px;
-    white-space: nowrap;
-    z-index: 10;
-}
-</style>
 @endsection

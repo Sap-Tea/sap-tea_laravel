@@ -522,6 +522,7 @@ return view('rotina_monitoramento.monitoramento_aluno', [
     'socioemocional_propostas' => $socioemocional_propostas,
     'debug_atividades_agrupadas' => $debug_atividades_agrupadas,
     'total_eixos' => $total_eixos,
+    'dadosMonitoramento' => $dadosMonitoramento, // Adiciona os dados de monitoramento para a view
 ]);
     }
 

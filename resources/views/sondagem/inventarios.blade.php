@@ -113,10 +113,14 @@
                 </thead>
                 <tbody>
                     @foreach ($perguntas_eixo_comportamento as $i_comportamento => $comportamento)
-                    <tr style="background-color: #FFEB3B;">
+                    @php
+                        $campo = 'ecp' . sprintf('%02d', $i_comportamento + 1);
+                        $isEc17 = ($i_comportamento + 1) === 17;
+                    @endphp
+                    <tr style="background-color: #FFEB3B;" @if($isEc17) id="tr-ecp17" @endif>
                         <td>{{$comportamento}}</td>
-                        <td><input type="radio" name="ecp{{ sprintf('%02d', $i_comportamento + 1) }}" value="1" required></td>
-                        <td><input type="radio" name="ecp{{ sprintf('%02d', $i_comportamento + 1) }}" value="0" required></td>
+                        <td><input type="radio" name="{{ $campo }}" value="1" required @if($isEc17) id="ecp17-sim" @endif></td>
+                        <td><input type="radio" name="{{ $campo }}" value="0" required @if($isEc17) id="ecp17-nao" @endif></td>
                     </tr>
                 @endforeach
         
@@ -175,6 +179,42 @@
     <!-- Importação das bibliotecas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script>
+    // Verificação de inicialização do formulário
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verifica se o campo ecp17 está presente no DOM
+        const ecp17Inputs = document.querySelectorAll('input[name="ecp17"]');
+        console.log('Campos ecp17 encontrados:', ecp17Inputs.length);
+        
+        // Verifica todos os campos ecp
+        for (let i = 1; i <= 17; i++) {
+            const campo = 'ecp' + String(i).padStart(2, '0');
+            const inputs = document.querySelectorAll(`input[name="${campo}"]`);
+            console.log(`Campo ${campo}:`, inputs.length > 0 ? 'Encontrado' : 'NÃO ENCONTRADO');
+        }
+
+        // Adiciona evento de submissão do formulário
+        const form = document.getElementById('formInventario');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Verifica os valores dos campos ecp antes de enviar
+                for (let i = 1; i <= 17; i++) {
+                    const campo = 'ecp' + String(i).padStart(2, '0');
+                    const selected = document.querySelector(`input[name="${campo}"]:checked`);
+                    console.log(`Valor de ${campo} no envio:`, selected ? selected.value : 'Não selecionado');
+                }
+                
+                // Verifica especificamente o ecp17
+                const ecp17Selected = document.querySelector('input[name="ecp17"]:checked');
+                console.log('Valor de ecp17 no envio:', ecp17Selected ? ecp17Selected.value : 'Não selecionado');
+                
+                // Permite o envio do formulário
+                return true;
+            });
+        }
+    });
+    </script>
     <script>
 // Confirmação segura ao enviar formulário
 const form = document.getElementById('formInventario');
@@ -189,17 +229,49 @@ if(form && btnSalvar && modal && confirmar && cancelar && mensagem) {
         // Validação do formulário antes de mostrar o modal
         let radiosValid = true;
         // Validação manual dos grupos de radio dinâmicos
-        // Comunicação/Linguagem
-        const comunicacaoCount = document.querySelectorAll('input[name^="ecm"]').length / 2;
-        for(let i=1; i<=comunicacaoCount; i++) {
-            const radios = document.querySelectorAll(`input[name='ecm${String(i).padStart(2, '0')}']`);
-            if (![...radios].some(r => r.checked)) { radiosValid = false; break; }
+        // Comunicação/Linguagem (32 itens)
+        for(let i=1; i<=32; i++) {
+            const campo = 'ecm' + String(i).padStart(2, '0');
+            const radios = document.querySelectorAll(`input[name='${campo}']`);
+            if (radios.length > 0 && ![...radios].some(r => r.checked)) { 
+                radiosValid = false; 
+                break; 
+            }
         }
-        // Comportamento
-        const comportamentoCount = document.querySelectorAll('input[name^="ecp"]').length / 2;
-        for(let i=1; i<=comportamentoCount; i++) {
-            const radios = document.querySelectorAll(`input[name='ecp${String(i).padStart(2, '0')}']`);
-            if (![...radios].some(r => r.checked)) { radiosValid = false; break; }
+        // Comportamento (17 itens)
+        console.log('Iniciando validação dos campos de comportamento...');
+        for(let i=1; i<=17; i++) {
+            const campo = 'ecp' + String(i).padStart(2, '0');
+            const radios = document.querySelectorAll(`input[name='${campo}']`);
+            console.log(`Campo ${campo}:`, radios);
+            
+            // Verifica se é o campo ecp17 e adiciona logs extras
+            if (campo === 'ecp17') {
+                console.log('=== DETALHES DO CAMPO ECP17 ===');
+                console.log('Elementos encontrados:', radios.length);
+                radios.forEach((radio, index) => {
+                    console.log(`Radio ${index + 1}:`, {
+                        value: radio.value,
+                        checked: radio.checked,
+                        disabled: radio.disabled,
+                        parentElement: radio.parentElement?.outerHTML
+                    });
+                });
+            }
+            
+            if (radios.length > 0 && ![...radios].some(r => r.checked)) { 
+                console.log('Campo não preenchido:', campo);
+                if (campo === 'ecp17') {
+                    console.error('ERRO: Campo ecp17 não preenchido!');
+                }
+                radiosValid = false; 
+                break; 
+            } else if (radios.length === 0) {
+                console.warn(`Campo ${campo} não encontrado no DOM`);
+                if (campo === 'ecp17') {
+                    console.error('ERRO: Campo ecp17 não encontrado no DOM!');
+                }
+            }
         }
         // Socioemocional
         const emocionalCount = document.querySelectorAll('input[name^="eis"]').length / 2;
