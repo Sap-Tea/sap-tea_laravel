@@ -105,6 +105,25 @@
     .socioemocional-bg tfoot {
         background: #E6F4EA !important;
     }
+    
+    /* Estilos para campos readonly */
+    .campo-readonly {
+        background-color: #f8f8f8 !important;
+        color: #666 !important;
+        border: 1px solid #ddd !important;
+        cursor: not-allowed !important;
+    }
+    
+    /* Estilos para checkboxes desabilitados */
+    .checkbox-readonly {
+        opacity: 0.7 !important;
+        cursor: not-allowed !important;
+    }
+    
+    /* Estilização visual para linhas com dados carregados */
+    tr[data-possui-dados="true"] {
+        background-color: #f0f7ff !important;
+    }
     .table-bordered td, .table-bordered th {
       background: white !important;
     }
@@ -522,6 +541,11 @@ if ($total_atividades_geral > 0) {
       Após finalizar o processo, você deverá registrar no Suporte TEA Digital o cenário atual do aluno.</p>
       <p><em>Observação: Em caso de dúvidas, consulte o suporte técnico ou administrativo para orientação.</em></p>
     </div>
+    
+    <!-- Alerta sobre modo de visualização (inicialmente oculto) -->
+    <div id="mensagemModoVisualizacao" class="alert alert-info" style="display: none; margin: 15px 0; padding: 12px; border-left: 5px solid #2196F3; background-color: #e3f2fd; color: #0c5460;">
+      <i class="fas fa-eye mr-2"></i> <strong>Modo de Visualização:</strong> Os dados estão sendo exibidos em modo somente leitura. Os campos não podem ser editados pois representam registros já salvos no sistema.
+    </div>
 
     <!-- TABELA DE ATIVIDADES -->
     {{-- EIXO COMUNICAÇÃO/LINGUAGEM (PADRÃO VISUAL) --}}
@@ -804,46 +828,24 @@ if ($total_atividades_geral > 0) {
     var dadosMonitoramento = @json($dadosMonitoramento ?? []);
     console.log('Dados de monitoramento recebidos:', dadosMonitoramento);
     
-    // Garantir que os dados sejam carregados imediatamente
+    // Função para carregar os dados do monitoramento quando a página carregar
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM carregado, preenchendo formulário diretamente...');
-        if (dadosMonitoramento && Object.keys(dadosMonitoramento).length > 0) {
-            // Preencher os campos manualmente para garantir
-            Object.keys(dadosMonitoramento).forEach(function(eixo) {
-                Object.keys(dadosMonitoramento[eixo]).forEach(function(codAtividade) {
-                    const dados = dadosMonitoramento[eixo][codAtividade];
-                    console.log(`Preenchendo ${eixo} - ${codAtividade}:`, dados);
-                    
-                    // Encontrar todas as linhas com este código de atividade
-                    const linhas = document.querySelectorAll(`tr[data-cod-atividade="${codAtividade}"][data-eixo="${eixo}"]`);
-                    linhas.forEach(function(linha) {
-                        const idx = linha.getAttribute('data-idx');
-                        if (!idx) return;
-                        
-                        // Preencher data
-                        const inputData = linha.querySelector('input[type="date"]');
-                        if (inputData && dados.data_inicial) {
-                            inputData.value = dados.data_inicial;
-                        }
-                        
-                        // Marcar checkbox
-                        if (dados.sim_inicial === '1') {
-                            const simCheckbox = linha.querySelector(`.sim-checkbox`);
-                            if (simCheckbox) simCheckbox.checked = true;
-                        }
-                        if (dados.nao_inicial === '1') {
-                            const naoCheckbox = linha.querySelector(`.nao-checkbox`);
-                            if (naoCheckbox) naoCheckbox.checked = true;
-                        }
-                        
-                        // Preencher observações
-                        const textarea = linha.querySelector('textarea');
-                        if (textarea && dados.observacoes) {
-                            textarea.value = dados.observacoes;
-                        }
-                    });
+        console.log('DOM carregado, carregando dados do monitoramento...');
+        
+        // Obter o ID do aluno do campo oculto
+        const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
+        
+        if (alunoId) {
+            // Carregar os dados do monitoramento via AJAX
+            carregarDadosMonitoramento(alunoId)
+                .then(() => {
+                    console.log('Dados do monitoramento carregados com sucesso!');
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar dados do monitoramento:', error);
                 });
-            });
+        } else {
+            console.error('ID do aluno não encontrado');
         }
     });
 </script>
@@ -853,77 +855,302 @@ if ($total_atividades_geral > 0) {
 async function carregarDadosMonitoramento(alunoId) {
     if (!alunoId) {
         console.error('ID do aluno não fornecido');
-        return;
+        return Promise.reject('ID do aluno não fornecido');
     }
 
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const mensagemErro = document.getElementById('mensagem-erro');
+    const mensagemSucesso = document.getElementById('mensagem-sucesso');
+
     try {
-        const response = await fetch(`/monitoramento/carregar/${alunoId}`, {
+        console.log(`Carregando dados do monitoramento para o aluno ${alunoId}...`);
+        
+        // Mostrar indicador de carregamento
+        if (loadingIndicator) loadingIndicator.style.display = 'block';
+        if (mensagemErro) mensagemErro.style.display = 'none';
+        if (mensagemSucesso) mensagemSucesso.style.display = 'none';
+        
+        const response = await fetch(`/monitoramento/carregar/${alunoId}?_=${Date.now()}`, {
             headers: {
                 'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            method: 'GET',
+            cache: 'no-store'
         });
 
         if (!response.ok) {
-            throw new Error('Erro ao carregar os dados');
+            const errorText = await response.text();
+            console.error('Erro na resposta:', response.status, response.statusText);
+            console.error('Detalhes do erro:', errorText);
+            throw new Error(`Erro ao carregar os dados: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
+        console.log('Resposta da API:', data);
 
         if (!data.success) {
-            throw new Error(data.message || 'Erro ao processar os dados');
+            throw new Error(data.message || 'Erro ao processar os dados do servidor');
         }
 
         // Função auxiliar para preencher os campos de um eixo
         const preencherEixo = (eixo, dadosEixo) => {
-            if (!dadosEixo) return;
-
-            // Itera sobre cada atividade do eixo
-            Object.entries(dadosEixo).forEach(([codAtividade, dados]) => {
-                if (!dados) return;
+            if (!dadosEixo || !Array.isArray(dadosEixo) || dadosEixo.length === 0) {
+                console.log(`Nenhum dado para o eixo: ${eixo}`);
+                return;
+            }
+            
+            console.log(`Preenchendo ${dadosEixo.length} registros do eixo ${eixo}:`, dadosEixo);
+            
+            // Processar cada registro do array
+            dadosEixo.forEach((dados, index) => {
+                if (!dados || !dados.cod_atividade) {
+                    console.log(`Dados inválidos no índice ${index}`, dados);
+                    return;
+                }
                 
-                // Encontra a linha correspondente ao código da atividade
-                const linha = document.querySelector(`.${eixo}-linha[data-cod-atividade="${codAtividade}"]`);
-                if (!linha) return;
-
-                // Preenche os campos da linha
-                const dataInput = linha.querySelector('input[type="date"]');
-                const simInput = linha.querySelector('input[type="checkbox"][name$="[sim_inicial]"]');
-                const naoInput = linha.querySelector('input[type="checkbox"][name$="[nao_inicial]"]');
-                const obsInput = linha.querySelector('input[type="text"][name$="[observacoes]"]');
-
-                // Formata a data para o formato YYYY-MM-DD
-                if (dataInput && dados.data_aplicacao) {
-                    const data = new Date(dados.data_aplicacao);
-                    if (!isNaN(data.getTime())) {
-                        dataInput.value = data.toISOString().split('T')[0];
+                const codAtividade = dados.cod_atividade;
+                try {
+                    
+                    console.log(`Processando atividade ${codAtividade}:`, dados);
+                    
+                    // Encontrar todas as linhas com essa atividade (tenta vários seletores)
+                    let linhas = document.querySelectorAll(`tr[data-eixo="${eixo}"][data-cod-atividade="${codAtividade}"]`);
+                    
+                    // Se não encontrou linhas pelo atributo, tenta pela classe
+                    if (!linhas.length) {
+                        linhas = document.querySelectorAll(`tr[data-cod-atividade="${codAtividade}"]`);
                     }
-                }
-
-                // Define os checkboxes de sim/não
-                if (simInput && naoInput) {
-                    simInput.checked = dados.realizado === true || dados.realizado === 1;
-                    naoInput.checked = dados.realizado === false || dados.realizado === 0;
-                }
-                
-                // Preenche as observações
-                if (obsInput && dados.observacoes) {
-                    obsInput.value = dados.observacoes;
+                    
+                    // Se ainda não encontrou, tenta pela classe e depois filtra pelo código de atividade
+                    if (!linhas.length) {
+                        const todasLinhasEixo = document.querySelectorAll(`.${eixo}-linha`);
+                        
+                        const linhasFiltradas = Array.from(todasLinhasEixo).filter(linha => {
+                            const inputCodigo = linha.querySelector(`input[name$="[cod_atividade]"]`);
+                            return inputCodigo?.value === codAtividade;
+                        });
+                        
+                        if (linhasFiltradas.length) {
+                            console.log(`Encontradas ${linhasFiltradas.length} linhas para ${codAtividade} pela classe`);
+                            linhas = linhasFiltradas;
+                        }
+                    }
+                    
+                    // Converter NodeList para Array para facilitar o processamento
+                    linhas = Array.from(linhas);
+                    
+                    if (!linhas.length) {
+                        console.warn(`Nenhuma linha encontrada para a atividade ${codAtividade} do eixo ${eixo}`);
+                        return;
+                    }
+                    
+                    // CORREÇÃO: Para evitar duplicação, preencher apenas a primeira linha encontrada
+                    // Isso garante que cada código de atividade tenha apenas um registro visual na tela
+                    const linha = linhas[0];
+                    console.log(`Preenchendo apenas a primeira linha encontrada para ${codAtividade} do eixo ${eixo}`);
+                    
+                    // Marcar linhas que já têm dados para evitar duplicidades
+                    linha.setAttribute('data-possui-dados', 'true');
+                    
+                    // Preenche a data de aplicação
+                    const dataInput = linha.querySelector('input[type="date"]');
+                    if (dataInput) {
+                        const dataValor = dados.data_aplicacao || dados.data_inicial;
+                        if (dataValor) {
+                            // Converte a data para o formato YYYY-MM-DD se for DD/MM/YYYY
+                            let dataFormatada = dataValor;
+                            
+                            // Verifica se a data está no formato DD/MM/YYYY
+                            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataValor)) {
+                                const partes = dataValor.split('/');
+                                dataFormatada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                            }
+                            
+                            dataInput.value = dataFormatada;
+                            // Torna o campo não editável
+                            dataInput.setAttribute('readonly', true);
+                            dataInput.classList.add('campo-readonly');
+                            console.log(`Data definida para ${codAtividade} e campo desabilitado:`, dataFormatada);
+                        }
+                    } else {
+                        console.log(`Campo de data não encontrado para ${codAtividade}`);
+                    }
+                    
+                    // Nova implementação para lidar com checkboxes
+                    try {
+                        // Encontrar os checkboxes Sim/Não
+                        const simCheck = linha.querySelector('input[type="checkbox"][name$="[sim_inicial]"]'); 
+                        const naoCheck = linha.querySelector('input[type="checkbox"][name$="[nao_inicial]"]');
+                        
+                        // Só prossegue se ambos os checkboxes forem encontrados
+                        if (simCheck && naoCheck) {
+                            // Define o estado dos checkboxes baseado nos dados
+                            if (dados.sim_inicial !== undefined) {
+                                simCheck.checked = (dados.sim_inicial === '1' || dados.sim_inicial === 1 || dados.sim_inicial === true);
+                            }
+                            
+                            if (dados.nao_inicial !== undefined) {
+                                naoCheck.checked = (dados.nao_inicial === '1' || dados.nao_inicial === 1 || dados.nao_inicial === true);
+                            }
+                            
+                            // Se os valores específicos não foram definidos, tenta usar o campo 'realizado'
+                            if (dados.realizado !== undefined && dados.sim_inicial === undefined && dados.nao_inicial === undefined) {
+                                const valorRealizado = dados.realizado;
+                                if (valorRealizado === 1 || valorRealizado === '1' || valorRealizado === true) {
+                                    simCheck.checked = true;
+                                    naoCheck.checked = false;
+                                } else if (valorRealizado === 0 || valorRealizado === '0' || valorRealizado === false) {
+                                    simCheck.checked = false;
+                                    naoCheck.checked = true;
+                                }
+                            }
+                            
+                            // Dispara eventos change para ambos os checkboxes
+                            simCheck.dispatchEvent(new Event('change'));
+                            naoCheck.dispatchEvent(new Event('change'));
+                            
+                            // Torna os checkboxes readonly
+                            simCheck.disabled = true;
+                            naoCheck.disabled = true;
+                            simCheck.classList.add('checkbox-readonly');
+                            naoCheck.classList.add('checkbox-readonly');
+                            
+                            console.log(`Checkboxes processados e desabilitados para ${codAtividade}`);
+                        } else {
+                            console.log(`Checkboxes não encontrados para ${codAtividade}`);
+                        }
+                    } catch (checkboxError) {
+                        console.error(`Erro ao processar checkboxes para ${codAtividade}:`, checkboxError);
+                    }
+                    
+                    // Preenche as observações (tenta vários seletores)
+                    const obsTextarea = linha.querySelector('textarea[name$="[observacoes]"]');
+                    const obsInput = linha.querySelector('input[type="text"][name$="[observacoes]"]');
+                    const obsEspecifico = document.getElementById(`observacao-${eixo}-${codAtividade}`);
+                    
+                    console.log(`Processando observação para ${codAtividade}:`, { valorObservacao: dados.observacoes });
+                    
+                    // Garantir que incluamos observações mesmo se vazias (diferente de undefined)
+                    if (dados.observacoes !== undefined) {
+                        let observacaoPreenchida = false;
+                        
+                        if (obsTextarea) {
+                            obsTextarea.value = dados.observacoes;
+                            // Tornar não editável
+                            obsTextarea.setAttribute('readonly', true);
+                            obsTextarea.classList.add('campo-readonly');
+                            observacaoPreenchida = true;
+                            console.log(`Observação definida (textarea) para ${codAtividade} e campo desabilitado:`, dados.observacoes);
+                        }
+                        
+                        if (obsInput) {
+                            obsInput.value = dados.observacoes;
+                            // Tornar não editável
+                            obsInput.setAttribute('readonly', true);
+                            obsInput.classList.add('campo-readonly');
+                            observacaoPreenchida = true;
+                            console.log(`Observação definida (input) para ${codAtividade} e campo desabilitado:`, dados.observacoes);
+                        }
+                        
+                        if (obsEspecifico) {
+                            obsEspecifico.value = dados.observacoes;
+                            // Tornar não editável
+                            obsEspecifico.setAttribute('readonly', true);
+                            obsEspecifico.classList.add('campo-readonly');
+                            observacaoPreenchida = true;
+                            console.log(`Observação definida (específico) para ${codAtividade} e campo desabilitado:`, dados.observacoes);
+                        }
+                        
+                        if (!observacaoPreenchida) {
+                            console.log(`Campo de observações não encontrado para ${codAtividade}`);
+                        }
+                    } else {
+                        // Mesmo sem observações, vamos desabilitar os campos
+                        if (obsTextarea) {
+                            obsTextarea.setAttribute('readonly', true);
+                            obsTextarea.classList.add('campo-readonly');
+                        }
+                        if (obsInput) {
+                            obsInput.setAttribute('readonly', true);
+                            obsInput.classList.add('campo-readonly');
+                        }
+                        if (obsEspecifico) {
+                            obsEspecifico.setAttribute('readonly', true);
+                            obsEspecifico.classList.add('campo-readonly');
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Erro ao processar atividade ${codAtividade} do eixo ${eixo}:`, error);
                 }
             });
         };
 
         // Preenche os dados de cada eixo
-        preencherEixo('comunicacao', data.data?.comunicacao);
-        preencherEixo('comportamento', data.data?.comportamento);
-        preencherEixo('socioemocional', data.data?.socioemocional);
+        if (data.data) {
+            console.log('Processando dados recebidos:', data.data);
+            
+            // Verifica se cada eixo existe e processa
+            if (Array.isArray(data.data.comunicacao)) {
+                preencherEixo('comunicacao', data.data.comunicacao);
+            } else {
+                console.warn('Dados de comunicação não estão no formato esperado (array)');
+            }
+            
+            if (Array.isArray(data.data.comportamento)) {
+                preencherEixo('comportamento', data.data.comportamento);
+            } else {
+                console.warn('Dados de comportamento não estão no formato esperado (array)');
+            }
+            
+            if (Array.isArray(data.data.socioemocional)) {
+                preencherEixo('socioemocional', data.data.socioemocional);
+            } else {
+                console.warn('Dados de socioemocional não estão no formato esperado (array)');
+            }
+            
+            // Exibir mensagem ao usuário que os dados estão em modo somente leitura
+            document.getElementById('mensagemModoVisualizacao').style.display = 'block';
+        } else {
+            console.warn('Nenhum dado encontrado na resposta');
+        }
 
         console.log('Dados carregados com sucesso!');
+        
+        // Mostrar mensagem de sucesso
+        if (mensagemSucesso) {
+            mensagemSucesso.textContent = 'Dados carregados com sucesso!';
+            mensagemSucesso.style.display = 'block';
+            
+            // Esconder a mensagem após 5 segundos
+            setTimeout(() => {
+                if (mensagemSucesso) mensagemSucesso.style.display = 'none';
+            }, 5000);
+        }
         return true;
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
-        showMessage(error.message || 'Erro ao carregar os dados salvos', 'danger');
-        return false;
+        
+        // Mostra mensagem de erro para o usuário
+        const mensagemErro = document.getElementById('mensagem-erro');
+        if (mensagemErro) {
+            mensagemErro.textContent = 'Erro ao carregar os dados. ' + (error.message || '');
+            mensagemErro.style.display = 'block';
+            
+            // Esconder a mensagem após 10 segundos
+            setTimeout(() => {
+                mensagemErro.style.display = 'none';
+            }, 10000);
+        }
+        
+        // Garante que o indicador de carregamento seja ocultado mesmo em caso de erro
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+        
+        throw error; // Rejeita a promessa para que o chamador saiba que houve um erro
+    } finally {
+        // Garante que o indicador de carregamento seja sempre ocultado
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
     }
 }
 
@@ -939,81 +1166,125 @@ function formatarDadosFormulario() {
     
     formData.append('aluno_id', alunoId);
     
-    // Coletar dados de comunicação/linguagem
-    const dadosComunicacao = [];
-    document.querySelectorAll('input[name^="comunicacao["]').forEach(input => {
-        const match = input.name.match(/comunicacao\[(\d+)\]\[(\w+)\]/);
-        if (match) {
-            const idx = match[1];
-            const campo = match[2];
-            
-            if (!dadosComunicacao[idx]) {
-                dadosComunicacao[idx] = { cod_atividade: '' };
-            }
-            
-            if (campo === 'cod_atividade') {
-                dadosComunicacao[idx].cod_atividade = input.value;
-            } else if (input.type === 'checkbox') {
-                dadosComunicacao[idx][campo] = input.checked ? 1 : 0;
-            } else {
-                dadosComunicacao[idx][campo] = input.value;
-            }
+    // Função auxiliar para formatar os dados de um eixo específico
+    const formatarDadosEixo = (prefixo) => {
+        const dados = [];
+        
+        // Busca linhas tanto por atributo data-eixo quanto por classe
+        let linhas = document.querySelectorAll(`tr[data-eixo="${prefixo}"]`);
+        if (!linhas.length) {
+            linhas = document.querySelectorAll(`.${prefixo}-linha`);
         }
+        
+        console.log(`Encontradas ${linhas.length} linhas para o eixo ${prefixo}`);
+        
+        linhas.forEach(linha => {
+            // Busca o código da atividade tanto por atributo quanto por input hidden
+            let codAtividade = linha.getAttribute('data-cod-atividade');
+            if (!codAtividade) {
+                const codInput = linha.querySelector('input[name$="[cod_atividade]"]');
+                codAtividade = codInput?.value || null;
+            }
+            
+            if (!codAtividade) {
+                console.log('Linha sem código de atividade detectada, ignorando');
+                return;
+            }
+            
+            console.log(`Processando atividade ${codAtividade} do eixo ${prefixo}`);
+            
+            // Busca os elementos de input
+            const dataAplicacao = linha.querySelector('input[type="date"]')?.value || '';
+            const simInicial = linha.querySelector('input[type="checkbox"][name$="[sim_inicial]"]')?.checked || false;
+            const naoInicial = linha.querySelector('input[type="checkbox"][name$="[nao_inicial]"]')?.checked || false;
+            
+            // Busca observações de todas as possíveis fontes
+            let observacoes = '';
+            
+            // Primeiro tenta textarea
+            const obsTextarea = linha.querySelector('textarea[name$="[observacoes]"]');
+            if (obsTextarea) {
+                observacoes = obsTextarea.value;
+                console.log(`Encontrada observação no textarea para ${codAtividade}: "${observacoes}"`);
+            }
+            
+            // Se não encontrou, tenta input de texto
+            if (observacoes === '' || observacoes === undefined) {
+                const obsInput = linha.querySelector('input[type="text"][name$="[observacoes]"]');
+                if (obsInput) {
+                    observacoes = obsInput.value;
+                    console.log(`Encontrada observação no input para ${codAtividade}: "${observacoes}"`);
+                }
+            }
+            
+            // Por último, tenta buscar por ID específico
+            if (observacoes === '' || observacoes === undefined) {
+                const obsEspecifico = document.getElementById(`observacao-${prefixo}-${codAtividade}`);
+                if (obsEspecifico) {
+                    observacoes = obsEspecifico.value;
+                    console.log(`Encontrada observação pelo ID específico para ${codAtividade}: "${observacoes}"`);
+                }
+            }
+            
+            // Garantir que observacoes seja sempre definido, mesmo que vazio
+            if (observacoes === undefined) observacoes = '';
+            
+            // Determina o valor de 'realizado' baseado nos checkboxes
+            let realizado = null;
+            if (simInicial && !naoInicial) {
+                realizado = 1;
+            } else if (!simInicial && naoInicial) {
+                realizado = 0;
+            }
+            
+            // Adiciona à lista apenas se houver algum dado preenchido
+            const item = {
+                cod_atividade: codAtividade,
+                data_inicial: dataAplicacao || '' // Garantir que nunca seja undefined
+            };
+            
+            // SEMPRE envia o campo observacoes, mesmo que vazio
+            // String vazia ("") permite limpar observações existentes
+            item.observacoes = observacoes;
+            console.log(`Observação para atividade ${codAtividade}: "${observacoes}"`); 
+            
+            // Só adiciona realizado se tiver valor definido
+            if (realizado !== null) {
+                item.realizado = realizado;
+            }
+                
+            dados.push(item);
+            console.log(`Dados formatados para ${codAtividade}:`, item);
+        });
+        
+        return dados;
+    };
+    
+    // Coletar dados de cada eixo
+    const dadosComunicacao = formatarDadosEixo('comunicacao');
+    const dadosComportamento = formatarDadosEixo('comportamento');
+    const dadosSocioemocional = formatarDadosEixo('socioemocional');
+    
+    // Adiciona os dados ao formData como JSON
+    formData.append('comunicacao', JSON.stringify(dadosComunicacao));
+    formData.append('comportamento', JSON.stringify(dadosComportamento));
+    formData.append('socioemocional', JSON.stringify(dadosSocioemocional));
+    
+    console.log('Dados formatados para envio:', {
+        comunicacao: dadosComunicacao,
+        comportamento: dadosComportamento,
+        socioemocional: dadosSocioemocional
     });
     
-    // Coletar dados de comportamento
-    const dadosComportamento = [];
-    document.querySelectorAll('input[name^="comportamento["]').forEach(input => {
-        const match = input.name.match(/comportamento\[(\d+)\]\[(\w+)\]/);
-        if (match) {
-            const idx = match[1];
-            const campo = match[2];
-            
-            if (!dadosComportamento[idx]) {
-                dadosComportamento[idx] = { cod_atividade: '' };
-            }
-            
-            if (campo === 'cod_atividade') {
-                dadosComportamento[idx].cod_atividade = input.value;
-            } else if (input.type === 'checkbox') {
-                dadosComportamento[idx][campo] = input.checked ? 1 : 0;
-            } else {
-                dadosComportamento[idx][campo] = input.value;
-            }
-        }
-    });
-    
-    // Coletar dados socioemocionais
-    const dadosSocioemocional = [];
-    document.querySelectorAll('input[name^="socioemocional["]').forEach(input => {
-        const match = input.name.match(/socioemocional\[(\d+)\]\[(\w+)\]/);
-        if (match) {
-            const idx = match[1];
-            const campo = match[2];
-            
-            if (!dadosSocioemocional[idx]) {
-                dadosSocioemocional[idx] = { cod_atividade: '' };
-            }
-            
-            if (campo === 'cod_atividade') {
-                dadosSocioemocional[idx].cod_atividade = input.value;
-            } else if (input.type === 'checkbox') {
-                dadosSocioemocional[idx][campo] = input.checked ? 1 : 0;
-            } else {
-                dadosSocioemocional[idx][campo] = input.value;
-            }
-        }
-    });
-    
-    // Remover índices vazios dos arrays
+    // Remover itens vazios dos arrays
     const comunicacaoFiltrado = dadosComunicacao.filter(item => item && item.cod_atividade);
     const comportamentoFiltrado = dadosComportamento.filter(item => item && item.cod_atividade);
     const socioemocionalFiltrado = dadosSocioemocional.filter(item => item && item.cod_atividade);
     
-    // Adicionar os dados ao formData
-    formData.append('comunicacao', JSON.stringify(comunicacaoFiltrado));
-    formData.append('comportamento', JSON.stringify(comportamentoFiltrado));
-    formData.append('socioemocional', JSON.stringify(socioemocionalFiltrado));
+    // Atualizar os dados no formData com os arrays filtrados
+    formData.set('comunicacao', JSON.stringify(comunicacaoFiltrado));
+    formData.set('comportamento', JSON.stringify(comportamentoFiltrado));
+    formData.set('socioemocional', JSON.stringify(socioemocionalFiltrado));
     
     return formData;
 }
@@ -1172,39 +1443,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return formData;
     }
     
-    // Função auxiliar para formatar os dados de um eixo específico
-    function formatarDadosEixo(eixo) {
-        const dados = [];
-        const linhas = document.querySelectorAll(`.${eixo}-linha`);
-        
-        linhas.forEach(linha => {
-            const codAtividade = linha.querySelector('input[name$="[cod_atividade]"]')?.value;
-            if (!codAtividade) return;
-            
-            const dataAplicacao = linha.querySelector('input[type="date"]')?.value || '';
-            const simInicial = linha.querySelector('input[type="checkbox"][name$="[sim_inicial]"]')?.checked || false;
-            const naoInicial = linha.querySelector('input[type="checkbox"][name$="[nao_inicial]"]')?.checked || false;
-            const observacoes = linha.querySelector('input[type="text"][name$="[observacoes]"]')?.value || '';
-            
-            // Determina o valor de 'realizado' baseado nos checkboxes
-            let realizado = null;
-            if (simInicial && !naoInicial) realizado = 1;
-            else if (!simInicial && naoInicial) realizado = 0;
-            // Se ambos marcados ou ambos desmarcados, não envia realizado
-            
-            // Adiciona à lista apenas se houver algum dado preenchido
-            if (dataAplicacao || realizado !== null || observacoes) {
-                dados.push({
-                    cod_atividade: codAtividade,
-                    data_inicial: dataAplicacao,
-                    realizado: realizado,
-                    observacoes: observacoes
-                });
-            }
-        });
-        
-        return dados;
-    }
+    // Já temos uma implementação desta função na formatarDadosFormulario()
     
     // Função para exibir mensagem de feedback ao usuário
     function showMessage(message, type = 'success') {
