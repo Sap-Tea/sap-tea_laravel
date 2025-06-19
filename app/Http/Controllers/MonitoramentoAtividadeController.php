@@ -114,6 +114,7 @@ class MonitoramentoAtividadeController extends Controller
 
         $faseCadastro = $this->obterFaseAtual();
         $registrosSalvos = 0;
+        $timestampAtual = now()->timestamp;
 
         foreach ($dados as $indice => $atividade) {
             // Verifica se há um código de atividade válido
@@ -132,39 +133,74 @@ class MonitoramentoAtividadeController extends Controller
                 $realizado = 0; // false no banco
             }
 
+            // Log dos dados recebidos
+            Log::debug("Dados recebidos para o eixo {$eixo} - Atividade {$codAtividade}", [
+                'dados_completos' => $atividade,
+                'observacoes_recebidas' => $atividade['observacoes'] ?? 'N/A',
+                'tipo_observacoes' => gettype($atividade['observacoes'] ?? null)
+            ]);
+
             // Prepara os dados para salvar
             $dadosSalvar = [
                 'aluno_id' => $alunoId,
                 'cod_atividade' => $codAtividade,
                 'fase_cadastro' => $faseCadastro,
-                'data_aplicacao' => $atividade['data_inicial'] ?? null,
+                'data_aplicacao' => $atividade['data_inicial'] ?? now()->toDateString(),
                 'realizado' => $realizado,
-                'observacoes' => $atividade['observacoes'] ?? null
+                'observacoes' => $atividade['observacoes'] ?? '', // Força string vazia ao invés de null
+                'registro_timestamp' => $timestampAtual // Adiciona o timestamp atual
             ];
+            
+            Log::debug('Dados preparados para salvar', [
+                'dados_salvar' => $dadosSalvar,
+                'tem_observacoes' => isset($dadosSalvar['observacoes']),
+                'valor_observacoes' => $dadosSalvar['observacoes']
+            ]);
 
-            // Remove valores vazios
-            $dadosSalvar = array_filter($dadosSalvar, function($value) {
-                return $value !== null && $value !== '';
-            });
+            // Garante que observacoes sempre exista no array, mesmo que vazio
+            if (!array_key_exists('observacoes', $dadosSalvar)) {
+                $dadosSalvar['observacoes'] = '';
+                Log::debug('Campo observacoes não existia, foi adicionado como string vazia');
+            } else {
+                Log::debug('Campo observacoes existe', [
+                    'valor' => $dadosSalvar['observacoes'],
+                    'tipo' => gettype($dadosSalvar['observacoes'])
+                ]);
+            }
+
+            // Remove valores vazios, exceto os campos obrigatórios
+            $dadosSalvar = array_filter($dadosSalvar, function($value, $key) {
+                $camposObrigatorios = ['registro_timestamp', 'observacoes', 'aluno_id', 'cod_atividade', 'fase_cadastro'];
+                return ($value !== null && $value !== '') || in_array($key, $camposObrigatorios);
+            }, ARRAY_FILTER_USE_BOTH);
 
             // Log para debug
             Log::info("Salvando dados para o eixo: {$eixo}", [
                 'aluno_id' => $alunoId, 
                 'cod_atividade' => $codAtividade,
-                'dados' => $dadosSalvar
+                'dados' => $dadosSalvar,
+                'tem_observacoes' => array_key_exists('observacoes', $dadosSalvar)
             ]);
 
-            // Verifica se há dados para salvar
-            if (count($dadosSalvar) > 3) { // Mais que apenas as chaves de identificação
+            // Verifica se há dados para salvar (considera que sempre terá pelo menos os campos obrigatórios)
+            $camposRelevantes = array_diff(array_keys($dadosSalvar), ['aluno_id', 'cod_atividade', 'fase_cadastro']);
+            if (!empty($camposRelevantes)) {
                 try {
-                    $model::updateOrCreate(
-                        [
-                            'aluno_id' => $alunoId,
-                            'cod_atividade' => $codAtividade,
-                            'fase_cadastro' => $faseCadastro
-                        ],
-                        $dadosSalvar
-                    );
+                    // Para o eixo de comunicação, usamos uma chave única que inclui o timestamp
+                    if ($eixo === 'comunicacao') {
+                        // Cria um novo registro com o timestamp atual
+                        $model::create($dadosSalvar);
+                    } else {
+                        // Para outros eixos, mantém o comportamento original
+                        $model::updateOrCreate(
+                            [
+                                'aluno_id' => $alunoId,
+                                'cod_atividade' => $codAtividade,
+                                'fase_cadastro' => $faseCadastro
+                            ],
+                            $dadosSalvar
+                        );
+                    }
                     $registrosSalvos++;
                 } catch (\Exception $e) {
                     Log::error("Erro ao salvar atividade do eixo $eixo: " . $e->getMessage(), [
@@ -173,6 +209,18 @@ class MonitoramentoAtividadeController extends Controller
                         'dados' => $dadosSalvar,
                         'trace' => $e->getTraceAsString()
                     ]);
+                    
+                    // Se for erro de chave duplicada no eixo de comunicação, tenta com um novo timestamp
+                    if ($e->getCode() == 23000 && $eixo === 'comunicacao') { // Código para violação de chave única
+                        try {
+                            $dadosSalvar['registro_timestamp'] = now()->timestamp + 1; // Adiciona 1 segundo
+                            $model::create($dadosSalvar);
+                            $registrosSalvos++;
+                            Log::info("Registro salvo com sucesso após ajuste do timestamp");
+                        } catch (\Exception $e2) {
+                            Log::error("Erro ao salvar após ajuste do timestamp: " . $e2->getMessage());
+                        }
+                    }
                 }
             }
         }

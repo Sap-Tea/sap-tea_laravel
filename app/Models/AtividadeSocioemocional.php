@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class AtividadeSocioemocional extends Model
 {
@@ -24,7 +25,17 @@ class AtividadeSocioemocional extends Model
         'data_aplicacao',
         'realizado',
         'observacoes',
-        'fase_cadastro'
+        'fase_cadastro',
+        'registro_timestamp'  // Adicionado o campo registro_timestamp
+    ];
+    
+    /**
+     * Valores padrão para os atributos
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'registro_timestamp' => null,
     ];
     
     /**
@@ -36,7 +47,8 @@ class AtividadeSocioemocional extends Model
         'data_aplicacao' => 'date',
         'realizado' => 'boolean',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'registro_timestamp' => 'integer'  // bigint no banco, inteiro no PHP
     ];
     
     /**
@@ -45,5 +57,43 @@ class AtividadeSocioemocional extends Model
     public function aluno()
     {
         return $this->belongsTo(Aluno::class, 'aluno_id');
+    }
+    
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            Log::debug('Criando registro AtividadeSocioemocional', [
+                'dados' => $model->toArray(),
+                'attributes' => $model->getAttributes(),
+                'observacoes' => $model->observacoes,
+                'exists' => $model->exists,
+                'isDirty' => $model->isDirty('observacoes'),
+                'original' => $model->getOriginal('observacoes', 'N/A')
+            ]);
+        });
+        
+        static::created(function ($model) {
+            Log::debug('Registro AtividadeSocioemocional criado', [
+                'id' => $model->id,
+                'observacoes' => $model->observacoes,
+                'attributes' => $model->getAttributes()
+            ]);
+        });
+        
+        static::saving(function ($model) {
+            Log::debug('Salvando registro AtividadeSocioemocional', [
+                'dados' => $model->toArray(),
+                'observacoes' => $model->observacoes,
+                'isDirty_observacoes' => $model->isDirty('observacoes'),
+                'original_observacoes' => $model->getOriginal('observacoes', 'N/A')
+            ]);
+        });
     }
 }

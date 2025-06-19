@@ -1237,24 +1237,33 @@ function formatarDadosFormulario() {
                 realizado = 0;
             }
             
-            // Adiciona à lista apenas se houver algum dado preenchido
+            // Cria o item com os dados básicos
             const item = {
                 cod_atividade: codAtividade,
-                data_inicial: dataAplicacao || '' // Garantir que nunca seja undefined
+                data_inicial: dataAplicacao || '', // Garantir que nunca seja undefined
+                observacoes: observacoes // Sempre inclui observações, mesmo que vazias
             };
             
-            // SEMPRE envia o campo observacoes, mesmo que vazio
-            // String vazia ("") permite limpar observações existentes
-            item.observacoes = observacoes;
-            console.log(`Observação para atividade ${codAtividade}: "${observacoes}"`); 
-            
-            // Só adiciona realizado se tiver valor definido
+            // Adiciona o campo 'realizado' apenas se tiver valor definido
             if (realizado !== null) {
                 item.realizado = realizado;
             }
-                
-            dados.push(item);
+            
             console.log(`Dados formatados para ${codAtividade}:`, item);
+            
+            // Verifica se há dados relevantes para salvar
+            const temDadosRelevantes = (
+                (realizado !== null) ||  // Tem um valor de realizado
+                (dataAplicacao && dataAplicacao.trim() !== '') || // Tem data de aplicação
+                (observacoes && observacoes.trim() !== '')  // Tem observações (mesmo que vazias, o backend trata)
+            );
+            
+            if (temDadosRelevantes) {
+                dados.push(item);
+                console.log(`Item adicionado para ${codAtividade}`);
+            } else {
+                console.log(`Item ignorado para ${codAtividade} - sem dados relevantes`);
+            }
         });
         
         return dados;

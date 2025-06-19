@@ -24,7 +24,17 @@ class AtividadeComunicacao extends Model
         'data_aplicacao',
         'realizado',
         'observacoes',
-        'fase_cadastro'
+        'fase_cadastro',
+        'registro_timestamp'  // Adicionado o campo registro_timestamp
+    ];
+    
+    /**
+     * Valores padrão para os atributos
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'registro_timestamp' => null,
     ];
     
     /**
@@ -36,8 +46,24 @@ class AtividadeComunicacao extends Model
         'data_aplicacao' => 'date',
         'realizado' => 'boolean',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'registro_timestamp' => 'integer'  // bigint no banco, inteiro no PHP
     ];
+    
+    /**
+     * Boot do modelo
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Garante que o registro_timestamp seja definido ao criar um novo registro
+            if (empty($model->registro_timestamp)) {
+                $model->registro_timestamp = now()->timestamp;
+            }
+        });
+    }
     
     /**
      * Relacionamento com o modelo Aluno
