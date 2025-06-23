@@ -96,7 +96,7 @@
     </div>
     <div class="page" style="margin-bottom: 110px; display: flex; justify-content: flex-end; width: 100%;">
         <img src="{{ asset('img/sap_logo2.png') }}" alt="Imagem representativa">
-        <div class="formLogin" style="max-width: 420px; min-width: 300px; padding: 10px 12px 6px 12px; box-sizing: border-box; background: #fff; border-radius: 16px; box-shadow: 0 4px 18px #0001; display: flex; flex-direction: column; align-items: center; margin-right: 200px; margin-top: 40px;">
+        <div class="formLogin" style="max-width: 600px; min-width: 360px; padding: 18px 32px 10px 32px; box-sizing: border-box; background: #fff; border-radius: 16px; box-shadow: 0 4px 18px #0001; display: flex; flex-direction: column; align-items: center; margin-right: 200px; margin-top: 40px;">
             <img src="{{ asset('img/logo_sap.png') }}" alt="Imagem de Login" class="logoSap">
             <div class="login-header">
         <h2>Bem-vindo ao SAP-TEA</h2>
