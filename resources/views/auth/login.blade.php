@@ -94,9 +94,9 @@
         </a>
         </a>
     </div>
-    <div class="page">
+    <div class="page" style="margin-bottom: 110px; display: flex; justify-content: flex-end; width: 100%;">
         <img src="{{ asset('img/sap_logo2.png') }}" alt="Imagem representativa">
-        <div class="formLogin">
+        <div class="formLogin" style="max-width: 420px; min-width: 300px; padding: 10px 12px 6px 12px; box-sizing: border-box; background: #fff; border-radius: 16px; box-shadow: 0 4px 18px #0001; display: flex; flex-direction: column; align-items: center; margin-right: 200px; margin-top: 40px;">
             <img src="{{ asset('img/logo_sap.png') }}" alt="Imagem de Login" class="logoSap">
             <div class="login-header">
         <h2>Bem-vindo ao SAP-TEA</h2>
@@ -166,6 +166,11 @@
     <div class="login-links" style="margin-top: 22px;">
         <a href="{{ url('/primeiro-acesso') }}" class="link-senha" style="font-size:1.02em;font-weight:bold;">Primeiro acesso? Clique aqui para cadastrar sua senha</a>
     </div>
+    <!-- Logos nas extremidades, na mesma linha, abaixo do link 'Primeiro acesso' -->
+    <div style="margin: 20px auto 0 auto; max-width: 420px; min-width: 300px; width: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+      <img src="{{ asset('img/logo_tea.png') }}" alt="Logo TEA" style="width: 150px; height: auto; object-fit: contain;">
+      <img src="{{ asset('img/logo_foccus.png') }}" alt="Logo Foccus" style="width: 150px; height: auto; object-fit: contain;">
+    </div>
     @if ($errors->any())
         <div class="notificacao erro" id="notificacao">
             @foreach ($errors->all() as $error)
@@ -217,8 +222,10 @@
             color: #003a75;
         }
     </style>
+
         </div>
         <div class="notificacao" id="notificacao"></div>
     </div>
+
 </body>
 </html>
