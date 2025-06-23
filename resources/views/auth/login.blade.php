@@ -86,9 +86,7 @@
  <!-- Barra de navegação -->
  <div class="navbar">
         <a href="https://wa.me/5511992312745" target="_blank" style="text-decoration: none; color: inherit;">
-            <strong>Não consegue acessar sua conta?</strong> Entre em contato com o suporte 
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 20px; height: 20px; margin-left: 5px; vertical-align: middle;">
-            <span style="font-weight: bold;">+55 11 99231-2745</span>
+            Não consegue acessar sua conta? Entre em contato com nosso suporte: (11) 9 9231-2745 ou suporte@foccuseditora.com.br
         </a>
         
         </a>
@@ -110,7 +108,7 @@
     <form method="POST" action="{{ route('login') }}" class="login-form" autocomplete="on" onsubmit="salvarLoginSenha()">
         @csrf
         <div class="form-group">
-            <label for="email_func">E-mail</label>
+            <label for="email_func">Usuário</label>
             <input type="email" name="email_func" id="email_func" placeholder="Digite seu e-mail" required autofocus value="{{ old('email_func') }}" autocomplete="username">
         </div>
         <div class="form-group">
