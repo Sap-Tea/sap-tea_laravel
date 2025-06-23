@@ -1,0 +1,152 @@
+body {
+    background-image: url('../img/tela_azul.jpg'); /* Caminho da imagem de fundo em Laravel */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    margin: 0;
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+}
+
+.logos-footer {
+    position: fixed;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 1000;
+}
+
+.notificacao {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: white;
+    display: none;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s ease-in-out;
+}
+.notificacao.sucesso {
+    background-color: #28a745;
+    display: block;
+}
+.notificacao.erro {
+    background-color: #dc3545;
+    display: block;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.login-instrucoes {
+    font-size: 1.05em;
+    color: #333;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+.login-form {
+    margin-top: 10px;
+}
+.form-group {
+    margin-bottom: 14px;
+}
+.btn-acesso {
+    width: 100%;
+    background: #0056b3;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1em;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+.btn-acesso:hover {
+    background: #003a75;
+}
+.login-links {
+    text-align: center;
+    margin-top: 5px;
+}
+.link-senha {
+    color: #0056b3;
+    text-decoration: underline;
+    font-size: 1em;
+    white-space: nowrap;
+}
+.link-senha:hover {
+    color: #003a75;
+}
+
+.formLogin {
+    max-width: 600px;
+    min-width: 360px;
+    padding: 18px 32px 10px 32px;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 4px 18px #0001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 200px;
+    margin-top: 40px;
+    /* Bordas coloridas apenas em cima e embaixo */
+    border-top: 16px solid;
+    border-bottom: 16px solid;
+    border-image-source: linear-gradient(90deg, #f9b233 0%, #3ec6e0 50%, #4bb543 100%);
+    border-image-slice: 1;
+    border-left: none;
+    border-right: none;
+}
+
+.logos-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 28px;
+    margin-top: -120px !important;
+    width: 600px;
+    margin-left: auto;
+    margin-right: 200px;
+}
+
+.logos-container img:first-child {
+    width: 155px;
+}
+.logos-container img:last-child {
+    width: 120px;
+}
+
+.navbar {
+    width: 100vw; /* ocupa toda a largura da janela */
+    background: #fff;
+    color: #1a1a1a;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 1.1em;
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 400;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    border-top: 1px solid #e0e0e0;
+}
+.navbar a {
+    color: #1a1a1a;
+    text-decoration: none;
+    font-weight: 400;
+}
+.navbar a {
+    color: #1a1a1a;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 1.1em; /* Fonte maior */
+    white-space: nowrap;
+}
