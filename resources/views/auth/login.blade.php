@@ -55,9 +55,9 @@
         </a>
     </div>
     
-    <div class="page" style="margin-bottom: 20px; display: flex; justify-content: flex-end; width: 100%;">
+    <div class="page">
         <img src="{{ asset('img/sap_logo2.png') }}" alt="Imagem representativa">
-        <div class="formLogin" style="max-width: 600px; min-width: 360px; padding: 18px 32px 10px 32px; box-sizing: border-box; background: #fff; border-radius: 16px; box-shadow: 0 4px 18px #0001; display: flex; flex-direction: column; align-items: center; margin-right: 200px; margin-top: 40px;">
+        <div class="formLogin">
             <div class="login-header">
         <h2>bem-vindo</h2>
         <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" class="logo-inside">
@@ -78,11 +78,11 @@
             <label for="password">Senha</label>
             <input type="password" name="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
         </div>
-        <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
-            <input type="checkbox" name="remember" id="remember" style="margin-right: 7px;">
-            <label for="remember" style="margin-bottom: 0; font-size: 1em; cursor: pointer;">Lembre-me nesta máquina</label>
-            <input type="checkbox" id="mostrarSenhaLogin" onclick="mostrarOcultarSenhaLogin()" style="margin-left: 16px;">
-            <label for="mostrarSenhaLogin" style="font-size:0.97em;cursor:pointer;margin-left:2px;">Mostrar senha</label>
+        <div class="form-group">
+            <input type="checkbox" name="remember" id="remember">
+            <label for="remember">Lembre-me nesta máquina</label>
+            <input type="checkbox" id="mostrarSenhaLogin" onclick="mostrarOcultarSenhaLogin()">
+            <label for="mostrarSenhaLogin">Mostrar senha</label>
         </div>
         <script>
             function mostrarOcultarSenhaLogin() {
