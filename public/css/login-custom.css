@@ -40,6 +40,11 @@ body {
     display: block;
 }
 
+.logo-inside {
+    width: 140px;
+    margin-bottom: 12px;
+}
+
 .login-header {
     text-align: center;
     margin-bottom: 20px;
@@ -110,7 +115,7 @@ body {
     justify-content: space-between;
     align-items: center;
     gap: 28px;
-    margin-top: -120px !important;
+    margin-top: -80px !important;
     width: 600px;
     margin-left: auto;
     margin-right: 200px;

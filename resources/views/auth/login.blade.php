@@ -60,6 +60,7 @@
         <div class="formLogin" style="max-width: 600px; min-width: 360px; padding: 18px 32px 10px 32px; box-sizing: border-box; background: #fff; border-radius: 16px; box-shadow: 0 4px 18px #0001; display: flex; flex-direction: column; align-items: center; margin-right: 200px; margin-top: 40px;">
             <div class="login-header">
         <h2>bem-vindo</h2>
+        <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" class="logo-inside">
         <p class="login-instrucoes">Acesse com seu e-mail institucional e senha cadastrada.<br>Se for o <strong>primeiro acesso</strong>, clique no link abaixo para cadastrar sua senha.</p>
     </div>
     @if (session('status'))
