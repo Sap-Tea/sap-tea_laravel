@@ -272,9 +272,15 @@
                         <i class="fa-solid fa-people-group"></i> Turma Supergando
                     </a>
                 </li>
+                <li>
+                    <a href="#" id="assistirVideoLink" class="menu-link text-primary">
+                        <i class="fa-solid fa-circle-play"></i> Assistir vídeo de boas-vindas
+                    </a>
+                </li>
             </ul>
             <div style="font-size:13px;color:#555;margin:15px;">
-                <i class="fa-solid fa-circle-info"></i> Clique em um dos materiais acima para acessar e baixar os arquivos no Google Drive.
+                <i class="fa-solid fa-circle-info"></i> Clique em um dos materiais acima para acessar e baixar os arquivos no Google Drive.<br>
+                <span style="color:#1976d2;cursor:pointer;">Ou <b>assista o vídeo de boas-vindas</b> a qualquer momento!</span>
             </div>
         </div>
 
@@ -378,6 +384,15 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('videoModal')) {
                 showWelcomeVideo();
+                // Permitir abrir o vídeo a qualquer momento pelo link
+                var link = document.getElementById('assistirVideoLink');
+                if (link) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        var modal = new bootstrap.Modal(document.getElementById('videoModal'));
+                        modal.show();
+                    });
+                }
             }
         });
     </script>
