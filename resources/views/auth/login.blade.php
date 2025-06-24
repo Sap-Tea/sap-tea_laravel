@@ -148,5 +148,9 @@
 <div class="notificacao" id="notificacao"></div>
 
 
+    <script>
+        // Limpa sessionStorage ao acessar a tela de login
+        sessionStorage.clear();
+    </script>
 </body>
 </html>
