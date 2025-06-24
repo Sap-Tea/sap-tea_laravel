@@ -290,6 +290,39 @@
             <!-- Área onde o conteúdo dos formulários será carregado -->
             <div id="main-content">
                 @yield('content')
+
+                <!-- Modal do Vídeo de Boas-Vindas -->
+                <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true" data-bs-backdrop="static">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="videoModalLabel">Bem-vindo ao Sistema SAP-TEA</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="d-flex justify-content-center align-items-center w-100">
+                                    <div class="ratio ratio-16x9" style="width:100%; max-width:700px;">
+                                        <video id="videoPlayer" controls playsinline style="width:100%; height:100%; object-fit:cover;">
+                                            <source src="{{ asset('videos/exemplo.mp4') }}" type="video/mp4">
+                                            Seu navegador não suporta o elemento de vídeo.
+                                        </video>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dontShowAgain">
+                                        <label class="form-check-label" for="dontShowAgain">
+                                            Não mostrar este vídeo novamente
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -325,6 +358,66 @@
                     }
                 }
             });
+        });
+    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts do Vídeo -->
+    <script>
+        // Função para verificar se o Bootstrap está carregado
+        function isBootstrapLoaded() {
+            return typeof bootstrap !== 'undefined' && typeof bootstrap.Modal !== 'undefined';
+        }
+
+        // Função para mostrar o modal
+        function showWelcomeVideo() {
+            // Verifica se o usuário já viu o vídeo
+            let videoSeen = localStorage.getItem('video_seen');
+            console.log('Bootstrap:', typeof bootstrap, 'Modal:', typeof bootstrap.Modal, 'videoSeen:', videoSeen);
+
+            // Se o vídeo não foi visto ainda
+            if (!videoSeen) {
+                // Espera o Bootstrap carregar
+                if (isBootstrapLoaded()) {
+                    // Mostra o modal após 2 segundos
+                    setTimeout(function() {
+                        var modal = new bootstrap.Modal(document.getElementById('videoModal'));
+                        if (modal) {
+                            console.log('Mostrando modal do vídeo!');
+                            modal.show();
+                        } else {
+                            console.error('Não foi possível instanciar o modal!');
+                        }
+                    }, 2000);
+
+                    // Quando o modal é fechado
+                    document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
+                        // Se o usuário marcou para não mostrar novamente
+                        if (document.getElementById('dontShowAgain').checked) {
+                            localStorage.setItem('video_seen', 'true');
+                        }
+                    });
+                } else {
+                    console.error('Bootstrap não está carregado');
+                }
+            }
+        }
+
+        // Inicializa quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verifica se o modal existe
+            if (document.getElementById('videoModal')) {
+                showWelcomeVideo();
+                // Botão de teste para forçar o modal
+                document.getElementById('testModal').addEventListener('click', function() {
+                    if (isBootstrapLoaded()) {
+                        var modal = new bootstrap.Modal(document.getElementById('videoModal'));
+                        modal.show();
+                    } else {
+                        alert('Bootstrap não está carregado!');
+                    }
+                });
+            }
         });
     </script>
     @yield('scripts')

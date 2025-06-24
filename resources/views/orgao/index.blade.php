@@ -231,6 +231,55 @@ a.btn.btn-secondary:hover {
 });
 </script>
 
+    @include('partials.video-modal')
+
+    <!-- Scripts do Modal -->
+    <script>
+        // Inicializa o modal quando a página carrega
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verifica se já existe um modal aberto
+            if (document.querySelector('.modal.show')) {
+                return;
+            }
+
+            // Se o usuário já viu o vídeo, não mostra o modal
+            if (localStorage.getItem('video_seen')) {
+                return;
+            }
+
+            // Mostra o modal após 2 segundos
+            setTimeout(function() {
+                var modal = new bootstrap.Modal(document.getElementById('videoModal'));
+                modal.show();
+            }, 2000);
+        });
+    </script>
+
+    <style>
+        .video-container {
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        video {
+            border-radius: 4px;
+            background: #000;
+        }
+    </style>
+
+    <script>
+        // Adicionando controles adicionais
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('videoPlayer');
+            
+            // Atualizando o tempo do vídeo
+            video.addEventListener('timeupdate', function() {
+                const progress = (video.currentTime / video.duration) * 100;
+                document.getElementById('progress').style.width = progress + '%';
+            });
+        });
+    </script>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
