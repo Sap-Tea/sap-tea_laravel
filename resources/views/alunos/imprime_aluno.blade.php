@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>Relação dos Alunos</h2>
+    <h2>Relação dos estudantes</h2>
 
     @if(isset($professor_nome))
     <div class="alert alert-info" style="font-size:1.2em;">
@@ -26,7 +26,7 @@
     <!-- Formulário de Pesquisa -->
     <form id = "pesquisaForm" method="POST" action="{{ route('inserir_perfil') }}">
         <div class="input-group mb-3">
-            <input type="text" name="nome" class="form-control" placeholder="Pesquisar por aluno"
+            <input type="text" name="nome" class="form-control" placeholder="Pesquisar por estudante"
                    value="{{ request('nome') }}">
             <button id="pesquisarBtn" class="btn btn-primary" type="submit">Pesquisar</button>
 
@@ -54,8 +54,8 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
         <thead>
             <tr>
                 <th>#</th>
-                <th>RA do Aluno</th>
-                <th>Nome do Aluno</th>
+                <th>RA do estudante</th>
+                <th>Nome do estudante</th>
                 <th>Responsável</th>
                 <th>Tel. Responsável</th>
                 <th>Email</th>
@@ -99,7 +99,7 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
             @empty
                 <!-- Caso não existam alunos -->
                 <tr>
-                    <td colspan="8" class="text-center">Nenhum aluno encontrado.</td>
+                    <td colspan="8" class="text-center">Nenhum estudante encontrado.</td>
                 </tr>
             @endforelse
         </tbody>

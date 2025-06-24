@@ -1,6 +1,6 @@
 @extends('index')
 
-@section('title', 'Monitoramento do Aluno')
+@section('title', 'Monitoramento do estudante')
 
 @section('styles')
 <style>
@@ -457,7 +457,7 @@ if ($total_atividades_geral > 0) {
 
 @if(!isset($alunoDetalhado) || empty($alunoDetalhado))
     <div style="background: #ffdddd; color: #a00; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-        <strong>Erro:</strong> Não foi possível carregar os dados do aluno. Por favor, acesse o formulário pela rota correta ou verifique se o aluno existe.
+        <strong>Erro:</strong> Não foi possível carregar os dados do estudante. Por favor, acesse o formulário pela rota correta ou verifique se o estudante existe.
     </div>
 @else
     <div class="monitoring-container">
@@ -492,7 +492,7 @@ if ($total_atividades_geral > 0) {
         <input type="text" value="{{ $detalhe->esc_razao_social ?? '-' }}" readonly />
       </label>
       <label>
-        Nome do Aluno:
+        Nome do estudante:
         <input type="text" value="{{ $detalhe->alu_nome ?? '-' }}" readonly />
       </label>
       <label>
@@ -538,7 +538,7 @@ if ($total_atividades_geral > 0) {
       <p><strong>Caro educador,</strong></p>
       <p>Por favor, registre as atividades nas datas mencionadas e realize a devida anotação no quadro.  
       Se necessário, utilize este espaço para marcar a aplicação e observações pertinentes.  
-      Após finalizar o processo, você deverá registrar no Suporte TEA Digital o cenário atual do aluno.</p>
+      Após finalizar o processo, você deverá registrar no Suporte TEA Digital o cenário atual do estudante.</p>
       <p><em>Observação: Em caso de dúvidas, consulte o suporte técnico ou administrativo para orientação.</em></p>
     </div>
     
@@ -553,7 +553,7 @@ if ($total_atividades_geral > 0) {
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:15px;"
     ><div class="table-title" style="font-size:20px; color:#b28600; text-align:center;">Eixo Comunicação/Linguagem</div>
     @php
-        // Determina o ID do aluno de forma segura
+        // Determina o ID do estudante de forma segura
         $alunoId = null;
         if (is_array($alunoDetalhado) && isset($alunoDetalhado[0]) && isset($alunoDetalhado[0]->alu_id)) {
             $alunoId = $alunoDetalhado[0]->alu_id;
@@ -845,7 +845,7 @@ if ($total_atividades_geral > 0) {
                     console.error('Erro ao carregar dados do monitoramento:', error);
                 });
         } else {
-            console.error('ID do aluno não encontrado');
+            console.error('ID do estudante não encontrado');
         }
     });
 </script>
@@ -854,8 +854,8 @@ if ($total_atividades_geral > 0) {
 // Função para carregar os dados salvos do monitoramento
 async function carregarDadosMonitoramento(alunoId) {
     if (!alunoId) {
-        console.error('ID do aluno não fornecido');
-        return Promise.reject('ID do aluno não fornecido');
+        console.error('ID do estudante não fornecido');
+        return Promise.reject('ID do estudante não fornecido');
     }
 
     const loadingIndicator = document.getElementById('loading-indicator');
@@ -863,7 +863,7 @@ async function carregarDadosMonitoramento(alunoId) {
     const mensagemSucesso = document.getElementById('mensagem-sucesso');
 
     try {
-        console.log(`Carregando dados do monitoramento para o aluno ${alunoId}...`);
+        console.log(`Carregando dados do monitoramento para o estudante ${alunoId}...`);
         
         // Mostrar indicador de carregamento
         if (loadingIndicator) loadingIndicator.style.display = 'block';
@@ -1160,7 +1160,7 @@ function formatarDadosFormulario() {
     const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
     
     if (!alunoId) {
-        console.error('ID do aluno não encontrado');
+        console.error('ID do estudante não encontrado');
         return null;
     }
     

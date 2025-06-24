@@ -27,11 +27,11 @@
             
             
             <div class="form-group">
-                <label>Nome do Aluno:</label>
+                <label>Nome do estudante:</label>
                 <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
             </div>
             <div class="form-group">
-                        <label>RA do Aluno:</label>
+                        <label>RA do estudante:</label>
                         <input type="text" name="alu_ra" value="{{ $aluno->alu_ra }}" readonly>
                     </div>
 
@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Idade do Aluno:</label>
+                    <label>Idade do estudante:</label>
                     <input type="text" name="alu_idade" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} anos" readonly>
                 </div>
             </div>
@@ -391,7 +391,7 @@
 
             <!-- Botões -->
             <div class="button-group">
-                <button type="submit" class="btn btn-primary" id="confirmar-alteracao" onclick="return confirm('Tem certeza que deseja atualizar o perfil do aluno?')">Confirma Alteração</button>
+                <button type="submit" class="btn btn-primary" id="confirmar-alteracao" onclick="return confirm('Tem certeza que deseja atualizar o perfil do estudante?')">Confirma Alteração</button>
                 <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
                 <button type="button" class="pdf-button">Gerar PDF</button>
             </div>
@@ -401,7 +401,7 @@
     </div>
     @else
         <!-- Caso nenhum aluno esteja selecionado -->
-        <p>Nenhum aluno foi selecionado. Por favor, selecione um aluno para visualizar os dados.</p>
+        <p>Nenhum estudante foi selecionado. Por favor, selecione um estudante para visualizar os dados.</p>
     @endif
 </div>
 
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Confirmação antes de enviar
-        if (!confirm('Tem certeza que deseja atualizar o perfil do aluno?')) {
+        if (!confirm('Tem certeza que deseja atualizar o perfil do estudante?')) {
             e.preventDefault();
             return false;
         }
@@ -539,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             
             <div class="form-group">
-                <label>Nome do Aluno:</label>
+                <label>Nome do estudante:</label>
                 <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly>
             </div>
 
@@ -555,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
 
                 <div class="form-group">
-                    <label>Idade do Aluno:</label>
+                    <label>Idade do estudante:</label>
                     <input type="text" name="alu_idade" value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} anos" readonly>
                 </div>
             </div>

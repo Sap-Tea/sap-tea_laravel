@@ -183,14 +183,14 @@
 
             <div class="welcome-block">
                 <div style="font-size:1.15em; font-weight:600; color:#0056b3; margin-bottom:5px;">Bem-vindo ao SAP-TEA!</div>
-                <div style="font-size:1em; color:#222;">Esta é sua área inicial. Utilize o menu ao lado para acessar as funcionalidades.<br>Conte sempre com o suporte do SAP-TEA para apoiar o desenvolvimento dos alunos TEA.<br><span style="color:#009688; font-weight:500;">"Juntos superando desafios, celebrando conquistas!"</span></div>
+                <div style="font-size:1em; color:#222;">Esta é sua área inicial. Utilize o menu ao lado para acessar as funcionalidades.<br>Conte sempre com o suporte do SAP-TEA para apoiar o desenvolvimento dos estudantes TEA.<br><span style="color:#009688; font-weight:500;">"Juntos superando desafios, celebrando conquistas!"</span></div>
             </div>
 
             <ul>
                 {{--
                 <li>
-                    <a href="{{ route('rotina.monitoramento.inicial') }}" class="menu-link" data-page="Monitoramento do Aluno">
-                        <i class="fa-solid fa-clipboard-list"></i> Monitoramento do Aluno
+                    <a href="{{ route('rotina.monitoramento.inicial') }}" class="menu-link" data-page="Monitoramento do estudante">
+                        <i class="fa-solid fa-clipboard-list"></i> Monitoramento do estudante
                     </a>
                 </li>
                 --}}

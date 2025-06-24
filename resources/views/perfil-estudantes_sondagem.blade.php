@@ -88,7 +88,7 @@ button:hover {
         <form method="POST" action="{{ route('perfil.estudante.salvar') }}">
             @csrf
             <div class="form-group">
-                <label>Nome do Aluno:</label>
+                <label>Nome do estudante:</label>
                 <input type="text" name="nome_aluno"  
                 value="{{ $aluno->alu_nome }}" class="form-control">
             </div>

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>{{ $titulo ?? 'Relação dos Alunos' }}</h2>
+    <h2>{{ $titulo ?? 'Relação dos estudantes' }}</h2>
 
     @if(isset($professor_nome))
         <div class="alert alert-secondary mb-3">
@@ -13,7 +13,7 @@
     <!-- Formulário de Pesquisa -->
     <form id="pesquisaForm" method="GET" action="{{ route('imprime_aluno') }}">
         <div class="input-group mb-3">
-            <input type="text" name="nome" class="form-control" placeholder="Pesquisar por aluno"
+            <input type="text" name="nome" class="form-control" placeholder="Pesquisar por estudante"
                    value="{{ request('nome') }}">
             <button class="btn btn-primary" type="submit">Pesquisar</button>
         </div>
@@ -24,8 +24,8 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>RA do Aluno</th>
-                <th>Nome do Aluno</th>
+                <th>RA do estudante</th>
+                <th>Nome do estudante</th>
                 <th>Nome da Escola</th>
                 <th>Modalidade de Ensino</th>
                 <th>Ações</th>
@@ -70,9 +70,9 @@
                     </td>
                 </tr>
             @empty
-                <!-- Caso não existam alunos -->
+                <!-- Caso não existam estudantes -->
                 <tr>
-                    <td colspan="8" class="text-center">Nenhum aluno encontrado.</td>
+                    <td colspan="8" class="text-center">Nenhum estudante encontrado.</td>
                 </tr>
             @endforelse
         </tbody>

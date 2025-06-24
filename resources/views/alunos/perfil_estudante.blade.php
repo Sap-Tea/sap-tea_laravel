@@ -67,14 +67,14 @@
             
             <!-- Etapa 1: Dados Pessoais -->
             <div class="step-content form-section active" data-step="1">
-                <div class="section-title">Dados Pessoais do Aluno</div>
+                <div class="section-title">Dados Pessoais do estudante</div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
-                        <label>Nome do Aluno:</label>
+                        <label>Nome do estudante:</label>
                         <input type="text" name="nome_aluno" value="{{ $aluno->alu_nome }}" readonly class="form-control" style="min-width:300px;max-width:100%;">
                     </div>
                     <div class="form-group col-md-3">
-                        <label>RA do Aluno:</label>
+                        <label>RA do estudante:</label>
                         <input type="text" name="ra_aluno" value="{{ $aluno->alu_ra }}" readonly class="form-control" style="min-width:200px;max-width:100%;">
                     </div>
                 </div>

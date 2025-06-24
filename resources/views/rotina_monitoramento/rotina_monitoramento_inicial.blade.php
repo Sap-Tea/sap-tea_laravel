@@ -205,7 +205,7 @@
             </tbody>
         </table>
     @else
-        <div class="alert alert-warning">Nenhum aluno selecionado.</div>
+        <div class="alert alert-warning">Nenhum estudante selecionado.</div>
     @endif
 
     <!-- Botão Voltar -->

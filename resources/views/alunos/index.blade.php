@@ -2,7 +2,7 @@
 
 @section('content')
 <main>
-    <h1>Detalhes do Aluno</h1>
+    <h1>Detalhes do estudante</h1>
     @if(isset($aluno))
         <table>
             <thead>
@@ -27,7 +27,7 @@
             </tbody>
         </table>
     @else
-        <p>Aluno não encontrado</p>
+        <p>estudante não encontrado</p>
     @endif
 </main>
 @endsection
