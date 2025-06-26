@@ -57,7 +57,8 @@
     
     <div class="page">
         <img src="{{ asset('img/sap_logo2.png') }}" alt="Imagem representativa">
-        <div class="formLogin">
+        <div class="login-card">
+            <div class="formLogin">
             <div class="login-header">
         <h2>bem-vindo</h2>
         <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" class="logo-inside">
@@ -119,34 +120,15 @@
             }
         }
         </script>
-        <button class="btn btn-acesso" type="submit">Entrar</button>
-        <div class="login-links">
-            <a href="{{ route('password.request') }}" class="link-senha">Esqueci minha senha</a>
-        </div>
-    </form>
-    <div class="login-links" style="margin-top: 22px;">
-        <a href="{{ url('/primeiro-acesso') }}" class="link-senha" style="font-size:1.02em;font-weight:bold;">Primeiro acesso? Clique aqui para cadastrar sua senha</a>
-    </div>
-    </div>
-    </div>
-</div>
+            </div> <!-- fecha .formLogin -->
+            <div class="logos-login">
+                <img src="{{ asset('img/logo_tea.png') }}" alt="Logo TEA">
+                <img src="{{ asset('img/logo_foccus.png') }}" alt="Logo Foccus">
+            </div>
+        </div> <!-- fecha .login-card -->
+    </div> <!-- fecha .page -->
 
-<!-- LOGOS CENTRALIZADAS (subindo devagar) -->
-<div class="logos-container">
-    <img src="{{ asset('img/logo_tea.png') }}" alt="Logo TEA">
-    <img src="{{ asset('img/logo_foccus.png') }}" alt="Logo Foccus">
-</div>
-
-@if ($errors->any())
-    <div class="notificacao erro" id="notificacao">
-        @foreach ($errors->all() as $error)
-            <div>{{ $error }}</div>
-        @endforeach
-    </div>
-@endif
-
-<div class="notificacao" id="notificacao"></div>
-
+    <div class="notificacao" id="notificacao"></div>
 
     <script>
         // Limpa sessionStorage ao acessar a tela de login
