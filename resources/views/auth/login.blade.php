@@ -85,6 +85,13 @@
             <input type="checkbox" id="mostrarSenhaLogin" onclick="mostrarOcultarSenhaLogin()">
             <label for="mostrarSenhaLogin">Mostrar senha</label>
         </div>
+        <button class="btn btn-acesso" type="submit">Entrar</button>
+        <div class="login-links">
+            <a href="{{ route('password.request') }}" class="link-senha">Esqueci minha senha</a>
+        </div>
+        <div class="login-links" style="margin-top: 22px;">
+            <a href="{{ url('/primeiro-acesso') }}" class="link-senha" style="font-size:1.02em;font-weight:bold;">Primeiro acesso? Clique aqui para cadastrar sua senha</a>
+        </div>
         <script>
             function mostrarOcultarSenhaLogin() {
                 var senha = document.getElementById('password');
