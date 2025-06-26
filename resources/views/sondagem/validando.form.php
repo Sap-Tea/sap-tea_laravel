@@ -41,7 +41,7 @@
                     Idade: <input value="{{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} - anos" readonly type="text" min="0" style="width: 50px;"></p>
                 <p>Ano/Série: <input type="text" style="width: 150px;" value="{{$aluno->serie_desc}}" readonly>
                     Turma: <input value="{{$aluno->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly>
-                    Período: <input type="text" style="width: 250px;" value="{{$aluno->desc_modalidade}}" readonly></p>
+                    Ano/Série: <input type="text" style="width: 250px;" value="{{$aluno->desc_modalidade}}" readonly></p>
             </div>
 
             <div class="support">
