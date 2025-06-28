@@ -280,7 +280,7 @@
             </ul>
             <div style="font-size:13px;color:#555;margin:15px;">
                 <i class="fa-solid fa-circle-info"></i> Clique em um dos materiais acima para acessar e baixar os arquivos no Google Drive.<br>
-                <span style="color:#1976d2;cursor:pointer;">Ou <b>assista o vídeo de boas-vindas</b> a qualquer momento!</span>
+                <span id="assistirVideoLink" style="color:#1976d2;cursor:pointer;">Ou <b>assista o vídeo de boas-vindas</b> a qualquer momento!</span>
             </div>
         </div>
 
@@ -306,6 +306,19 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                             </div>
                             <div class="modal-body">
+                                <!-- Importação da fonte Quicksand do Google Fonts -->
+                                <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+                                
+                                <!-- Texto de boas-vindas com as configurações solicitadas -->
+                                <div class="text-center mb-4">
+                                    <p style="font-family: 'Quicksand', sans-serif; font-size: 25pt; color: #D67A3B; margin-bottom: 10px; text-align: center;">
+                                        Caro(a) Professor(a), bem-vindo(a) ao Supergando TEA Digital!
+                                    </p>
+                                    <p style="font-family: 'Quicksand', sans-serif; font-size: 15pt; color: #000000; margin-bottom: 20px; text-align: center; font-weight: bold;">
+                                        Esta é uma ferramenta do Programa Supergando TEA, criada para acompanhar o desenvolvimento do estudante com TEA por meio do mapeamento, monitoramento e emissão de relatórios que orientam suas ações pedagógicas, integrando um projeto de intervenção personalizado, contínuo e gradual.
+                                    </p>
+                                </div>
+                                
                                 <div class="d-flex justify-content-center align-items-center w-100">
                                     <div class="ratio ratio-16x9" style="width:100%; max-width:700px;">
                                         <video id="videoPlayer" controls playsinline style="width:100%; height:100%; object-fit:cover;">

@@ -10,18 +10,6 @@
     </div>
 @endif
 
-{{-- DEBUG: Dados do professor autenticado --}}
-@if(Auth::guard('funcionario')->check())
-    @php
-        $prof = Auth::guard('funcionario')->user();
-    @endphp
-    <pre style="background:#f8f9fa;border:1px solid #ced4da;padding:8px;margin-bottom:10px;color:#222;font-size:1em;">
-        <strong>DEBUG PROFESSOR LOGADO:</strong>
-        ID: {{ $prof->func_id ?? 'N/A' }}
-        Nome: {{ $prof->func_nome ?? 'N/A' }}
-        Email: {{ $prof->func_email ?? 'N/A' }}
-    </pre>
-@endif
 
     <!-- Formulário de Pesquisa -->
     <form id = "pesquisaForm" method="POST" action="{{ route('inserir_perfil') }}">
@@ -56,9 +44,7 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                 <th>#</th>
                 <th>RA do estudante</th>
                 <th>Nome do estudante</th>
-                <th>Responsável</th>
-                <th>Tel. Responsável</th>
-                <th>Email</th>
+                <th>Modalidade de Ensino</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -69,11 +55,14 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <td>{{ $loop->iteration }}</td> 
                     <!-- Dados do aluno -->
                     <td>{{ $aluno->alu_ra }}</td>
-                    <td>{{ $aluno->alu_nome }}</td>
-                    <td>{{ $aluno->alu_nome_resp }}</td>
-                    <td>{{ $aluno->alu_tel_resp }}</td>
-                    <td>{{ $aluno->alu_email_resp }}</td>
-                  
+<td>{{ $aluno->alu_nome }}</td>
+<td>
+    @php
+        $modalidade = $aluno->matriculas->first()->modalidade->tipo->desc_modalidade ?? '-';
+    @endphp
+    {{ $modalidade }}
+</td>
+
                     <!-- Botão cadastra perfil -->
                     <td>
                         @if($aluno->flag_perfil === "*")

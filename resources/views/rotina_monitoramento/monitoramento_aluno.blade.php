@@ -521,7 +521,7 @@ if ($total_atividades_geral > 0) {
     <!-- PERÍODO DE APLICAÇÃO -->
     <div class="period-section">
       <span class="period">
-        <strong>Período de Aplicação (Inicial):</strong>
+        <strong>Data da sondagem</strong>
         <input type="text" name="periodo_inicial" value="{{ $data_inicial_com_lin ? \Carbon\Carbon::parse($data_inicial_com_lin)->format('d/m/Y') : '' }}" readonly />
       </span>
 
@@ -529,7 +529,9 @@ if ($total_atividades_geral > 0) {
 
     @if($data_inicial_com_lin)
       <div style="color: #b30000; font-weight: bold; margin-bottom: 10px; font-size: 16px;">
-        Já se passaram {{ \Carbon\Carbon::parse($data_inicial_com_lin)->diffInDays(\Carbon\Carbon::now()) }} dias desde o início do prazo.
+       <!-- Já se passaram {{ \Carbon\Carbon::parse($data_inicial_com_lin)->diffInDays(\Carbon\Carbon::now()) }} dias desde o início do prazo.
+-->
+       Já se passaram x dias desde a realização da sondagem
       </div>
     @endif
 

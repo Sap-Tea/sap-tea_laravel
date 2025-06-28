@@ -285,6 +285,10 @@ public function mostra_aluno_eixo($id)
     public function rotina_monitoramento_inicial()
     {
         $professor = auth('funcionario')->user();
+        if (!$professor) {
+            // Redireciona para login ou mostra erro amigável
+            return redirect()->route('login')->withErrors(['msg' => 'Sessão expirada ou acesso não autorizado. Faça login novamente.']);
+        }
         $funcId = $professor->func_id;
 
         $alunos = \App\Models\Aluno::porProfessor($funcId)
