@@ -537,10 +537,14 @@ if ($total_atividades_geral > 0) {
 
     <!-- INSTRUÇÕES -->
     <div class="instructions">
-      <p><strong>Caro educador,</strong></p>
-      <p>Por favor, registre as atividades nas datas mencionadas e realize a devida anotação no quadro.  
-      Se necessário, utilize este espaço para marcar a aplicação e observações pertinentes.  
-      Após finalizar o processo, você deverá registrar no Suporte TEA Digital o cenário atual do estudante.</p>
+      <p><strong></strong></p>
+      <p>Caro(a) educador(a),
+Inicie diariamente com as atividades MINHA ROTINA e EMOCIONÔMETRO.
+Após a aplicação da(s) atividade(s), informe a data (campo obrigatório) e se houve necessidade de apoio (campo
+obrigatório).
+Registre aspectos relevantes no campo observação.
+REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
+</p>
       <p><em>Observação: Em caso de dúvidas, consulte o suporte técnico ou administrativo para orientação.</em></p>
     </div>
     
@@ -568,7 +572,7 @@ if ($total_atividades_geral > 0) {
   <table class="result-table" style="background: #fff;">
     <thead>
       <tr style="background: #ffe066;">
-        <th style="width: 8%;" rowspan="2">Código</th>
+        <th style="width: 8%;" rowspan="2">Atividade</th>
         <th style="width: 28%;" rowspan="2">Descrição</th>
         <th style="width: 12%;" rowspan="2">Data de aplicação</th>
         <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
@@ -615,7 +619,7 @@ if ($total_atividades_geral > 0) {
   <table class="result-table" style="background: #fff;">
     <thead>
     <tr style="background: #ffe066;">
-        <th style="width: 8%;" rowspan="2">Código</th>
+        <th style="width: 8%;" rowspan="2">Atividade</th>
         <th style="width: 28%;" rowspan="2">Descrição</th>
         <th style="width: 12%;" rowspan="2">Data de aplicação</th>
         <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
@@ -666,7 +670,7 @@ if ($total_atividades_geral > 0) {
   <table class="result-table" style="background: #fff;">
     <thead>
       <tr style="background: #ffe066;">
-        <th style="width: 8%;" rowspan="2">Código</th>
+        <th style="width: 8%;" rowspan="2">Atividade</th>
         <th style="width: 28%;" rowspan="2">Descrição</th>
         <th style="width: 12%;" rowspan="2">Data de aplicação</th>
         <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>

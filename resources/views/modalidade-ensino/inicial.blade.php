@@ -207,7 +207,7 @@
     </div>
 
     <div class="alert-box">
-      <strong>Caro educador,</strong><br>
+      <strong>Caro(a) educador(a),</strong><br>
       Por favor, registre as atividades nas datas mencionadas e realize a devida anotação no quadro. Se necessário, utilize este espaço para marcar a aplicação e observações pertinentes. Após finalizar o processo, você deverá registrar no Suporte <strong>TEG Digital</strong> o cenário atual do aluno.<br>
       <em>Observação: Em caso de dúvidas, consulte o suporte técnico ou administrativo para orientação. TEA</em>
     </div>

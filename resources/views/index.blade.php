@@ -207,7 +207,7 @@
                 </li>
                 <li>
                     <a href="#" class="menu-toggle" data-page="Rotina e Monitoramento">
-                        <i class="fa-solid fa-school"></i> Rotina e Monitoramento ⬇
+                        <i class="fa-solid fa-school"></i> Rotina e Monitoramento de Aplicação das Atividades ⬇
                     </a>
                     <ul class="submenu_escola">
                         <li><a href="{{ route('rotina.monitoramento.inicial') }}" class="menu-link" data-page="Rotina Inicial">.1 Inicial</a></li>

@@ -57,7 +57,7 @@
                 </p>
 
             
-            <p>Orgão: <input type="text" style="width: 300px;" value = "{{$alunoDetalhado->org_razaosocial}}" readonly></p>
+            <!--<p>Orgão: <input type="text" style="width: 300px;" value = "{{$alunoDetalhado->org_razaosocial}}" readonly></p>-->
 
             <p>Escola: <input type="text" style="width: 300px;" value = "{{$alunoDetalhado->esc_razao_social}}" readonly ></p>
             <p>Nome do estudante: <input type="text" style="width: 250px;"value = "{{$aluno->alu_nome}}" readonly></p>
@@ -69,6 +69,7 @@
                 <input value = "{{$alunoDetalhado->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly>
                 Ano/Série: <input type="text" style="width: 200px;" value = "{{$alunoDetalhado->desc_modalidade}}" readonly></p>
         </div>
+
         <div class="support">
             <p><strong>Responsável pelo preenchimento:</strong></p>
             <p><input type="radio" name="responsavel" class="radio-toggle" value = "1"> Professor de sala Regular</p>
@@ -78,13 +79,19 @@
             <p><input type="radio" name="suporte" class="radio-toggle" value = "2"> Nível 2 de Suporte - Exige apoio substancial</p>
             <p><input type="radio" name="suporte" class="radio-toggle" value = "3"> Nível 3 de Suporte - Exige apoio muito substancial</p>
             <p><strong>Assinale a forma de comunicação utilizada pelo estudante:</strong></p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "1"> Comunicação verbal</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "1"> Comunicação verbal com uso de recursos alternativos de comunicação</p>
             <p><input type="radio" name="comunicacao" class="radio-toggle" value = "2"> Comunicação não verbal com uso de métodos alternativos de comunicação</p>
             <p><input type="radio" name="comunicacao" class="radio-toggle" value = "3"> Comunicação não Verbal</p>
         </div>
+        <!-- INSTRUÇÕES PARA O USUÁRIO -->
+        <div class="alert alert-info" style="margin-bottom: 22px; padding: 16px; border-left: 6px solid #007bff; background: #f8fafd; color: #222; font-size: 1.08em; box-shadow: 0 2px 8px #e0e7ef;">
+            <strong>Atenção:</strong><br>
+            Com base na observação inicial e no detalhamento das habilidades, marque <strong>“SIM”</strong> para as que já foram desenvolvidas e <strong>“NÃO”</strong> para as que ainda não foram.<br>
+            <span style="color: #b30000; font-weight: bold;">REVISE E CONFIRA AS INFORMAÇÕES REGISTRADAS ANTES DE SALVAR O DOCUMENTO.</span>
+        </div>
     </div>
     <div id="capture">
-        <h2>Cadastro de inventários</h2>
+      
             <table>
                 <thead>
                     <tr>
