@@ -83,6 +83,9 @@ Route::post('/formulario-teste', function (Illuminate\Http\Request $request) {
     return back()->with('error', 'Preencha todos os campos!');
 })->name('formulario.teste.submit');
 // =========================
+// MONITORAMENTO EXEMPLO DEBUG
+Route::get('/monitoramento/exemplo/{alunoId}', [\App\Http\Controllers\MonitoramentoAtividadeController::class, 'exemploMonitoramento']);
+// =========================
 // SONDAGEM
 // =========================
 Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {

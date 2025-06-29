@@ -140,6 +140,15 @@ class MonitoramentoAtividadeController extends Controller
         Log::debug('Filtro de atividades válidas para o eixo ' . $eixo, ['dados_validos' => $dados, 'dados_recebidos' => $dados]);
 
         foreach ($dados as $indice => $atividade) {
+            // Verifica se já existe registro para este aluno, atividade e fase
+            $existe = $model::where('aluno_id', $alunoId)
+                ->where('cod_atividade', $atividade['cod_atividade'])
+                ->where('fase_cadastro', $faseCadastro)
+                ->exists();
+            if ($existe) {
+                Log::info("Atividade já cadastrada para o aluno {$alunoId}, eixo {$eixo}, atividade {$atividade['cod_atividade']} - ignorando novo cadastro.");
+                continue;
+            }
             Log::debug('Preparando para salvar registro', [
                 'eixo' => $eixo,
                 'atividade' => $atividade
@@ -284,78 +293,63 @@ class MonitoramentoAtividadeController extends Controller
      */
     /**
      * Carrega os dados de monitoramento para exibição na view
-     * 
-     * @param int $alunoId ID do aluno
-     * @return array Dados formatados para a view
+     *
+     * @param int $alunoId
+     * @return array
      */
     public function carregarParaView($alunoId)
     {
         try {
-            // Validar se o ID do aluno é válido
-            if (!is_numeric($alunoId) || $alunoId <= 0) {
-                Log::info("ID de aluno inválido: {$alunoId}");
-                return [];
-            }
-            
-            Log::info("Carregando dados de monitoramento para o aluno ID: {$alunoId}");
-            
-            // Carregar os dados de cada eixo
-            $dados = [];
             $eixos = [
                 'comunicacao' => AtividadeComunicacao::class,
                 'comportamento' => AtividadeComportamento::class,
                 'socioemocional' => AtividadeSocioemocional::class
             ];
-            
+            $dados = [];
+            $faseCadastro = $this->obterFaseAtual();
             foreach ($eixos as $tipo => $modelClass) {
-                $fase = $this->obterFaseAtual();
-                Log::info("Buscando registros do eixo {$tipo} para aluno {$alunoId} na fase {$fase}");
-                
+                // Busca todos os registros do aluno e fase
                 $registros = $modelClass::where('aluno_id', $alunoId)
-                    ->where('fase_cadastro', $fase)
+                    ->where('fase_cadastro', $faseCadastro)
+                    ->orderBy('registro_timestamp', 'desc')
                     ->get();
-                
-                Log::info("Encontrados " . count($registros) . " registros para o eixo {$tipo}");
-                
                 $dados[$tipo] = [];
-                foreach ($registros as $registro) {
-                    // Garantir que o registro tenha um código de atividade válido
-                    if (empty($registro->cod_atividade)) {
-                        Log::warning("Registro sem código de atividade encontrado para o eixo {$tipo}");
-                        continue;
-                    }
-                    
-                    Log::info("Processando registro de atividade {$registro->cod_atividade} do eixo {$tipo}");
-                    
-                    // Formatar a data no formato YYYY-MM-DD para o input type="date"
-                    $dataAplicacao = $registro->data_aplicacao;
-                    if ($dataAplicacao && strpos($dataAplicacao, '/') !== false) {
-                        $partes = explode('/', $dataAplicacao);
-                        if (count($partes) === 3) {
-                            $dataAplicacao = $partes[2] . '-' . $partes[1] . '-' . $partes[0];
-                        }
-                    }
-                    
-                    $dados[$tipo][$registro->cod_atividade] = [
-                        'data_inicial' => $dataAplicacao,
-                        'sim_inicial' => $registro->realizado == 1 ? '1' : '0',
-                        'nao_inicial' => $registro->realizado == 0 ? '1' : '0',
-                        'observacoes' => $registro->observacoes,
-                        'cod_atividade' => $registro->cod_atividade
+                foreach ($registros as $item) {
+                    $dados[$tipo][$item->cod_atividade][] = [
+                        'id' => $item->id,
+                        'registro_timestamp' => $item->registro_timestamp,
+                        'data_aplicacao' => (is_object($item->data_aplicacao) && method_exists($item->data_aplicacao, 'format'))
+                            ? $item->data_aplicacao->format('Y-m-d')
+                            : ($item->data_aplicacao ?? null),
+                        'realizado' => (bool)$item->realizado,
+                        'observacoes' => $item->observacoes,
+                        'fase_cadastro' => $item->fase_cadastro,
+                        'created_at' => ($item->created_at && method_exists($item->created_at, 'toDateTimeString'))
+                            ? $item->created_at->toDateTimeString() : ($item->created_at ?? null),
+                        'updated_at' => ($item->updated_at && method_exists($item->updated_at, 'toDateTimeString'))
+                            ? $item->updated_at->toDateTimeString() : ($item->updated_at ?? null),
                     ];
-                    
-                    Log::info("Dados formatados para {$registro->cod_atividade}: " . json_encode($dados[$tipo][$registro->cod_atividade]));
                 }
             }
-            
-            Log::info("Dados de monitoramento carregados com sucesso: " . json_encode($dados));
             return $dados;
-        } catch (\Exception $e) {
-            Log::error('Erro ao carregar dados para view: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            \Log::error("Erro ao carregar dados de monitoramento: " . $e->getMessage());
             return [];
         }
     }
-    
+
+    /**
+     * Exemplo mínimo para debug visual na Blade
+     */
+    public function exemploMonitoramento($alunoId)
+    {
+        $dados = $this->carregarParaView($alunoId);
+        return view('rotina_monitoramento.monitoramento_blade_exemplo', [
+            'alunoId' => $alunoId,
+            'dados' => $dados,
+        ]);
+    }
+
     /**
      * Obtém a fase atual do monitoramento (In = Inicial)
      * 
@@ -387,24 +381,29 @@ class MonitoramentoAtividadeController extends Controller
             ];
             
             foreach ($eixos as $tipo => $modelClass) {
-                $dados[$tipo] = $modelClass::where('aluno_id', $alunoId)
-                    ->where('fase_cadastro', $this->obterFaseAtual())
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [
-                            $item->cod_atividade => [
-                                'id' => $item->id,
-                                'data_aplicacao' => $item->data_aplicacao ? $item->data_aplicacao->format('Y-m-d') : null,
-                                'realizado' => (bool)$item->realizado,
-                                'observacoes' => $item->observacoes,
-                                'fase_cadastro' => $item->fase_cadastro,
-                                'created_at' => $item->created_at ? $item->created_at->toDateTimeString() : null,
-                                'updated_at' => $item->updated_at ? $item->updated_at->toDateTimeString() : null
-                            ]
-                        ];
-                    })
-                    ->toArray();
-            }
+    $dados[$tipo] = $modelClass::where('aluno_id', $alunoId)
+        ->where('fase_cadastro', $this->obterFaseAtual())
+        ->orderBy('registro_timestamp', 'desc')
+        ->get()
+        ->mapWithKeys(function ($item) {
+            return [
+                $item->cod_atividade => [
+                    'id' => $item->id,
+                    'data_aplicacao' => (is_object($item->data_aplicacao) && method_exists($item->data_aplicacao, 'format'))
+                        ? $item->data_aplicacao->format('Y-m-d')
+                        : ($item->data_aplicacao ?? null),
+                    'realizado' => (bool)$item->realizado,
+                    'observacoes' => $item->observacoes,
+                    'fase_cadastro' => $item->fase_cadastro,
+                    'created_at' => ($item->created_at && method_exists($item->created_at, 'toDateTimeString'))
+                        ? $item->created_at->toDateTimeString() : ($item->created_at ?? null),
+                    'updated_at' => ($item->updated_at && method_exists($item->updated_at, 'toDateTimeString'))
+                        ? $item->updated_at->toDateTimeString() : ($item->updated_at ?? null),
+                ]
+            ];
+        })
+        ->toArray();
+}
 
             return response()->json([
                 'success' => true,

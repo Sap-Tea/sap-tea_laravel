@@ -579,6 +579,38 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
     @endphp
     <a href="{{ route('grafico.comunicacao', ['alunoId' => $alunoId]) }}" class="btn btn-primary d-none" style="background-color: #b28600; border-color: #b28600;"><i class="fas fa-chart-bar"></i> Ver Gráfico</a>
   </div>
+
+  {{-- REGISTROS JÁ CADASTRADOS --}}
+  @if(isset($dadosMonitoramento['comunicacao']) && count($dadosMonitoramento['comunicacao']))
+    <div style="margin-bottom:12px;">
+      <strong>Registros já cadastrados:</strong>
+      <table class="result-table" style="margin-bottom:8px;">
+        <thead>
+          <tr style="background:#ffd966;">
+            <th>Código</th>
+            <th>Data</th>
+            <th>Realizado?</th>
+            <th>Observações</th>
+            <th>Registro Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($dadosMonitoramento['comunicacao'] as $cod => $registros)
+            @foreach($registros as $registro)
+              <tr>
+                <td>{{ $cod }}</td>
+                <td>{{ $registro['data_aplicacao'] }}</td>
+                <td><input type="checkbox" disabled @if($registro['realizado']) checked @endif></td>
+                <td>{{ $registro['observacoes'] }}</td>
+                <td>{{ $registro['registro_timestamp'] }}</td>
+              </tr>
+            @endforeach
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  @endif
+
   <table class="result-table" style="background: #fff;">
     <thead>
       <tr style="background: #ffe066;">
@@ -626,6 +658,37 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
     {{-- EIXO COMPORTAMENTO (PADRÃO VISUAL) --}}
 <div class="comportamento-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
   <div class="table-title" style="font-size:20px; color:#176ca7; text-align:center; margin-bottom:15px;">Eixo Comportamento</div>
+
+  {{-- REGISTROS JÁ CADASTRADOS - COMPORTAMENTO --}}
+  @if(isset($dadosMonitoramento['comportamento']) && count($dadosMonitoramento['comportamento']))
+    <div style="margin-bottom:12px;">
+      <strong>Registros já cadastrados:</strong>
+      <table class="result-table" style="margin-bottom:8px;">
+        <thead>
+          <tr style="background:#ffd966;">
+            <th>Código</th>
+            <th>Data</th>
+            <th>Realizado?</th>
+            <th>Observações</th>
+            <th>Registro Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($dadosMonitoramento['comportamento'] as $cod => $registros)
+            @foreach($registros as $registro)
+              <tr>
+                <td>{{ $cod }}</td>
+                <td>{{ $registro['data_aplicacao'] }}</td>
+                <td><input type="checkbox" disabled @if($registro['realizado']) checked @endif></td>
+                <td>{{ $registro['observacoes'] }}</td>
+                <td>{{ $registro['registro_timestamp'] }}</td>
+              </tr>
+            @endforeach
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  @endif
   <table class="result-table" style="background: #fff;">
     <thead>
     <tr style="background: #ffe066;">
@@ -677,6 +740,37 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
     {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (PADRÃO VISUAL) --}}
 <div class="socioemocional-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
   <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
+
+  {{-- REGISTROS JÁ CADASTRADOS - SOCIOEMOCIONAL --}}
+  @if(isset($dadosMonitoramento['socioemocional']) && count($dadosMonitoramento['socioemocional']))
+    <div style="margin-bottom:12px;">
+      <strong>Registros já cadastrados:</strong>
+      <table class="result-table" style="margin-bottom:8px;">
+        <thead>
+          <tr style="background:#ffd966;">
+            <th>Código</th>
+            <th>Data</th>
+            <th>Realizado?</th>
+            <th>Observações</th>
+            <th>Registro Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($dadosMonitoramento['socioemocional'] as $cod => $registros)
+            @foreach($registros as $registro)
+              <tr>
+                <td>{{ $cod }}</td>
+                <td>{{ $registro['data_aplicacao'] }}</td>
+                <td><input type="checkbox" disabled @if($registro['realizado']) checked @endif></td>
+                <td>{{ $registro['observacoes'] }}</td>
+                <td>{{ $registro['registro_timestamp'] }}</td>
+              </tr>
+            @endforeach
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  @endif
   <table class="result-table" style="background: #fff;">
     <thead>
       <tr style="background: #ffe066;">
