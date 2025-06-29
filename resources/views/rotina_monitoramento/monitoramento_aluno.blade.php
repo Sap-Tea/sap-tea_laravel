@@ -291,6 +291,9 @@
 @endsection
 
 @section('content')
+<form id="monitoramentoForm" method="POST" action="{{ route('monitoramento.salvar') }}">
+    @csrf
+    <input type="hidden" name="aluno_id" value="{{ $alunoId ?? '' }}">
 
 @php
     // Garantir que os totais usados já excluem ECP03/EIS01 (devem vir do controller já filtrados)
@@ -504,10 +507,17 @@ if ($total_atividades_geral > 0) {
         <input type="text" value="{{ $detalhe->alu_dtnasc ? \Carbon\Carbon::parse($detalhe->alu_dtnasc)->age : '-' }}" readonly />
       </label>
       <label>
-        Modalidade:
+        Série:
+        <input type="text" value="{{ $detalhe->serie_desc ?? '-' }}" readonly class="campo-readonly">
+      </label>
+      <label>
+        Período:
+        <input type="text" value="{{ $detalhe->periodo ?? '-' }}" readonly class="campo-readonly">
+      </label>
+      <label>
+        Seguimento:
         <input type="text" value="{{ $detalhe->desc_modalidade ?? '-' }}" readonly />
       </label>
-
       <label>
         Turma:
         <input type="text" value="{{ $detalhe->fk_cod_valor_turma ?? '-' }}" readonly />
@@ -770,10 +780,9 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
                 <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
                     <i class="fas fa-arrow-left me-2"></i>Voltar
                 </button>
-                <button type="button" class="btn btn-primary" id="btn-salvar">
+                <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save me-2"></i>
                     <span class="btn-text">Salvar</span>
-                    <span id="loading-icon" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                 </button>
             </div>
         </div>
@@ -1206,34 +1215,32 @@ function formatarDadosFormulario() {
             
             // Busca observações de todas as possíveis fontes
             let observacoes = '';
-            
             // Primeiro tenta textarea
             const obsTextarea = linha.querySelector('textarea[name$="[observacoes]"]');
-            if (obsTextarea) {
+            if (obsTextarea && typeof obsTextarea.value !== 'undefined' && obsTextarea.value !== null) {
                 observacoes = obsTextarea.value;
                 console.log(`Encontrada observação no textarea para ${codAtividade}: "${observacoes}"`);
             }
-            
             // Se não encontrou, tenta input de texto
-            if (observacoes === '' || observacoes === undefined) {
+            if (!observacoes || typeof observacoes === 'undefined' || observacoes === null) {
                 const obsInput = linha.querySelector('input[type="text"][name$="[observacoes]"]');
-                if (obsInput) {
+                if (obsInput && typeof obsInput.value !== 'undefined' && obsInput.value !== null) {
                     observacoes = obsInput.value;
                     console.log(`Encontrada observação no input para ${codAtividade}: "${observacoes}"`);
                 }
             }
-            
             // Por último, tenta buscar por ID específico
-            if (observacoes === '' || observacoes === undefined) {
+            if (!observacoes || typeof observacoes === 'undefined' || observacoes === null) {
                 const obsEspecifico = document.getElementById(`observacao-${prefixo}-${codAtividade}`);
-                if (obsEspecifico) {
+                if (obsEspecifico && typeof obsEspecifico.value !== 'undefined' && obsEspecifico.value !== null) {
                     observacoes = obsEspecifico.value;
                     console.log(`Encontrada observação pelo ID específico para ${codAtividade}: "${observacoes}"`);
                 }
             }
-            
-            // Garantir que observacoes seja sempre definido, mesmo que vazio
-            if (observacoes === undefined) observacoes = '';
+            // Fallback explícito para string vazia
+            if (typeof observacoes === 'undefined' || observacoes === null) observacoes = '';
+            // Log final para depuração
+            console.log(`Valor final coletado de observacoes para ${codAtividade}: "${observacoes}"`);
             
             // Determina o valor de 'realizado' baseado nos checkboxes
             let realizado = null;
@@ -1304,65 +1311,7 @@ function formatarDadosFormulario() {
     return formData;
 }
 
-// Função para enviar os dados do formulário
-function enviarDadosFormulario() {
-    const formData = formatarDadosFormulario();
-    if (!formData) return;
-    
-    const botaoSalvar = document.getElementById('btn-salvar');
-    const loadingIcon = document.getElementById('loading-icon');
-    const mensagemSucesso = document.getElementById('mensagem-sucesso');
-    const mensagemErro = document.getElementById('mensagem-erro');
-    
-    // Desabilitar botão e mostrar ícone de carregamento
-    botaoSalvar.disabled = true;
-    if (loadingIcon) loadingIcon.style.display = 'inline-block';
-    if (mensagemSucesso) mensagemSucesso.style.display = 'none';
-    if (mensagemErro) mensagemErro.style.display = 'none';
-    
-    // Enviar requisição AJAX
-    fetch('/monitoramento/salvar', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Dados salvos com sucesso!');
-            if (mensagemSucesso) {
-                mensagemSucesso.textContent = 'Dados salvos com sucesso!';
-                mensagemSucesso.style.display = 'block';
-                
-                // Esconder a mensagem após 5 segundos
-                setTimeout(() => {
-                    mensagemSucesso.style.display = 'none';
-                }, 5000);
-            }
-        } else {
-            console.error('Erro ao salvar dados:', data.message);
-            if (mensagemErro) {
-                mensagemErro.textContent = data.message || 'Ocorreu um erro ao salvar os dados. Por favor, tente novamente.';
-                mensagemErro.style.display = 'block';
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Erro na requisição:', error);
-        if (mensagemErro) {
-            mensagemErro.textContent = 'Erro ao conectar ao servidor. Verifique sua conexão e tente novamente.';
-            mensagemErro.style.display = 'block';
-        }
-    })
-    .finally(() => {
-        // Reabilitar botão e esconder ícone de carregamento
-        botaoSalvar.disabled = false;
-        if (loadingIcon) loadingIcon.style.display = 'none';
-    });
-}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Carregar dados salvos ao iniciar a página
@@ -1371,14 +1320,7 @@ document.addEventListener('DOMContentLoaded', function() {
         carregarDadosMonitoramento(alunoId);
     }
     
-    // Configurar evento de clique no botão salvar
-    const btnSalvar = document.getElementById('btn-salvar');
-    if (btnSalvar) {
-        btnSalvar.addEventListener('click', function(e) {
-            e.preventDefault();
-            enviarDadosFormulario();
-        });
-    }
+
     
     // Código para gerenciar checkboxes mutuamente exclusivos
     document.querySelectorAll('.sim-checkbox, .nao-checkbox').forEach(checkbox => {

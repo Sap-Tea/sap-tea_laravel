@@ -67,7 +67,9 @@
             <p>RA: <input type="text" style="width: 150px;" value = "{{$aluno->alu_ra}}" readonly>
                 Turma:
                 <input value = "{{$alunoDetalhado->fk_cod_valor_turma}}" type="text" style="width: 120px;" readonly>
-                Ano/Série: <input type="text" style="width: 200px;" value = "{{$alunoDetalhado->desc_modalidade}}" readonly></p>
+                Seguimento: <input type="text" style="width: 200px;" value = "{{$alunoDetalhado->desc_modalidade}}" readonly></p>
+            <p>Série: <input type="text" style="width: 200px;" value = "{{$alunoDetalhado->serie_desc ?? '-'}}" readonly>
+                Período: <input type="text" style="width: 120px;" value = "{{$alunoDetalhado->periodo ?? '-'}}" readonly></p>
         </div>
 
         <div class="support">

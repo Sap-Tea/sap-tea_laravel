@@ -48,6 +48,8 @@
                     <h5>Informações do Estudante</h5>
                     <p><strong>Nome:</strong> {{ $aluno->alu_nome ?? 'N/A' }}</p>
                     <p><strong>Matrícula:</strong> {{ $aluno->alu_matricula ?? 'N/A' }}</p>
+                    <p><strong>Série:</strong> {{ $aluno->serie_desc ?? 'N/A' }}</p>
+                    <p><strong>Período:</strong> {{ $aluno->periodo ?? 'N/A' }}</p>
                 </div>
             </div>
 

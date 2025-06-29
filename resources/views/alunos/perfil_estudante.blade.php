@@ -105,10 +105,17 @@
                         <input type="text" name="turma" value="{{ $aluno->fk_cod_valor_turma ?? '' }}" readonly class="form-control" style="min-width:200px;max-width:100%;">
                     </div>
                     <div class="form-group col-md-3">
-                        <label>Modalidade:</label>
+                        <label>Seguimento:</label>
                         <input type="text" name="modalidade" value="{{ $aluno->desc_modalidade ?? '' }}" readonly class="form-control" style="min-width:250px;max-width:100%;">
                     </div>
-                    
+                    <div class="form-group col-md-3">
+                        <label>Série:</label>
+                        <input type="text" name="serie" value="{{ $aluno->serie_desc ?? '-' }}" readonly class="form-control" style="min-width:150px;max-width:100%;">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Período:</label>
+                        <input type="text" name="periodo" value="{{ $aluno->periodo ?? '-' }}" readonly class="form-control" style="min-width:150px;max-width:100%;">
+                    </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">

@@ -17,7 +17,9 @@ class GraficoMonitoramentoController extends Controller
     public function graficoEixoComunicacao($alunoId)
     {
         // Busca o aluno
-        $aluno = Aluno::findOrFail($alunoId);
+        $alunoDetalhado = Aluno::getAlunosDetalhados($alunoId);
+        $alunoDetalhado = Aluno::getAlunosDetalhados($alunoId);
+        $aluno = $alunoDetalhado[0] ?? null;
         
         // Busca as propostas de atividades do eixo comunicação/linguagem
         $propostas = PropostaComLin::all();

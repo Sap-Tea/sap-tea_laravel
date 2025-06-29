@@ -24,7 +24,8 @@ class ProcessaResultadosController extends Controller
         $alunoId = $request->route('id');
 
         // Consultar dados do aluno
-        $aluno = DB::table('aluno')->where('id_aluno', $alunoId)->first();
+        $alunoDetalhado = \App\Models\Aluno::getAlunosDetalhados($alunoId);
+        $aluno = $alunoDetalhado[0] ?? null;
         
         if (!$aluno) {
             return redirect()->back()->with('error', 'Aluno não encontrado!');

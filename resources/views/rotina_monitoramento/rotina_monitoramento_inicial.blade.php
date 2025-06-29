@@ -103,6 +103,8 @@
                 <th>RA</th>
                 <th>Nome</th>
                 <th>Idade</th>
+                <th>Série</th>
+                <th>Período</th>
             </tr>
         </thead>
         <tbody>
@@ -110,6 +112,8 @@
                 <td>{{ $aluno->ra ?? '-' }}</td>
                 <td>{{ $aluno->nome ?? '-' }}</td>
                 <td>{{ $aluno->idade ?? '-' }}</td>
+                <td>{{ $aluno->serie_desc ?? '-' }}</td>
+                <td>{{ $aluno->periodo ?? '-' }}</td>
             </tr>
         </tbody>
     </table>

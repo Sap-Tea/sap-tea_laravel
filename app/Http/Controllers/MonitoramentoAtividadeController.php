@@ -22,6 +22,7 @@ class MonitoramentoAtividadeController extends Controller
     
     public function salvar(Request $request)
     {
+        
         // Código para salvar os dados do monitoramento
         try {
             DB::beginTransaction();
@@ -29,9 +30,9 @@ class MonitoramentoAtividadeController extends Controller
             // Validar os dados recebidos
             $request->validate([
                 'aluno_id' => 'required|integer|exists:aluno,alu_id',
-                'comunicacao' => 'sometimes|string',
-                'comportamento' => 'sometimes|string',
-                'socioemocional' => 'sometimes|string',
+                'comunicacao' => 'sometimes|array',
+                'comportamento' => 'sometimes|array',
+                'socioemocional' => 'sometimes|array',
             ]);
 
             $alunoId = $request->input('aluno_id');
@@ -42,14 +43,20 @@ class MonitoramentoAtividadeController extends Controller
             $dadosProcessados = [];
             
             foreach ($eixos as $eixo) {
-                $jsonData = $request->input($eixo);
-                if (!empty($jsonData)) {
-                    $dadosEixo = json_decode($jsonData, true);
+                $input = $request->input($eixo);
+                if (empty($input)) {
+                    $dadosProcessados[$eixo] = [];
+                } elseif (is_array($input)) {
+                    // Formulário tradicional: já é array
+                    $dadosProcessados[$eixo] = $input;
+                } elseif (is_string($input)) {
+                    // AJAX: é string JSON
+                    $dadosEixo = json_decode($input, true);
                     if (json_last_error() === JSON_ERROR_NONE) {
                         $dadosProcessados[$eixo] = $dadosEixo;
                     } else {
                         Log::error("Erro ao decodificar JSON para o eixo: {$eixo}", [
-                            'json' => $jsonData,
+                            'json' => $input,
                             'erro' => json_last_error_msg()
                         ]);
                         $dadosProcessados[$eixo] = [];
@@ -114,9 +121,30 @@ class MonitoramentoAtividadeController extends Controller
 
         $faseCadastro = $this->obterFaseAtual();
         $registrosSalvos = 0;
-        $timestampAtual = now()->timestamp;
+        $timestampBase = now()->timestamp;
+
+        // Loga o array recebido do request antes de qualquer filtro
+        Log::debug('Recebido do request para o eixo ' . $eixo, ['dados_recebidos' => $dados]);
+
+        // Filtra atividades inválidas (sem cod_atividade ou array vazio)
+        $dados = array_filter($dados, function($a) {
+            if (!is_array($a) || empty($a['cod_atividade'])) return false;
+            // Só descarta se data, sim e não estiverem todos vazios
+            return (
+                (!empty($a['data_inicial'])) ||
+                (!empty($a['sim_inicial'])) ||
+                (!empty($a['nao_inicial']))
+            );
+        });
+
+        Log::debug('Filtro de atividades válidas para o eixo ' . $eixo, ['dados_validos' => $dados, 'dados_recebidos' => $dados]);
 
         foreach ($dados as $indice => $atividade) {
+            Log::debug('Preparando para salvar registro', [
+                'eixo' => $eixo,
+                'atividade' => $atividade
+            ]);
+
             // Verifica se há um código de atividade válido
             if (empty($atividade['cod_atividade'])) {
                 Log::warning('Código de atividade não informado para o eixo: ' . $eixo, $atividade);
@@ -141,14 +169,15 @@ class MonitoramentoAtividadeController extends Controller
             ]);
 
             // Prepara os dados para salvar
+            $registro_timestamp = $timestampBase + $indice; // Garante valor único por linha
             $dadosSalvar = [
                 'aluno_id' => $alunoId,
                 'cod_atividade' => $codAtividade,
                 'fase_cadastro' => $faseCadastro,
-                'data_aplicacao' => $atividade['data_inicial'] ?? now()->toDateString(),
+                'data_aplicacao' => $atividade['data_inicial'] ?? null,
                 'realizado' => $realizado,
-                'observacoes' => $atividade['observacoes'] ?? '', // Força string vazia ao invés de null
-                'registro_timestamp' => $timestampAtual // Adiciona o timestamp atual
+                'observacoes' => isset($atividade['observacoes']) ? (string)$atividade['observacoes'] : '', // Força string
+                'registro_timestamp' => $registro_timestamp // Agora único por linha
             ];
             
             Log::debug('Dados preparados para salvar', [
@@ -191,15 +220,8 @@ class MonitoramentoAtividadeController extends Controller
                         // Cria um novo registro com o timestamp atual
                         $model::create($dadosSalvar);
                     } else {
-                        // Para outros eixos, mantém o comportamento original
-                        $model::updateOrCreate(
-                            [
-                                'aluno_id' => $alunoId,
-                                'cod_atividade' => $codAtividade,
-                                'fase_cadastro' => $faseCadastro
-                            ],
-                            $dadosSalvar
-                        );
+                        // Para comportamento e socioemocional, usar create() para garantir múltiplos registros
+                        $model::create($dadosSalvar);
                     }
                     $registrosSalvos++;
                 } catch (\Exception $e) {

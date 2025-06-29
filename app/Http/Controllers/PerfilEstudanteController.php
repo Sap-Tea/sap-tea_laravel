@@ -36,6 +36,7 @@ class PerfilEstudanteController extends Controller
         }
 
         $alunoDetalhado = \App\Models\Aluno::getAlunosDetalhados($aluno_id);
+
         $eixoCom = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $aluno_id)
             ->where('fase_inv_com_lin', 'In')
             ->first();

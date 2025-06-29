@@ -57,6 +57,7 @@ class Aluno extends Model
                       esc.esc_razao_social,
                       tm.desc_modalidade, -- Corrigido para buscar da tabela tipo_modalidade
                       ser.serie_desc,
+                  mat.periodo,
                       fk_cod_valor_turma,
                       org.org_razaosocial,
                       moda.id_modalidade,
@@ -70,7 +71,7 @@ class Aluno extends Model
                   LEFT JOIN funcionario AS fun ON fun.func_id = tur.fk_cod_func
                   LEFT JOIN escola AS esc ON CONVERT(esc.esc_inep USING utf8mb4) COLLATE utf8mb4_unicode_ci = CONVERT(tur.fk_inep USING utf8mb4) COLLATE utf8mb4_unicode_ci
                   LEFT JOIN tipo_funcao AS tp ON tp.tipo_funcao_id = fun.func_cod_funcao
-                  LEFT JOIN serie as ser ON ser.fk_mod_id = mat.fk_cod_mod
+                  LEFT JOIN serie as ser ON ser.serie_id = mat.fk_id_serie
                   LEFT JOIN orgao AS org ON org.org_id = esc.fk_org_esc_id
                   WHERE alu.alu_id =?";
 
