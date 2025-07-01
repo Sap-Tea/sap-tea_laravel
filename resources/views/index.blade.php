@@ -182,8 +182,9 @@
             </div>
 
             <div class="welcome-block">
-                <div style="font-size:1.15em; font-weight:600; color:#0056b3; margin-bottom:5px;">Bem-vindo ao SAP-TEA!</div>
-                <div style="font-size:1em; color:#222;">Esta é sua área inicial. Utilize o menu ao lado para acessar as funcionalidades.<br>Conte sempre com o suporte do SAP-TEA para apoiar o desenvolvimento dos estudantes TEA.<br><span style="color:#009688; font-weight:500;">"Juntos superando desafios, celebrando conquistas!"</span></div>
+                <div style="font-size:1.15em; font-weight:600; color:#0056b3; margin-bottom:5px;">Bem-vindo(a)!</div>
+                <div style="font-size:1em; color:#0056b3;">Utilize o menu para acessar as funcionalidades.<br>
+                <br><span style="color:#0056b3; font-weight:500;"></span></div>
             </div>
 
             <ul>
@@ -199,7 +200,7 @@
                         <i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇
                     </a>
                     <ul class="submenu">
-                      ->   <li><a href="{{ route('eixos.alunos') }}" class="menu-link" data-page="Sondagem Inicial">.1 Inicial</a></li>
+                       <li><a href="{{ route('eixos.alunos') }}" class="menu-link" data-page="Sondagem Inicial">.1 Inicial</a></li>
                         <li><a href="{{ route('sondagem.continuada1') }}" class="disabled" title="Em breve">.2 Continuada</a></li>
                         <li><a href="{{ route('sondagem.continuada2') }}" class="disabled" title="Em breve">.3 Continuada</a></li>
                         <li><a href="{{ route('sondagem.final') }}" class="disabled" title="Em breve">.4 Final</a></li>

@@ -5,6 +5,13 @@
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
 <link rel="stylesheet" href="{{ asset('css/atualiza_perfil_estudante.css') }}">
+<style>
+    /* Evita quebra de página em títulos ao gerar PDF */
+    h1, h2, h3, .no-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -390,10 +397,10 @@
             @endif
 
             <!-- Botões -->
-            <div class="button-group">
+            <div class="button-group no-break" style="text-align:right; margin-bottom:10px;">
                 <button type="submit" class="btn btn-primary" id="confirmar-alteracao" onclick="return confirm('Tem certeza que deseja atualizar o perfil do estudante?')">Confirma Alteração</button>
                 <a href="{{ route('index') }}" class="btn btn-danger">Cancelar</a>
-                <button type="button" class="pdf-button">Gerar PDF</button>
+                <button type="button" class="pdf-button btn btn-warning">Gerar PDF</button>
             </div>
         </form>
     <div class="logo-bg-bottom">
@@ -407,7 +414,92 @@
 
 @section('scripts')
 <!-- Scripts para geração de PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// Verifica se o jQuery já está carregado
+function checkJQuery() {
+    if (window.jQuery) {
+        initPdfGeneration();
+    } else {
+        // Se não estiver carregado, carrega o jQuery
+        const script = document.createElement('script');
+        script.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+        script.onload = initPdfGeneration;
+        document.head.appendChild(script);
+    }
+}
+
+function initPdfGeneration() {
+    $(document).on('click', '.pdf-button', function(e) {
+        e.preventDefault();
+        generatePdf(this);
+    });
+}
+
+function generatePdf(button) {
+    const originalText = $(button).text();
+    $(button).prop('disabled', true).text('Gerando PDF...');
+    if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+        alert('Erro ao carregar as bibliotecas necessárias. Recarregue a página.');
+        $(button).prop('disabled', false).text(originalText);
+        return;
+    }
+    try {
+        const { jsPDF } = window.jspdf;
+        const element = document.querySelector('.perfil-container');
+        const options = {
+            scale: 1.5, // ajuste fino para evitar cortes abruptos
+            useCORS: true,
+            allowTaint: true,
+            scrollY: 0,
+            windowHeight: document.documentElement.offsetHeight
+        };
+        html2canvas(element, options).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            let heightLeft = pdfHeight;
+            let position = 10;
+            const pageHeight = pdf.internal.pageSize.getHeight() - 20;
+            while (heightLeft > 0) {
+                pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
+                heightLeft -= pageHeight;
+                if (heightLeft > 0) {
+                    pdf.addPage();
+                    position = heightLeft - pdfHeight;
+                }
+            }
+            let nomeAluno = $(element).find('input[name="nome_aluno"]').val() || 'Estudante';
+            nomeAluno = nomeAluno
+                ? nomeAluno.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '')
+                : 'Estudante';
+            const hoje = new Date();
+            const dataAtual = [
+                String(hoje.getDate()).padStart(2, '0'),
+                String(hoje.getMonth() + 1).padStart(2, '0'),
+                hoje.getFullYear()
+            ].join('_');
+            const nomeArquivo = `PerfilEstudante_${nomeAluno}_${dataAtual}.pdf`;
+            pdf.save(nomeArquivo);
+        }).catch(error => {
+            alert('Ocorreu um erro ao gerar o PDF.');
+        }).finally(() => {
+            $(button).prop('disabled', false).text(originalText);
+        });
+    } catch (error) {
+        alert('Erro ao processar a geração do PDF.');
+        $(button).prop('disabled', false).text(originalText);
+    }
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkJQuery);
+} else {
+    checkJQuery();
+}
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <!-- Script para redirecionamento após atualização -->

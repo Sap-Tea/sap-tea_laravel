@@ -98,6 +98,14 @@ public function preenchimento()
     return $this->hasOne(PreenchimentoInventario::class, 'fk_id_aluno');
 }
 
+/**
+ * Relacionamento com o responsável
+ */
+public function responsavel()
+{
+    return $this->hasOne(Responsavel::class, 'aluno_id', 'alu_id');
+}
+
     /**
      * Relacionamento com as atividades de comunicação/linguagem
      */

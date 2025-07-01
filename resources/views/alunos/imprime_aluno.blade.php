@@ -44,7 +44,10 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                 <th>#</th>
                 <th>RA do estudante</th>
                 <th>Nome do estudante</th>
-                <th>Modalidade de Ensino</th>
+                <th>Série</th>
+                <th>Seguimento</th>
+                <th>Responsavel</th>
+                <th>Tel. Responsavel</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -55,13 +58,11 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <td>{{ $loop->iteration }}</td> 
                     <!-- Dados do aluno -->
                     <td>{{ $aluno->alu_ra }}</td>
-<td>{{ $aluno->alu_nome }}</td>
-<td>
-    @php
-        $modalidade = $aluno->matriculas->first()->modalidade->tipo->desc_modalidade ?? '-';
-    @endphp
-    {{ $modalidade }}
-</td>
+                    <td>{{ $aluno->alu_nome }}</td>
+                    <td>{{ $aluno->matriculas->first()->serie->desc_serie ?? ($aluno->matriculas->first()->turma->serie->desc_serie ?? '-') }}</td>
+                    <td>{{ $aluno->matriculas->first()->modalidade->tipo->desc_modalidade ?? '-' }}</td>
+                    <td>{{ $aluno->alu_nome_resp ?? '-' }}</td>
+                    <td>{{ $aluno->alu_tel_resp ?? '-' }}</td>
 
                     <!-- Botão cadastra perfil -->
                     <td>
@@ -101,7 +102,5 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
         </div>
     @endif
 
-    <!-- Botão Voltar -->
-    <a href="{{ route('index') }}" class="btn btn-secondary mt-3">Voltar -> Menu</a>
 </div>
 @endsection

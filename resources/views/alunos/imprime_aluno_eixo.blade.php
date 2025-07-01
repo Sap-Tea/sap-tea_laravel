@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>{{ $titulo ?? 'Relação dos estudantes' }}</h2>
+    <h2>{{ $titulo ?? 'Alunos matriculados' }}</h2>
 
     @if(isset($professor_nome))
         <div class="alert alert-secondary mb-3">
@@ -27,7 +27,7 @@
                 <th>RA do estudante</th>
                 <th>Nome do estudante</th>
                 <th>Nome da Escola</th>
-                <th>Modalidade de Ensino</th>
+                <th>Seguimento</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -48,7 +48,7 @@
                             @if(isset($botoes))
     @foreach($botoes as $botao)
         @if(!empty($aluno->alu_id))
-            <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $botao['classe'] }} btn-sm">{{ $botao['label'] }}</a>
+            <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $botao['classe'] }} btn-sm" @if($botao['label'] === 'Visualizar Rotina') style="display:none" @endif>{{ $botao['label'] }}</a>
         @endif
     @endforeach
 @endif
@@ -85,7 +85,6 @@
         </div>
     @endif
 
-    <!-- Botão Voltar -->
-    <a href="{{ route('index') }}" class="btn btn-secondary mt-3">Voltar -> Menu</a>
+
 </div>
 @endsection

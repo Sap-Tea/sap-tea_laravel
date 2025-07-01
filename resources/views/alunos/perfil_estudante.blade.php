@@ -44,6 +44,14 @@
 </style>
 
 <div class="container" style="max-width: 1200px; width: 95%; margin: 30px auto; padding: 0 15px;">
+        <div class="alert alert-info" style="background-color: #e7f4ff; border-left: 4px solid #007bff; color: #0056b3; padding: 15px; margin-bottom: 25px; border-radius: 4px;">
+            <p style="margin: 0; font-size: 1.15em; line-height: 1.7; font-weight: 500;">
+                Este documento deve ser atualizado regularmente, considerando os progressos e novas demandas. Os dados
+                devem ser tratados de forma confidencial e utilizados exclusivamente para o planejamento de ações que
+                promovam a inclusão e o desenvolvimento dos estudantes.
+            </p>
+        </div>
+        
         <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" onsubmit="return confirmSubmit(event)">
             @csrf
             <input type="hidden" name="is_confirmed" id="is_confirmed" value="0">
@@ -57,11 +65,11 @@
             <!-- Abas de etapas -->
             <div class="step-tabs" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;">
                 <button class="step-tab active" data-step="1" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Dados Pessoais</button>
-                <button class="step-tab" data-step="2" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Perfil do Estudante</button>
-                <button class="step-tab" data-step="3" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Personalidade</button>
-                <button class="step-tab" data-step="4" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Preferências</button>
-                <button class="step-tab" data-step="5" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Informações da Família</button>
-                <button class="step-tab" data-step="6" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Profissionais</button>
+                <button class="step-tab" data-step="2" style="min-width:180px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">I - Perfil do Estudante</button>
+                <button class="step-tab" data-step="3" style="min-width:180px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">II - Personalidade</button>
+                <button class="step-tab" data-step="4" style="min-width:180px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">III - Comunicação</button>
+                <button class="step-tab" data-step="5" style="min-width:280px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">IV - Preferências e Dificuldades</button>
+                <button class="step-tab" data-step="6" style="min-width:220px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">V - Informações da Família</button>
             </div>
 
             
@@ -249,7 +257,7 @@
 
             </div>
             
-            <!-- Etapa 3: Personalidade e Comunicação -->
+            <!-- Etapa 3: Personalidade -->
             <div class="step-content form-section" data-step="3" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
                 <div class="section-title">II - Personalidade</div>
                 <div class="row custom-row-gap align-items-end">
@@ -288,9 +296,13 @@
                         <textarea rows="3" name="objeto_apego" class="form-control"></textarea>
                     </div>
                 </div>
+            </div>
+
+            <!-- Etapa 4: III - Comunicação -->
+            <div class="step-content form-section" data-step="4">
                 <div class="section-title">III - Comunicação</div>
                 <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label>Precisa de comunicação alternativa para expressar-se?</label>
                         <select name="precisa_comunicacao" class="form-control" style="width:150px;max-width:100%;">
                             <option value="">Selecione</option>
@@ -298,13 +310,11 @@
                             <option value="0">Não</option>
                         </select>
                     </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label>Entende instruções dadas de forma verbal?</label>
                         <select name="entende_instrucao" class="form-control" style="width:150px;max-width:100%;">
-                        <option value="">Selecione</option>    
-                        <option value="1">Sim</option>
+                            <option value="">Selecione</option>
+                            <option value="1">Sim</option>
                             <option value="0">Não</option>
                         </select>
                     </div>
@@ -315,235 +325,133 @@
                         <textarea rows="3" name="recomenda_instrucao" class="form-control"></textarea>
                     </div>
                 </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como é o contato com o PC?</label>
-                        <textarea rows="3" name="contato_pc_04" class="form-control"></textarea>
+            </div>
+
+            <!-- Etapa 5: Preferências, sensibilidade e dificuldades -->
+            <div class="step-content form-section" data-step="5">
+                <div class="section-title">IV - Preferências, sensibilidade e dificuldades</div>
+                <div class="form-group">
+                    <label>Apresenta sensibilidade:</label>
+                    <div class="checkbox-group" style="display: flex; gap: 15px; margin-top: 5px;">
+                        <label style="font-weight: normal;"><input type="checkbox" name="sensibilidade[]" value="auditiva"> Auditiva</label>
+                        <label style="font-weight: normal;"><input type="checkbox" name="sensibilidade[]" value="visual"> Visual</label>
+                        <label style="font-weight: normal;"><input type="checkbox" name="sensibilidade[]" value="tatil"> Tátil</label>
+                        <label style="font-weight: normal;"><input type="checkbox" name="sensibilidade[]" value="outros"> Outros estímulos</label>
                     </div>
                 </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Apresenta sensibilidade auditiva, visual ou tátil (ASA)?</label>
-                        <select name="asa_04" class="form-control" style="width:150px;max-width:100%;">
-                            <option value="">Selecione</option>
-                            <option value="1">Sim</option>
-                            <option value="0">Não</option>
-                        </select>
+                <div class="form-group">
+                    <label>Caso sim, como manejar em sala de aula:</label>
+                    <textarea rows="3" name="manejo_sensibilidade" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Apresenta seletividade alimentar?</label>
+                    <select name="seletividade_alimentar" class="form-control" style="width:150px;max-width:100%;">
+                        <option value="">Selecione</option>
+                        <option value="1">Sim</option>
+                        <option value="0">Não</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alimentos preferidos:</label>
+                    <textarea rows="3" name="alimentos_preferidos" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Alimentos que evita:</label>
+                    <textarea rows="3" name="alimentos_evita" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Com quem tem mais afinidade na escola (professores, colegas)? Identifique</label>
+                    <textarea rows="3" name="afinidade_escola" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Como reage no contato com novas pessoas ou situações?</label>
+                    <textarea rows="3" name="reage_contato" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>O que ajuda a sua interação na escola e o que dificulta a sua interação na escola?</label>
+                    <textarea rows="3" name="ajuda_dificulta_interacao" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
+                    <textarea rows="3" name="interesses_especificos" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Como o(a) estudante aprende melhor?</label>
+                    <div class="checkbox-group" style="display: flex; gap: 15px; margin-top: 5px;">
+                        <label style="font-weight: normal;"><input type="checkbox" name="como_aprende_melhor[]" value="visual"> Recurso visual</label>
+                        <label style="font-weight: normal;"><input type="checkbox" name="como_aprende_melhor[]" value="auditivo"> Recurso auditivo</label>
+                        <label style="font-weight: normal;"><input type="checkbox" name="como_aprende_melhor[]" value="concreto"> Material concreto</label>
+                        <label style="font-weight: normal;"><input type="checkbox" name="como_aprende_melhor[]" value="outro"> Outro</label>
                     </div>
                 </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Apresenta seletividade alimentar?</label>
-                        <select name="seletividade_alimentar" class="form-control"  style="width:150px;max-width:100%;">
-                            <option value="">Selecione</option>
-                            <option value="1">Sim</option>
-                            <option value="0">Não</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
+                    <textarea rows="3" name="gosta_grupo_sozinho" class="form-control"></textarea>
                 </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Alimentos preferidos:</label>
-                        <textarea rows="3" name="alimentos_pref_04" class="form-control"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label>Quais estratégias são utilizadas e se mostram eficazes?</label>
+                    <textarea rows="3" name="estrategias_eficazes" class="form-control"></textarea>
                 </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Alimentos que evita:</label>
-                        <textarea rows="3" name="alimento_evita_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Com quem tem mais afinidade na escola (professores, colegas)? Identifique</label>
-                        <textarea rows="3" name="afinidade_escola" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como reage no contato com novas pessoas ou situações?</label>
-                        <textarea rows="3" name="reage_contato" class="form-control"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label>O que desperta seu interesse para realizar uma tarefa/atividade?</label>
+                    <textarea rows="3" name="interesse_tarefa" class="form-control"></textarea>
                 </div>
             </div>
-            
-            <!-- Etapa 4: Preferências -->
-            <div class="step-content form-section" data-step="4" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-                <div class="section-title">IV - Preferências</div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Apresenta sensibilidade auditiva, visual ou tátil (ASA)?</label>
-                        <select name="asa_04" class="form-control" style="width:150px;max-width:100%;">
-                            <option value="">Selecione</option>
-                            <option value="1">Sim</option>
-                            <option value="0">Não</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Apresenta seletividade alimentar?</label>
-                        <select name="seletividade_alimentar" class="form-control" style="width:150px;max-width:100%;">
-                            <option value="">Selecione</option>
-                            <option value="1">Sim</option>
-                            <option value="0">Não</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Alimentos preferidos:</label>
-                        <textarea rows="3" name="alimentos_pref_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Alimentos que evita:</label>
-                        <textarea rows="3" name="alimento_evita_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como é o contato com o PC?</label>
-                        <textarea rows="3" name="contato_pc_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como reage no contato com novas pessoas ou situações?</label>
-                        <textarea rows="3" name="reage_contato" class="form-control"></textarea>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Etapa 5: Preferências (continuação) e Família -->
-            <div class="step-content form-section" data-step="5" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-                <div class="section-title">IV - Preferências (Continuação)</div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>O que ajuda a sua interação na escola? O que dificulta a sua interação na escola?</label>
-                        <textarea rows="3" name="interacao_escola_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Há interesses específicos ou hiperfoco em algum tema ou atividade?</label>
-                        <textarea rows="3" name="interesse_atividade_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como o(a) estudante aprende melhor?</label>
-                        <div class="checkbox-group">
-                            <input type="checkbox" name="aprende_visual_04" value="1"><label for="r_visual">Recurso visual</label>
-                            <input type="checkbox" name="recurso_auditivo_04" value="1"><label for="r_auditivo">Recurso auditivo</label>
-                            <input type="checkbox" name="material_concreto_04" value="1"><label for="m_concreto">Material concreto</label>
-                            <input type="checkbox" name="outro_identificar_04" value="1"><label for="o_outro">Outro - identificar</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Descrição do outro identificar:</label>
-                        <textarea rows="3" name="descricao_outro_identificar_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Gosta de atividades em grupo ou prefere trabalhar sozinho?</label>
-                        <textarea rows="3" name="prefere_ts_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Quais estratégias são utilizadas e se mostram eficazes?</label>
-                        <textarea rows="3" name="mostram_eficazes_04" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>O que desperta seu interesse para realizar uma tarefa/atividade?</label>
-                        <textarea rows="3" name="realiza_tarefa_04" class="form-control"></textarea>
-                    </div>
-                </div>
+
+            <!-- Etapa 6: V - Informações da Família e Profissionais -->
+            <div class="step-content form-section" data-step="6">
                 <div class="section-title">V - Informações da família</div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
-                        <textarea rows="3" name="expectativas_familia" class="form-control"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
+                    <textarea rows="3" name="expectativas_familia" class="form-control"></textarea>
                 </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Existe alguma estratégia utilizada no contexto familiar que pode ser reaplicada na escola?</label>
-                        <textarea rows="3" name="estrategias_familia" class="form-control"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label>Existe alguma estratégia utilizada no contexto familiar que pode ser replicada na escola?</label>
+                    <textarea rows="3" name="estrategia_familiar" class="form-control"></textarea>
                 </div>
-                <div class="row custom-row-gap align-items-end">
-                    <div class="form-group col-md-12">
-                        <label>Como a família lida com situações de crise ou estresse do estudante?</label>
-                        <textarea rows="3" name="crise_estresse" class="form-control"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label>Como a família lida com situações de crise ou estresse do estudante?</label>
+                    <textarea rows="3" name="familia_crise_estresse" class="form-control"></textarea>
                 </div>
-            </div>
-            
-            <!-- Etapa 6: Cadastro de Profissionais -->
-            <div class="step-content form-section" data-step="6" style="border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-                <div class="section-title">Cadastro de Profissionais</div>
-                <div style="margin-bottom: 15px;">
+
+                <div class="section-title" style="margin-top: 30px; margin-bottom: 15px;">Cadastro de Profissionais</div>
+                <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
-                            <tr style="background-color: #0d6efd;">
-                                <th colspan="3" style="color: white; text-align: center; padding: 8px; font-weight: bold;">Profissionais que atendem o estudante</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered" style="margin-top: 0;">
-                        <thead>
                             <tr style="background-color: #e9ecef;">
-                                <th width="33%" style="text-align: center; padding: 8px; font-weight: bold; border: 1px solid #dee2e6;">Nome do Profissional</th>
-                                <th width="33%" style="text-align: center; padding: 8px; font-weight: bold; border: 1px solid #dee2e6;">Especialidade/Área</th>
-                                <th width="33%" style="text-align: center; padding: 8px; font-weight: bold; border: 1px solid #dee2e6;">Observações</th>
+                                <th style="text-align: center;">Nome do Profissional</th>
+                                <th style="text-align: center;">Especialidade/Área</th>
+                                <th style="text-align: center;">Observações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Linha 1 -->
-                            <tr style="background-color: #e6f2ff;">
+                            <tr>
                                 <td><input type="text" name="nome_profissional_01" class="form-control"></td>
                                 <td><input type="text" name="especialidade_profissional_01" class="form-control"></td>
                                 <td><input type="text" name="observacoes_profissional_01" class="form-control"></td>
                             </tr>
-                            <!-- Linha 2 -->
-                            <tr style="background-color: #e6f2ff;">
+                            <tr>
                                 <td><input type="text" name="nome_profissional_02" class="form-control"></td>
                                 <td><input type="text" name="especialidade_profissional_02" class="form-control"></td>
                                 <td><input type="text" name="observacoes_profissional_02" class="form-control"></td>
                             </tr>
-                            <!-- Linha 3 -->
-                            <tr style="background-color: #e6f2ff;">
+                            <tr>
                                 <td><input type="text" name="nome_profissional_03" class="form-control"></td>
                                 <td><input type="text" name="especialidade_profissional_03" class="form-control"></td>
                                 <td><input type="text" name="observacoes_profissional_03" class="form-control"></td>
                             </tr>
-                            <!-- Linha 4 -->
-                            <tr style="background-color: #e6f2ff;">
-                                <td><input type="text" name="nome_profissional_04" class="form-control"></td>
-                                <td><input type="text" name="especialidade_profissional_04" class="form-control"></td>
-                                <td><input type="text" name="observacoes_profissional_04" class="form-control"></td>
-                            </tr>
-                            <!-- Linha 5 -->
-                            <tr style="background-color: #e6f2ff;"> 
-                                <td><input type="text" name="nome_profissional_05" class="form-control"></td>
-                                <td><input type="text" name="especialidade_profissional_05" class="form-control"></td>
-                                <td><input type="text" name="observacoes_profissional_05" class="form-control"></td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
+                
+                <div class="form-buttons mt-3 text-center">
+                    <button type="submit" class="btn btn-success">Confirmar Alteração</button>
+                    <a href="#" class="btn btn-info">Gerar PDF</a>
+                </div>
             </div>
-            
+
+                        </tbody>
+                    </table>
             <!-- Navegação entre etapas -->
             <div class="step-navigation" style="margin-top: 30px;">
                 <div class="navigation-group">
@@ -571,69 +479,35 @@
     <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
 
     <script>
-    // Função para confirmar o envio do formulário
-    function confirmSubmit(event) {
-        // Se já foi confirmado, permite o envio
-        if (document.getElementById('is_confirmed').value === '1') {
-            return true;
-        }
-        
-        // Impede o envio padrão do formulário
-        event.preventDefault();
-        event.stopPropagation();
-        
-        // Mostra confirmação
-        if (confirm('Tem certeza que deseja finalizar e salvar os dados?')) {
-            // Marca como confirmado e envia o formulário
-            document.getElementById('is_confirmed').value = '1';
-            document.getElementById('perfilForm').submit();
-        }
-        
-        return false;
-    }
-    
-    // Script para paginação
-    // Função para inicializar o formulário
-    function initializeForm() {
-        const steps = document.querySelectorAll('.step-content');
-        const tabs = document.querySelectorAll('.step-tab');
-        const finishBtn = document.getElementById('finishBtn');
-        const prevBtn = document.getElementById('prevBtn');
+    document.addEventListener('DOMContentLoaded', function() {
+        const stepTabs = document.querySelectorAll('.step-tab');
+        const stepContents = document.querySelectorAll('.step-content');
         const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const progressBar = document.getElementById('progressBar');
         let currentStep = 1;
-        const totalSteps = steps.length;
-        let visitedSteps = new Set([1]); // Rastreia as etapas visitadas
-        
-        // Atualiza a barra de progresso
+        const totalSteps = stepContents.length;
+
         function updateProgressBar() {
-            const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
-            const progressBar = document.getElementById('progressBar');
-            if (progressBar) {
-                progressBar.style.width = percentage + '%';
-            }
+            const progress = totalSteps > 1 ? ((currentStep - 1) / (totalSteps - 1)) * 100 : 0;
+            progressBar.style.width = progress + '%';
         }
-        
-        // Mostra a etapa atual
-        function showStep(stepNumber) {
-            // Impede navegação direta para etapas não visitadas
-            if (stepNumber > 1 && !visitedSteps.has(stepNumber - 1) && stepNumber !== currentStep) {
-                alert('Por favor, preencha as etapas em ordem.');
-                return false;
-            }
-            
-            steps.forEach(step => step.classList.remove('active'));
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            document.querySelector(`.step-content[data-step="${stepNumber}"]`).classList.add('active');
-            document.querySelector(`.step-tab[data-step="${stepNumber}"]`).classList.add('active');
-            
-            // Mantém a lógica original de visibilidade dos botões
-            if (stepNumber === 1) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'block';
-                if (finishBtn) finishBtn.style.display = 'none';
-            } else if (stepNumber === totalSteps) {
-                prevBtn.style.display = 'block';
+
+        function showStep(step) {
+            stepContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
+
+            stepTabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.step-tab[data-step="${step}"]`).classList.add('active');
+
+            prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
+            nextBtn.style.display = step === totalSteps ? 'none' : 'inline-block';
+
+            currentStep = step;
                 nextBtn.style.display = 'none';
                 if (finishBtn) finishBtn.style.display = 'block';
             } else {

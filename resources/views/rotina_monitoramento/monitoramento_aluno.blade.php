@@ -4,6 +4,14 @@
 
 @section('styles')
 <style>
+    .no-break, h1, h2, h3 {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    .monitoring-container {
+        padding-bottom: 60px;
+    }
+
     .comunicacao-bg {
         background: #A1D9F6 !important;
     }
@@ -288,11 +296,12 @@
       text-align: center;
     }
 </style>
-@endsection
 
 @section('content')
+
 <form id="monitoramentoForm" method="POST" action="{{ route('monitoramento.salvar') }}">
     @csrf
+
     <input type="hidden" name="aluno_id" value="{{ $alunoId ?? '' }}">
 
 @php
@@ -539,23 +548,23 @@ if ($total_atividades_geral > 0) {
 
     @if($data_inicial_com_lin)
       <div style="color: #b30000; font-weight: bold; margin-bottom: 10px; font-size: 16px;">
-       <!-- Já se passaram {{ \Carbon\Carbon::parse($data_inicial_com_lin)->diffInDays(\Carbon\Carbon::now()) }} dias desde o início do prazo.
--->
-       Já se passaram x dias desde a realização da sondagem
+        Já se passaram {{ \Carbon\Carbon::parse($data_inicial_com_lin)->diffInDays(\Carbon\Carbon::now()) }} dias desde a realização da sondagem
+
+       
       </div>
     @endif
 
     <!-- INSTRUÇÕES -->
     <div class="instructions">
       <p><strong></strong></p>
-      <p>Caro(a) educador(a),
-Inicie diariamente com as atividades MINHA ROTINA e EMOCIONÔMETRO.
-Após a aplicação da(s) atividade(s), informe a data (campo obrigatório) e se houve necessidade de apoio (campo
-obrigatório).
-Registre aspectos relevantes no campo observação.
-REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
-</p>
-      <p><em>Observação: Em caso de dúvidas, consulte o suporte técnico ou administrativo para orientação.</em></p>
+      <p>Caro(a) educador(a),</p>
+      <p style="color: #0056b3;">
+        Inicie diariamente com as atividades MINHA ROTINA e EMOCIONÔMETRO.<br>
+        Após a aplicação da(s) atividade(s), informe a data (campo obrigatório) e se houve necessidade de apoio (campo obrigatório).<br>
+        Registre aspectos relevantes no campo observação.<br>
+        REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
+      </p>
+      <p style="color: #0056b3; font-style: italic;">Observação: Em caso de dúvidas, consulte o suporte técnico ou administrativo para orientação.</p>
     </div>
     
     <!-- Alerta sobre modo de visualização (inicialmente oculto) -->
@@ -627,11 +636,75 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
     </thead>
     <tbody>
       @php $idx = 0; @endphp
+@php
+    // Monta array de códigos já preenchidos para comunicação (por código)
+    $codigosPreenchidosCom = [];
+    if(isset($dadosMonitoramento['comunicacao'])) {
+        foreach($dadosMonitoramento['comunicacao'] as $cod => $registros) {
+            foreach($registros as $registro) {
+                $codigosPreenchidosCom[$cod][] = $registro['data_aplicacao'];
+            }
+        }
+    }
+@endphp
+@php
+    // Data de hoje no formato Y-m-d (igual ao salvo no banco)
+    $hoje = date('Y-m-d');
+@endphp
+@php
+    $contadoresCom = [];
+@endphp
+@php
+    // Se o agrupado tiver campo de data, filtrar por hoje
+    $dataHoje = date('Y-m-d');
+@endphp
 @foreach($comunicacao_linguagem_agrupado as $linha)
     @php
-        $key = 'com_' . $linha->cod_ati_com_lin;
-        $qtd = $norm_atividades[$key] ?? 0;
+        // Normaliza código para comparação
+        $codigo = strtoupper(trim($linha->cod_ati_com_lin));
+        $contadoresCom[$codigo] = ($contadoresCom[$codigo] ?? 0) + 1;
+        // Normaliza chaves do array de registros
+        $registrosHojeNorm = [];
+        foreach($comunicacaoRegistrosHoje as $k => $v) {
+            $registrosHojeNorm[strtoupper(trim($k))] = $v;
+        }
+        $totalJaRegistrado = $registrosHojeNorm[$codigo] ?? 0;
+        if ($contadoresCom[$codigo] <= $totalJaRegistrado) {
+            continue;
+        }
     @endphp
+    @php
+        // Se existir campo data_aplicacao, filtra
+        $temData = isset($linha->data_aplicacao) || isset($linha->data) || isset($linha->data_inicial);
+        $dataLinha = $linha->data_aplicacao ?? ($linha->data ?? ($linha->data_inicial ?? null));
+        if ($temData && $dataLinha && substr($dataLinha,0,10) !== $dataHoje) {
+            continue;
+        }
+    @endphp
+    @php
+        $codigo = $linha->cod_ati_com_lin;
+        $contadoresCom[$codigo] = ($contadoresCom[$codigo] ?? 0) + 1;
+        $totalJaRegistrado = $comunicacaoRegistrosHoje[$codigo] ?? 0;
+        // Só exibe se o número de repetições do código no formulário for MAIOR que o número de registros já feitos hoje
+        if ($contadoresCom[$codigo] <= $totalJaRegistrado) {
+            // Já atingiu o limite de registros para hoje, então pula (NÃO mostra)
+            continue;
+        }
+        $key = 'com_' . $codigo;
+        $qtd = $norm_atividades[$key] ?? 0;
+        $jaPreenchidoHoje = false;
+        if (!empty($codigosPreenchidosCom[$codigo])) {
+            foreach($codigosPreenchidosCom[$codigo] as $data) {
+                if ($data && substr($data,0,10) == $hoje) {
+                    $jaPreenchidoHoje = true;
+                    break;
+                }
+            }
+        }
+    @endphp
+    @if($jaPreenchidoHoje)
+        @continue
+    @endif
     @for($q=0; $q<$qtd; $q++)
         <tr data-eixo="comunicacao" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_com_lin }}">
             <td>
@@ -639,7 +712,7 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
                 <input type="hidden" name="comunicacao[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_com_lin }}">
             </td>
             <td>{{ $linha->desc_ati_com_lin }}</td>
-            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control"></td>
+            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
             <td class="text-center">
                 <input type="checkbox" name="comunicacao[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
             </td>
@@ -705,34 +778,73 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
     </thead>
     <tbody>
       @php $idx = 0; @endphp
-      @foreach($comportamento_agrupado as $linha)
-          {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
-          @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
-              @continue
-          @endif
-          @php
-              $key = 'comp_' . $linha->cod_ati_comportamento;
-              $qtd = $norm_atividades[$key] ?? 0;
-          @endphp
-          @for($q=0; $q<$qtd; $q++)
-              <tr data-eixo="comportamento" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_comportamento }}">
-                  <td>
-                      {{ $linha->cod_ati_comportamento }}
-                      <input type="hidden" name="comportamento[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_comportamento }}">
-                  </td>
-                  <td>{{ $linha->desc_ati_comportamento }}</td>
-                  <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" class="form-control"></td>
-                  <td class="text-center">
-                      <input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
-                  </td>
-                  <td class="text-center">
-                      <input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
-                  </td>
-                  <td><textarea name="comportamento[{{$idx}}][observacoes]" class="form-control"></textarea></td>
-              </tr>
-              @php $idx++; @endphp
-          @endfor
-      @endforeach
+      @php
+    // Monta array de códigos já preenchidos para comportamento (por código)
+    $codigosPreenchidosComp = [];
+    if(isset($dadosMonitoramento['comportamento'])) {
+        foreach($dadosMonitoramento['comportamento'] as $cod => $registros) {
+            foreach($registros as $registro) {
+                $codigosPreenchidosComp[$cod][] = $registro['data_aplicacao'];
+            }
+        }
+    }
+@endphp
+{{-- Debug comportamento --}}
+<pre style="color:blue; font-size:11px;">Códigos já registrados hoje (comportamento): {{ print_r($comportamentoRegistrosHoje, true) }}</pre>
+@php
+    $contadoresComp = [];
+@endphp
+@foreach($comportamento_agrupado as $linha)
+    {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
+    @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
+        @continue
+    @endif
+    @php
+        $codigo = $linha->cod_ati_comportamento;
+        // Debug cada código
+        echo "<div style='color:blue'>Código: $codigo | Já registrados hoje: ".($comportamentoRegistrosHoje[$codigo] ?? 0)."</div>";
+        $contadoresComp[$codigo] = ($contadoresComp[$codigo] ?? 0) + 1;
+        $totalJaRegistrado = $comportamentoRegistrosHoje[$codigo] ?? 0;
+    @endphp
+    @if($contadoresComp[$codigo] <= $totalJaRegistrado)
+        @continue
+    @endif
+           @php
+               $key = 'comp_' . $linha->cod_ati_comportamento;
+               $codigo = $linha->cod_ati_comportamento;
+               $qtd = $norm_atividades[$key] ?? 0;
+               $jaPreenchidoHoje = false;
+               if (!empty($codigosPreenchidosComp[$codigo])) {
+                   foreach($codigosPreenchidosComp[$codigo] as $data) {
+                       if ($data && substr($data,0,10) == $hoje) {
+                           $jaPreenchidoHoje = true;
+                           break;
+                       }
+                   }
+               }
+           @endphp
+           @if($jaPreenchidoHoje)
+               @continue
+           @endif
+           @for($q=0; $q<$qtd; $q++)
+               <tr data-eixo="comportamento" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_comportamento }}">
+                   <td>
+                       {{ $linha->cod_ati_comportamento }}
+                       <input type="hidden" name="comportamento[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_comportamento }}">
+                   </td>
+                   <td>{{ $linha->desc_ati_comportamento }}</td>
+                   <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
+                   <td class="text-center">
+                       <input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
+                   </td>
+                   <td class="text-center">
+                       <input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
+                   </td>
+                   <td><textarea name="comportamento[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+               </tr>
+               @php $idx++; @endphp
+           @endfor
+       @endforeach
     </tbody>
   </table>
 </div>
@@ -788,38 +900,77 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
     <tbody>
       @if(isset($socioemocional_atividades_ordenadas) && count($socioemocional_atividades_ordenadas) > 0)
           @php $idx = 0; @endphp
-          @foreach($socioemocional_agrupado as $linha)
-              @if(
-                  (isset($linha->cod_ati_int_soc) && $linha->cod_ati_int_soc === 'EIS01') ||
-                  (isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01') ||
-                  (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
-              )
-                  @continue
-              @endif
-              @php
-                  $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
-                  $key = 'soc_' . $cod;
-                  $qtd = $norm_atividades[$key] ?? 0;
-              @endphp
-              @for($q=0; $q<$qtd; $q++)
-                  <tr data-eixo="socioemocional" data-idx="{{$idx}}" data-cod-atividade="{{ $cod }}">
-                      <td>
-                          {{ $cod ?? 'N/A' }}
-                          <input type="hidden" name="socioemocional[{{$idx}}][cod_atividade]" value="{{ $cod }}">
-                      </td>
-                      <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
-                      <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" class="form-control"></td>
-                      <td class="text-center">
-                          <input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
-                      </td>
-                      <td class="text-center">
-                          <input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
-                      </td>
-                      <td><textarea name="socioemocional[{{$idx}}][observacoes]" class="form-control"></textarea></td>
-                  </tr>
-                  @php $idx++; @endphp
-              @endfor
-          @endforeach
+          @php
+    // Monta array de códigos já preenchidos para socioemocional (por código)
+    $codigosPreenchidosSoc = [];
+    if(isset($dadosMonitoramento['socioemocional'])) {
+        foreach($dadosMonitoramento['socioemocional'] as $cod => $registros) {
+            foreach($registros as $registro) {
+                $codigosPreenchidosSoc[$cod][] = $registro['data_aplicacao'];
+            }
+        }
+    }
+@endphp
+{{-- Debug socioemocional --}}
+<pre style="color:green; font-size:11px;">Códigos já registrados hoje (socioemocional): {{ print_r($socioemocionalRegistrosHoje, true) }}</pre>
+@php
+    $contadoresSoc = [];
+@endphp
+@foreach($socioemocional_agrupado as $linha)
+    @if(
+        (isset($linha->cod_ati_int_soc) && $linha->cod_ati_int_soc === 'EIS01') ||
+        (isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01') ||
+        (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
+    )
+        @continue
+    @endif
+    @php
+        $codigo = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
+        if (!$codigo) continue;
+        // Debug cada código
+        echo "<div style='color:green'>Código: $codigo | Já registrados hoje: ".($socioemocionalRegistrosHoje[$codigo] ?? 0)."</div>";
+        $contadoresSoc[$codigo] = ($contadoresSoc[$codigo] ?? 0) + 1;
+        $totalJaRegistrado = $socioemocionalRegistrosHoje[$codigo] ?? 0;
+    @endphp
+    @if($contadoresSoc[$codigo] <= $totalJaRegistrado)
+        @continue
+    @endif
+               @php
+                   $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
+                   $key = 'soc_' . $cod;
+                   $qtd = $norm_atividades[$key] ?? 0;
+                   $jaPreenchidoHoje = false;
+                   if (!empty($codigosPreenchidosSoc[$cod])) {
+                       foreach($codigosPreenchidosSoc[$cod] as $data) {
+                           if ($data && substr($data,0,10) == $hoje) {
+                               $jaPreenchidoHoje = true;
+                               break;
+                           }
+                       }
+                   }
+               @endphp
+               @if($jaPreenchidoHoje)
+                   @continue
+               @endif
+               @for($q=0; $q<$qtd; $q++)
+                   <tr data-eixo="socioemocional" data-idx="{{$idx}}" data-cod-atividade="{{ $cod }}">
+                       <td>
+                           {{ $cod ?? 'N/A' }}
+                           <input type="hidden" name="socioemocional[{{$idx}}][cod_atividade]" value="{{ $cod }}">
+                       </td>
+                       <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
+                       <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
+                       <td class="text-center">
+                           <input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
+                       </td>
+                       <td class="text-center">
+                           <input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
+                       </td>
+                       <td><textarea name="socioemocional[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+                   </tr>
+                   @php $idx++; @endphp
+               @endfor
+           @endforeach
       @else
           <tr>
               <td colspan="6" class="text-center">Nenhuma atividade socioemocional encontrada.</td>
@@ -874,10 +1025,13 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
                 <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
                     <i class="fas fa-arrow-left me-2"></i>Voltar
                 </button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i>
-                    <span class="btn-text">Salvar</span>
-                </button>
+                <button type="submit" class="btn btn-primary me-2">
+    <i class="fas fa-save me-2"></i>
+    <span class="btn-text">Salvar</span>
+</button>
+<button type="button" class="pdf-button btn btn-warning">
+    <i class="fas fa-file-pdf me-2"></i>Gerar PDF
+</button>
             </div>
         </div>
     </form>
@@ -928,6 +1082,90 @@ REVISE E CONFIRA AS INFORMAÇÕS REGISTRADAS ANTES DE SALVAR O DOCUMENTO.
   </div>
 </div>
 @endif
+@section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+function checkJQuery() {
+    if (window.jQuery) {
+        initPdfGeneration();
+    } else {
+        const script = document.createElement('script');
+        script.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+        script.onload = initPdfGeneration;
+        document.head.appendChild(script);
+    }
+}
+function initPdfGeneration() {
+    $(document).on('click', '.pdf-button', function(e) {
+        e.preventDefault();
+        generatePdf(this);
+    });
+}
+function generatePdf(button) {
+    const originalText = $(button).text();
+    $(button).prop('disabled', true).text('Gerando PDF...');
+    if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+        alert('Erro ao carregar as bibliotecas necessárias. Recarregue a página.');
+        $(button).prop('disabled', false).text(originalText);
+        return;
+    }
+    try {
+        const { jsPDF } = window.jspdf;
+        // Captura o container principal
+        const element = document.querySelector('.monitoring-container') || document.getElementById('monitoramentoForm');
+        const options = {
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: true,
+            scrollY: 0,
+            windowHeight: document.documentElement.offsetHeight
+        };
+        html2canvas(element, options).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            let heightLeft = pdfHeight;
+            let position = 10;
+            const pageHeight = pdf.internal.pageSize.getHeight() - 20;
+            while (heightLeft > 0) {
+                pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
+                heightLeft -= pageHeight;
+                if (heightLeft > 0) {
+                    pdf.addPage();
+                    position = heightLeft - pdfHeight;
+                }
+            }
+            let nomeAluno = @json($detalhe->alu_nome ?? 'Aluno');
+nomeAluno = nomeAluno
+    ? nomeAluno.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '')
+    : 'Aluno';
+            const hoje = new Date();
+            const dataAtual = [
+                String(hoje.getDate()).padStart(2, '0'),
+                String(hoje.getMonth() + 1).padStart(2, '0'),
+                hoje.getFullYear()
+            ].join('_');
+            const nomeArquivo = `${nomeAluno}_rotina_monitoramento_${dataAtual}.pdf`;
+            pdf.save(nomeArquivo);
+        }).catch(error => {
+            alert('Ocorreu um erro ao gerar o PDF.');
+        }).finally(() => {
+            $(button).prop('disabled', false).text(originalText);
+        });
+    } catch (error) {
+        alert('Erro ao processar a geração do PDF.');
+        $(button).prop('disabled', false).text(originalText);
+    }
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkJQuery);
+} else {
+    checkJQuery();
+}
+</script>
 @endsection
 
 @section('scripts')

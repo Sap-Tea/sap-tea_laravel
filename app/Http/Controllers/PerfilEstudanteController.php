@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Aluno; // Importa o modelo Aluno
 use Carbon\Carbon; // Para manipulação de datas
 use App\Models\PerfilEstudante;
+use App\Http\Controllers\MonitoramentoAtividadeController;
 
  
 
@@ -35,6 +36,122 @@ class PerfilEstudanteController extends Controller
             return back()->withErrors(['msg' => 'O aluno precisa ter registros em todos os eixos (Comunicação, Interação Socioemocional e Comportamento) para acessar esta rotina.']);
         }
 
+        // --- POPULAR ESTOQUE DE ATIVIDADES CASO NÃO EXISTA ---
+        \Log::info('Tentando popular estoque para o aluno', ['aluno_id' => $aluno_id]);
+        $existeEstoque = DB::table('estoque_atividades')->where('aluno_id', $aluno_id)->exists();
+        if (!$existeEstoque) {
+            // Comunicação/Linguagem
+            $Perguntas_eixo_comunicacao = [
+                'Amplia gradativamente seu vocabulário?',     
+                'Amplia gradativamente sua comunicação social?',
+                'Apresenta entonação vocal, com boa articulação e ritmo adequado?',
+                'Ativa conhecimentos prévios em situações de novas aprendizagens?',
+                'Categoriza diferentes elementos de acordo com critérios preestabelecidos?',
+                'Compreende e utiliza comunicação alternativa para comunicar-se?',
+                'Compreende que pode receber ajuda de pessoas conhecidas que estão ao seu redor?',
+                'Comunica fatos, acontecimentos e ações de seu cotidiano de modo compreensível, ainda que não seja por meio da linguagem verbal?',
+                'Comunica suas necessidades básicas (banheiro, água, comida, entre outros)?',
+                'Entende expressões faciais em uma conversa?',            
+                'Executa mais de um comando sequencialmente?',
+                'Expressa-se com clareza e objetividade?',
+                'Faz uso de expressões faciais para se comunicar?',
+                'Faz uso de gestos para se comunicar?',
+                'Identifica diferentes elementos, ampliando seu repertório?',
+                'Identifica semelhanças e diferenças entre elementos?',
+                'Inicia uma situação comunicativa?',
+                'Mantem uma situação comunicativa?',
+                'Nomeia as pessoas que fazem parte de sua rede de apoio?',
+                'Nomeia diferentes elementos, ampliando seu vocabulário?',
+                'Possui autonomia para se comunicar, mesmo em situações que geram conflito?',
+                'Realiza pareamento de elementos idênticos?',
+                'Reconhece e pareia elementos diferentes?',
+                'Reconhece visualmente estímulos apresentados?',
+                'Refere-se a si mesmo em primeira pessoa?',
+                'Respeita turnos de fala?',
+                'Responde ao ouvir seu nome?"',
+                'Solicita ajuda de pessoas que estão ao seu redor, quando necessário?',
+                'Utiliza linguagem não verbal para se comunicar?',
+                'Utiliza linguagem verbal para se comunicar?',
+                'Utiliza respostas simples para se comunicar?',
+                'Utiliza vocabulário adequado, de acordo com seu nível de desenvolvimento?'
+            ];
+            foreach ($Perguntas_eixo_comunicacao as $i => $descricao) {
+                DB::table('estoque_atividades')->updateOrInsert([
+                    'aluno_id' => $aluno_id,
+                    'eixo' => 'comunicacao',
+                    'cod_atividade' => 'ECM' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                ], [
+                    'descricao' => $descricao,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            // Comportamento
+            $perguntas_eixo_comportamento = [
+                'Adapta-se com flexibilidade a mudanças, em sua rotina (familiar, escolar e social)?',
+                'Apresenta autonomia na realização das atividades propostas?',
+                'Autorregula-se evitando comportamentos disruptivos em situações de desconforto?',
+                'Compreende acontecimentos de sua rotina por meio de ilustrações?',
+                'Compreende regras de convivência?',
+                'Entende ações de autocuidado?',
+                'Faz uso de movimentos corporais, como: apontar, movimentar a cabeça em sinal afirmativo/negativo, entre outros?',
+                'Imita gestos, movimentos e segue comandos?',
+                'Inicia e finaliza as atividades propostas diariamente?',
+                'Interage nos momentos de jogos, lazer e demais atividades, respeitando as regras de convivência?',
+                'Mantem a organização na sua rotina escolar?',
+                'Permanace sentado por mais de dez minutos para a realização das atividades?',
+                'Realiza ações motoras que envolvam movimento e equilíbrio?',
+                'Realiza atividades com atenção e tolerância?',
+                'Realiza, em sua rotina, ações de autocuidado com autonomia?',
+                'Reconhece e identifica alimentos que lhe são oferecidos?',
+                'Responde a comandos de ordem direta?'
+            ];
+            foreach ($perguntas_eixo_comportamento as $i => $descricao) {
+                DB::table('estoque_atividades')->updateOrInsert([
+                    'aluno_id' => $aluno_id,
+                    'eixo' => 'comportamento',
+                    'cod_atividade' => 'ECP' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                ], [
+                    'descricao' => $descricao,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            // Socioemocional
+            $eixo_int_socio_emocional = [
+                'Compartilha brinquedos e brincadeiras?',
+                'Compartilha interesses?',
+                'Controla suas emoções? (Autorregula-se)',
+                'Coopera em situações que envolvem interação?',
+                'Demonstra e compartilha afeto?',
+                'Demonstra interesse nas atividades propostas?',
+                'Expressa suas emoções?',
+                'Identifica/reconhece a emoção do outro?',
+                'Identifica/reconhece suas emoções?',
+                'Inicia e mantém interação em situações sociais?',
+                'Interage com o(a) professor(a), seus colegas e outras pessoas de seu convívio escolar?',
+                'Interage, fazendo contato visual?',
+                'Reconhece e entende seus sentimentos, pensamentos e comportamentos?',
+                'Relaciona-se, estabelecendo vínculos?',
+                'Respeita regras em jogos e brincadeiras?',
+                'Respeita regras sociais?',
+                'Responde a interações?',
+                'Solicita ajuda, quando necessário?'
+            ];
+            foreach ($eixo_int_socio_emocional as $i => $descricao) {
+                DB::table('estoque_atividades')->updateOrInsert([
+                    'aluno_id' => $aluno_id,
+                    'eixo' => 'socioemocional',
+                    'cod_atividade' => 'EIS' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                ], [
+                    'descricao' => $descricao,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+        \Log::info('Finalizou tentativa de popular estoque para o aluno', ['aluno_id' => $aluno_id]);
+
         $alunoDetalhado = \App\Models\Aluno::getAlunosDetalhados($aluno_id);
 
         $eixoCom = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $aluno_id)
@@ -57,6 +174,34 @@ class PerfilEstudanteController extends Controller
         $socioemocional_resultados = $socioemocional_resultados->sortBy(function($item) {
             return optional($item->proposta)->cod_pro_int_soc;
         })->values();
+
+        // DATA DE HOJE PARA FILTRO
+        $hoje = date('Y-m-d');
+
+        // Consultar quantas vezes cada código de atividade já foi registrado HOJE por eixo
+        $comportamentoRegistrosHoje = DB::table('cad_ativ_eixo_comportamento')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $aluno_id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+
+        $comunicacaoRegistrosHoje = DB::table('cad_ativ_eixo_com_lin')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $aluno_id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+
+        $socioemocionalRegistrosHoje = DB::table('cad_ativ_eixo_int_socio')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $aluno_id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
 
         // Buscar atividades do eixo comunicação/linguagem do aluno via JOIN
         $comunicacao_atividades = DB::table('atividade_com_lin as acom')
@@ -174,22 +319,71 @@ class PerfilEstudanteController extends Controller
             }
         }
 
-        return view('rotina_monitoramento.monitoramento_aluno', compact(
-            'alunoDetalhado',
-            'data_inicial_com_lin',
-            'professor_nome',
-            'comunicacao_atividades',
-            'comunicacao_atividades_ordenadas',
-            'comunicacao_atividades_assoc',
-            'comportamento_atividades',
-            'comportamento_atividades_ordenadas',
-            'comportamento_atividades_assoc',
-            'socioemocional_atividades',
-            'socioemocional_atividades_ordenadas',
-            'socioemocional_atividades_assoc',
-            'debug_atividades_agrupadas',
-            'total_eixos'
-        ));
+// --- NOVO BLOCO: Carregar códigos já preenchidos por eixo na data de hoje ---
+$hoje = date('Y-m-d');
+$codigosPreenchidosCom = [];
+$codigosPreenchidosComp = [];
+$codigosPreenchidosSoc = [];
+
+// Importa o controller de monitoramento
+$monitoramentoController = app(MonitoramentoAtividadeController::class);
+$dadosMonitoramento = $monitoramentoController->carregarParaView($aluno_id);
+
+// Comunicação
+if (!empty($dadosMonitoramento['comunicacao'])) {
+    foreach ($dadosMonitoramento['comunicacao'] as $cod => $registros) {
+        foreach ($registros as $registro) {
+            if (!empty($registro['data_aplicacao']) && $registro['data_aplicacao'] == $hoje) {
+                $codigosPreenchidosCom[] = $cod;
+                break;
+            }
+        }
+    }
+}
+// Comportamento
+if (!empty($dadosMonitoramento['comportamento'])) {
+    foreach ($dadosMonitoramento['comportamento'] as $cod => $registros) {
+        foreach ($registros as $registro) {
+            if (!empty($registro['data_aplicacao']) && $registro['data_aplicacao'] == $hoje) {
+                $codigosPreenchidosComp[] = $cod;
+                break;
+            }
+        }
+    }
+}
+// Socioemocional
+if (!empty($dadosMonitoramento['socioemocional'])) {
+    foreach ($dadosMonitoramento['socioemocional'] as $cod => $registros) {
+        foreach ($registros as $registro) {
+            if (!empty($registro['data_aplicacao']) && $registro['data_aplicacao'] == $hoje) {
+                $codigosPreenchidosSoc[] = $cod;
+                break;
+            }
+        }
+    }
+}
+
+return view('rotina_monitoramento.monitoramento_aluno', compact(
+    'alunoDetalhado',
+    'data_inicial_com_lin',
+    'professor_nome',
+    'comunicacao_atividades',
+    'comunicacao_atividades_ordenadas',
+    'comunicacao_atividades_assoc',
+    'comportamento_atividades',
+    'comportamento_atividades_ordenadas',
+    'comportamento_atividades_assoc',
+    'socioemocional_atividades',
+    'socioemocional_atividades_ordenadas',
+    'socioemocional_atividades_assoc',
+    'debug_atividades_agrupadas',
+    'total_eixos',
+    'hoje',
+    'codigosPreenchidosCom',
+    'codigosPreenchidosComp',
+    'codigosPreenchidosSoc',
+    'dadosMonitoramento'
+));
     }
 
     public function index()
@@ -244,7 +438,7 @@ public function index_inventario(Request $request)
     // Default: inventário
     return view('alunos.imprime_aluno_eixo', [
         'alunos' => $alunos,
-        'titulo' => 'Alunos do Professor',
+        'titulo' => 'Estudantes matriculados:',
         'rota_acao' => 'alunos.inventario',
         'rota_pdf' => 'visualizar.inventario',
         'exibeBotaoInventario' => true,
@@ -395,7 +589,6 @@ public function mostra_aluno_eixo($id)
                 $obj->desc_ati_int_soc = $item->desc_ati_int_soc;
                 $socioemocional_atividades_ordenadas->push($obj);
             }
-            $socioemocional_frequencias[$item->cod_ati_int_soc] = 0;
         }
         $socioemocional_atividades_ordenadas = $socioemocional_atividades_ordenadas->sortByDesc('cod_ati_int_socio')->values();
 
@@ -403,47 +596,45 @@ public function mostra_aluno_eixo($id)
         $comunicacao_propostas = \App\Models\PropostaComLin::all()->keyBy('id_pro_com_lin');
         $comportamento_propostas = \App\Models\PropostaComportamento::all()->keyBy('id_pro_comportamento');
         $socioemocional_propostas = \App\Models\PropostaIntSoc::all()->keyBy('id_pro_int_soc');
-        // Agrupamento debug igual rotina_monitoramento_aluno
-        $debug_atividades_agrupadas = [
-            'comunicacao' => DB::table('result_eixo_com_lin')
-                ->select(
-                    'fk_id_pro_com_lin as cod_ati_com_lin',
-                    'fk_hab_pro_com_lin',
-                    DB::raw('count(*) as qtd'),
-                    DB::raw('GROUP_CONCAT(id_result_eixo_com_lin) as ids'),
-                    DB::raw('MAX(date_cadastro) as ultima_data')
-                )
-                ->where('fk_result_alu_id_ecomling', $id)
-                ->groupBy('fk_id_pro_com_lin', 'fk_hab_pro_com_lin')
-                ->orderByRaw('cod_ati_com_lin DESC, qtd DESC')
-                ->get(),
-            'comportamento' => DB::table('result_eixo_comportamento')
-                ->select(
-                    'fk_id_pro_comportamento as cod_ati_comportamento',
-                    'fk_hab_pro_comportamento',
-                    DB::raw('count(*) as qtd'),
-                    DB::raw('GROUP_CONCAT(id_result_eixo_comportamento) as ids'),
-                    DB::raw('MAX(date_cadastro) as ultima_data')
-                )
-                ->where('fk_result_alu_id_comportamento', $id)
-                ->groupBy('fk_id_pro_comportamento', 'fk_hab_pro_comportamento')
-                ->orderByRaw('cod_ati_comportamento DESC, qtd DESC')
-                ->get(),
-            'socioemocional' => DB::table('result_eixo_int_socio')
-                ->select(
-                    'fk_id_pro_int_socio as cod_ati_int_soc',
-                    'fk_hab_pro_int_socio',
-                    DB::raw('count(*) as qtd'),
-                    DB::raw('GROUP_CONCAT(id_result_eixo_int_socio) as ids'),
-                    DB::raw('MAX(date_cadastro) as ultima_data')
-                )
-                ->where('fk_result_alu_id_int_socio', $id)
-                ->groupBy('fk_id_pro_int_socio', 'fk_hab_pro_int_socio')
-                ->orderByRaw('cod_ati_int_soc DESC, qtd DESC')
-                ->get(),
-        ];
-        // --- Agrupamento Comunicação/Linguagem ---
-$comunicacao_linguagem_agrupado = DB::select("
+
+        // DATA DE HOJE PARA FILTRO
+        $hoje = date('Y-m-d');
+        // Consultar quantas vezes cada código de atividade já foi registrado HOJE por eixo
+        $comportamentoRegistrosHoje = DB::table('cad_ativ_eixo_comportamento')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+        $comunicacaoRegistrosHoje = DB::table('cad_ativ_eixo_com_lin')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+        $socioemocionalRegistrosHoje = DB::table('cad_ativ_eixo_int_socio')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+
+        return view('rotina_monitoramento.monitoramento_aluno', [
+            'alunoDetalhado' => $alunoDetalhado,
+            'professor_nome' => $professor->func_nome,
+            'data_inicial_com_lin' => $data_inicial_com_lin,
+            'comunicacao_resultados' => $comunicacao_resultados,
+            
+            
+            
+            'comunicacao_atividades' => $comunicacao_atividades,
+            'comportamento_atividades' => $comportamento_atividades,
+            'socioemocional_atividades' => $socioemocional_atividades,
+            'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
+            'comunicacao_linguagem_agrupado' => DB::select("
     SELECT 
         r.fk_id_pro_com_lin,
         r.fk_result_alu_id_ecomling,
@@ -456,10 +647,8 @@ $comunicacao_linguagem_agrupado = DB::select("
     WHERE r.fk_result_alu_id_ecomling = ?
     GROUP BY r.fk_id_pro_com_lin, r.fk_result_alu_id_ecomling, r.tipo_fase_com_lin, a.cod_ati_com_lin, a.desc_ati_com_lin
     ORDER BY total DESC
-", [$id]);
-
-// --- Agrupamento Comportamento ---
-$comportamento_agrupado = DB::select("
+", [$id]),
+            'comportamento_agrupado' => DB::select("
     SELECT 
         r.fk_id_pro_comportamento,
         r.fk_result_alu_id_comportamento,
@@ -472,10 +661,8 @@ $comportamento_agrupado = DB::select("
     WHERE r.fk_result_alu_id_comportamento = ?
     GROUP BY r.fk_id_pro_comportamento, r.fk_result_alu_id_comportamento, r.tipo_fase_comportamento, a.cod_ati_comportamento, a.desc_ati_comportamento
     ORDER BY total DESC
-", [$id]);
-
-// --- Agrupamento Socioemocional ---
-$socioemocional_agrupado = DB::select("
+", [$id]),
+            'socioemocional_agrupado' => DB::select("
     SELECT 
         r.fk_id_pro_int_socio,
         r.fk_result_alu_id_int_socio,
@@ -488,47 +675,19 @@ $socioemocional_agrupado = DB::select("
     WHERE r.fk_result_alu_id_int_socio = ?
     GROUP BY r.fk_id_pro_int_socio, r.fk_result_alu_id_int_socio, r.tipo_fase_int_socio, a.cod_ati_int_soc, a.desc_ati_int_soc
     ORDER BY total DESC
-", [$id]);
-
-// Calcula o total de atividades em todos os eixos (soma dos campos 'total' dos agrupados)
-$total_eixos = 0;
-foreach ($comunicacao_linguagem_agrupado as $item) {
-    if (isset($item->total)) $total_eixos += (int)$item->total;
-}
-foreach ($comportamento_agrupado as $item) {
-    if (isset($item->total)) $total_eixos += (int)$item->total;
-}
-foreach ($socioemocional_agrupado as $item) {
-    if (isset($item->total)) $total_eixos += (int)$item->total;
-}
-
-// Carregar dados de monitoramento já cadastrados
-$monitoramentoController = new \App\Http\Controllers\MonitoramentoAtividadeController();
-$dadosMonitoramento = $monitoramentoController->carregarParaView($id);
-
-return view('rotina_monitoramento.monitoramento_aluno', [
-    'alunoDetalhado' => $alunoDetalhado,
-    'professor_nome' => $professor->func_nome,
-    'data_inicial_com_lin' => $data_inicial_com_lin,
-    'comunicacao_resultados' => $comunicacao_resultados,
-    'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
-    'comportamento_agrupado' => $comportamento_agrupado,
-    'socioemocional_agrupado' => $socioemocional_agrupado,
-    'comunicacao_atividades' => $comunicacao_atividades,
-    'comportamento_atividades' => $comportamento_atividades,
-    'socioemocional_atividades' => $socioemocional_atividades,
-    'comunicacao_atividades_ordenadas' => $comunicacao_atividades_ordenadas,
-    'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
-    'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
-    'comportamento_resultados' => $comportamento_resultados,
-    'socioemocional_resultados' => $socioemocional_resultados,
-    'comunicacao_propostas' => $comunicacao_propostas,
-    'comportamento_propostas' => $comportamento_propostas,
-    'socioemocional_propostas' => $socioemocional_propostas,
-    'debug_atividades_agrupadas' => $debug_atividades_agrupadas,
-    'total_eixos' => $total_eixos,
-    'dadosMonitoramento' => $dadosMonitoramento, // Adiciona os dados de monitoramento para a view
-]);
+", [$id]),
+            'comportamento_atividades_ordenadas' => $comportamento_atividades_ordenadas,
+            'socioemocional_atividades_ordenadas' => $socioemocional_atividades_ordenadas,
+            'comportamento_resultados' => $comportamento_resultados,
+            'socioemocional_resultados' => $socioemocional_resultados,
+            'comunicacao_propostas' => $comunicacao_propostas,
+            'comportamento_propostas' => $comportamento_propostas,
+            'socioemocional_propostas' => $socioemocional_propostas,
+            'comportamentoRegistrosHoje' => $comportamentoRegistrosHoje,
+            'comunicacaoRegistrosHoje' => $comunicacaoRegistrosHoje,
+            'socioemocionalRegistrosHoje' => $socioemocionalRegistrosHoje,
+            // Adicione outros dados necessários para a view
+        ]);
     }
 
     /**
