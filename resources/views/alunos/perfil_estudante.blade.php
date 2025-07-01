@@ -1,7 +1,17 @@
 @extends('index')
 
 @section('content')
-    <style>
+        <style>
+    label {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .form-control {
+        font-size: 0.9rem;
+    }
+    .section-title {
+        font-size: 1.1rem;
+    }
     .form-section {
         border: 3px solid #d1d5db; /* Borda mais grossa */
         border-radius: 10px;
@@ -58,18 +68,24 @@
             <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
             
             <h2>Perfil do Estudante</h2>
+            @if(session('success') && (count(old()) > 0 || request()->isMethod('post') || request()->isMethod('put')))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
             <!-- Barra de progresso -->
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <!-- Abas de etapas -->
-            <div class="step-tabs" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;">
-                <button class="step-tab active" data-step="1" style="min-width:120px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">Dados Pessoais</button>
-                <button class="step-tab" data-step="2" style="min-width:180px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">I - Perfil do Estudante</button>
-                <button class="step-tab" data-step="3" style="min-width:180px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">II - Personalidade</button>
-                <button class="step-tab" data-step="4" style="min-width:180px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">III - Comunicação</button>
-                <button class="step-tab" data-step="5" style="min-width:280px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">IV - Preferências e Dificuldades</button>
-                <button class="step-tab" data-step="6" style="min-width:220px;height:36px;font-size:1em;padding:0 18px;display:flex;align-items:center;">V - Informações da Família</button>
+            <div class="step-tabs" style="display:flex;flex-wrap:nowrap;gap:3px;justify-content:flex-start;margin-bottom:18px;overflow-x:auto;">
+                <button class="step-tab active" data-step="1" style="height: 42px; font-size: 0.8em; padding: 4px 4px; min-width:90px; white-space: normal; line-height: 1.1; text-align: center;">Dados Pessoais</button>
+                <button class="step-tab" data-step="2" style="height: 42px; font-size: 0.8em; padding: 4px 4px; min-width:90px; white-space: normal; line-height: 1.1; text-align: center;">I - Perfil do Estudante</button>
+                <button class="step-tab" data-step="3" style="height: 42px; font-size: 0.8em; padding: 4px 4px; min-width:90px; white-space: normal; line-height: 1.1; text-align: center;">II - Personalidade</button>
+                <button class="step-tab" data-step="4" style="height: 42px; font-size: 0.8em; padding: 4px 4px; min-width:90px; white-space: normal; line-height: 1.1; text-align: center;">III - Comunicação</button>
+                <button class="step-tab" data-step="5" style="height: 42px; font-size: 0.8em; padding: 4px 4px; min-width:90px; white-space: normal; line-height: 1.1; text-align: center;">IV - Preferências</button>
+                <button class="step-tab" data-step="6" style="height: 42px; font-size: 0.8em; padding: 4px 4px; min-width:90px; white-space: normal; line-height: 1.1; text-align: center;">V - Informações da Família</button>
+                <button class="step-tab" data-step="7" style="height: 42px; font-size: 0.8em; padding: 4px 4px; min-width:90px; white-space: normal; line-height: 1.1; text-align: center;">Cadastro de Profissionais</button>
             </div>
 
             
@@ -398,7 +414,7 @@
                 </div>
             </div>
 
-            <!-- Etapa 6: V - Informações da Família e Profissionais -->
+            <!-- Etapa 6: V - Informações da Família -->
             <div class="step-content form-section" data-step="6">
                 <div class="section-title">V - Informações da família</div>
                 <div class="form-group">
@@ -413,8 +429,12 @@
                     <label>Como a família lida com situações de crise ou estresse do estudante?</label>
                     <textarea rows="3" name="familia_crise_estresse" class="form-control"></textarea>
                 </div>
+                
+            </div>
 
-                <div class="section-title" style="margin-top: 30px; margin-bottom: 15px;">Cadastro de Profissionais</div>
+            <!-- Etapa 7: Cadastro de Profissionais -->
+            <div class="step-content form-section" data-step="7">
+                <div class="section-title">Cadastro de Profissionais</div>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -443,41 +463,24 @@
                         </tbody>
                     </table>
                 </div>
-                
                 <div class="form-buttons mt-3 text-center">
                     <button type="submit" class="btn btn-success">Confirmar Alteração</button>
                     <a href="#" class="btn btn-info">Gerar PDF</a>
                 </div>
             </div>
 
-                        </tbody>
-                    </table>
-            <!-- Navegação entre etapas -->
-            <div class="step-navigation" style="margin-top: 30px;">
-                <div class="navigation-group">
-                    <button type="button" class="prev-btn" id="prevBtn" style="display: none;">
-                        <i class="fas fa-arrow-left"></i> Anterior
-                    </button>
-                    <button type="button" class="next-btn" id="nextBtn" style="display: none;">
-                        <i class="fas fa-arrow-right"></i> Próximo
-                    </button>
-                </div>
-                <div class="action-group">
-                    <button type="button" class="finish-btn" id="finishBtn" style="display: none;">
-                        <i class="fas fa-check"></i> Finalizar
-                    </button>
-                    <button type="button" class="btn btn-danger cancel-btn">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                </div>
+            <div class="form-buttons-nav" style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">Anterior</button>
+                <button type="button" class="btn btn-primary" id="nextBtn">Próximo</button>
             </div>
         </form>
     </div>
+@endsection
 
+@section('scripts')
     <!-- Adicionar Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
-
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const stepTabs = document.querySelectorAll('.step-tab');
@@ -494,149 +497,51 @@
         }
 
         function showStep(step) {
+            // Hide all steps
             stepContents.forEach(content => {
                 content.classList.remove('active');
             });
+            // Show the current step
             document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
 
+            // Update active tab
             stepTabs.forEach(tab => {
                 tab.classList.remove('active');
             });
             document.querySelector(`.step-tab[data-step="${step}"]`).classList.add('active');
 
+            // Update button visibility
             prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
             nextBtn.style.display = step === totalSteps ? 'none' : 'inline-block';
 
             currentStep = step;
-                nextBtn.style.display = 'none';
-                if (finishBtn) finishBtn.style.display = 'block';
-            } else {
-                prevBtn.style.display = 'block';
-                nextBtn.style.display = 'block';
-                if (finishBtn) finishBtn.style.display = 'none';
-            }
-            
-            // Marca a etapa como visitada
-            visitedSteps.add(stepNumber);
-            
-            // Atualiza a barra de progresso
             updateProgressBar();
-            
-            // Salvar o estado atual no armazenamento de sessão
-            sessionStorage.setItem('currentStep', stepNumber);
-            
-            return true;
         }
-        
-        // Função para validar os campos da etapa atual
-        function validateCurrentStep() {
-            const currentStepElement = document.querySelector(`.step-content[data-step="${currentStep}"]`);
-            const requiredFields = currentStepElement.querySelectorAll('[required]');
-            let isValid = true;
-            
-            // Verifica campos obrigatórios
-            for (let i = 0; i < requiredFields.length; i++) {
-                const field = requiredFields[i];
-                if (!field.value.trim()) {
-                    isValid = false;
-                    // Rola até o primeiro campo inválido
-                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    break;
-                }
-            }
-            
-            if (!isValid) {
-                alert('Por favor, preencha todos os campos obrigatórios antes de continuar.');
-            }
-            
-            return isValid;
-        }
-        
-        // Eventos para os botões de navegação
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
-                if (currentStep > 1) {
-                    currentStep--;
-                    showStep(currentStep);
-                }
-            });
-        }
-        
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
-                if (currentStep < totalSteps) {
-                    // Valida os campos antes de avançar
-                    if (validateCurrentStep()) {
-                        currentStep++;
-                        showStep(currentStep);
-                    }
-                }
-            });
-        }
-        
-        // Evento para o botão Finalizar
-        if (finishBtn) {
-            finishBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Valida os campos da última etapa
-                if (!validateCurrentStep()) {
-                    return;
-                }
-                
-                // Marca como confirmado e envia o formulário
-                document.getElementById('is_confirmed').value = '1';
-                document.getElementById('perfilForm').submit();
-            });
-        }
-        
-        // Evento para o botão Cancelar
-        const cancelBtn = document.querySelector('.cancel-btn');
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Desabilita todos os botões para evitar múltiplos cliques
-                const allButtons = document.querySelectorAll('button');
-                allButtons.forEach(button => {
-                    button.disabled = true;
-                });
-                
-                // Redireciona para a página inicial
-                window.location.href = '{{ route('index') }}';
-            });
-        }
-        
-        // Eventos para as abas
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetStep = parseInt(this.getAttribute('data-step'));
-                
-                // Se estiver tentando avançar para uma etapa não visitada, valida a atual primeiro
-                if (targetStep > currentStep) {
-                    if (!validateCurrentStep()) {
-                        return;
-                    }
-                }
-                
-                currentStep = targetStep;
-                showStep(currentStep);
+
+        // Tab click event
+        stepTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const step = parseInt(this.getAttribute('data-step'));
+                showStep(step);
             });
         });
-        
-        // Sempre inicia na primeira etapa ao carregar a página
+
+        // Next button click event
+        nextBtn.addEventListener('click', function() {
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        });
+
+        // Previous button click event
+        prevBtn.addEventListener('click', function() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        });
+
+        // Initialize form by showing the first step
         showStep(1);
-    }
-
-    // Inicializa o formulário quando o DOM estiver pronto
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeForm);
-    } else {
-        initializeForm();
-    }
+    });
     </script>
-    
-
 @endsection
