@@ -713,7 +713,7 @@ if ($total_atividades_geral > 0) {
                 <input type="hidden" name="comunicacao[{{$idx}}][flag]" value="{{ $q + 1 }}">
             </td>
             <td>{{ $linha->desc_ati_com_lin }}</td>
-            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control" value="" required></td>
+            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control" value=""></td>
             <td class="text-center">
                 <input type="checkbox" name="comunicacao[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
             </td>
@@ -721,6 +721,9 @@ if ($total_atividades_geral > 0) {
                 <input type="checkbox" name="comunicacao[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
             </td>
             <td><textarea name="comunicacao[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="comunicacao" data-idx="{{$idx}}">Salvar linha</button>
+            </td>
         </tr>
         @php $idx++; @endphp
     @endfor
@@ -1695,28 +1698,49 @@ document.addEventListener('DOMContentLoaded', function() {
     aplicarExclusividadeCheckboxes();
     configurarBotaoSalvar();
 
-    // Validação global antes do envio
+    // Validação minimalista antes do envio
+    function validarLinhasMonitoramento() {
+        let erro = false;
+        let msg = '';
+        document.querySelectorAll('tr[data-eixo]').forEach(linha => {
+            const data = linha.querySelector('input[type="date"]')?.value?.trim();
+            const sim = linha.querySelector('input[type="checkbox"][name$="[sim_inicial]"]')?.checked;
+            const nao = linha.querySelector('input[type="checkbox"][name$="[nao_inicial]"]')?.checked;
+
+            // Ignora linhas totalmente vazias
+            if (!data && !sim && !nao) return;
+
+            // Não pode marcar os dois
+            if (sim && nao) {
+                erro = true;
+                msg = 'Marque apenas SIM ou NÃO (nunca os dois) nas linhas preenchidas.';
+            }
+
+            // Se preencheu só um dos campos (data ou checkbox), erro
+            if ((data && !(sim || nao)) || (!data && (sim || nao))) {
+                erro = true;
+                msg = 'Preencha a data E marque SIM ou NÃO nas linhas preenchidas.';
+            }
+        });
+        if (erro) {
+            const erroDiv = document.getElementById('erro-validacao-monitoramento');
+            if(erroDiv) {
+                erroDiv.textContent = msg || 'Há erro(s) nas linhas preenchidas.';
+                erroDiv.style.display = 'block';
+            } else {
+                alert(msg || 'Há erro(s) nas linhas preenchidas.');
+            }
+        }
+        return !erro;
+    }
+
     const form = document.getElementById('monitoramentoForm');
     if(form) {
         form.addEventListener('submit', function(e) {
-            // Limpa mensagem de erro
             const erroDiv = document.getElementById('erro-validacao-monitoramento');
             if(erroDiv) erroDiv.style.display = 'none';
-            window._erroValidacaoMonitoramento = false;
-            window._msgErroMonitoramento = '';
-
-            // Executa a função de formatação (que seta os flags de erro)
-            if(typeof formatarDadosFormulario === 'function') {
-                formatarDadosFormulario();
-            }
-            if(window._erroValidacaoMonitoramento) {
+            if(!validarLinhasMonitoramento()) {
                 e.preventDefault();
-                if(erroDiv) {
-                    erroDiv.textContent = window._msgErroMonitoramento || 'Há linhas inválidas. Corrija antes de enviar.';
-                    erroDiv.style.display = 'block';
-                } else {
-                    alert(window._msgErroMonitoramento || 'Há linhas inválidas. Corrija antes de enviar.');
-                }
                 return false;
             }
         });
