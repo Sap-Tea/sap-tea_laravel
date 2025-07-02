@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Aluno;
 use App\Models\AtividadeComunicacao;
 use App\Models\AtividadeComportamento;
 use App\Models\AtividadeSocioemocional;
-use Illuminate\Support\Facades\DB;
+use App\Models\ResultEixoComLin;
+use App\Models\ResultEixoComport;
+use App\Models\ResultEixoSocio;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class MonitoramentoAtividadeController extends Controller
 {
@@ -27,13 +30,7 @@ class MonitoramentoAtividadeController extends Controller
         try {
             DB::beginTransaction();
 
-            // Validar os dados recebidos
-            $request->validate([
-                'aluno_id' => 'required|integer|exists:aluno,alu_id',
-                'comunicacao' => 'sometimes|array',
-                'comportamento' => 'sometimes|array',
-                'socioemocional' => 'sometimes|array',
-            ]);
+
 
             $alunoId = $request->input('aluno_id');
             $faseCadastro = $this->obterFaseAtual();
@@ -126,18 +123,11 @@ class MonitoramentoAtividadeController extends Controller
         // Loga o array recebido do request antes de qualquer filtro
         Log::debug('Recebido do request para o eixo ' . $eixo, ['dados_recebidos' => $dados]);
 
-        // Filtra atividades inválidas (sem cod_atividade ou array vazio)
+        // NÃO filtra nada aqui, apenas garante que é array
         $dados = array_filter($dados, function($a) {
-            if (!is_array($a) || empty($a['cod_atividade'])) return false;
-            // Só descarta se data, sim e não estiverem todos vazios
-            return (
-                (!empty($a['data_inicial'])) ||
-                (!empty($a['sim_inicial'])) ||
-                (!empty($a['nao_inicial']))
-            );
+            return is_array($a);
         });
-
-        Log::debug('Filtro de atividades válidas para o eixo ' . $eixo, ['dados_validos' => $dados, 'dados_recebidos' => $dados]);
+        Log::debug('Filtro apenas para garantir array para o eixo ' . $eixo, ['dados_recebidos' => $dados]);
 
         foreach ($dados as $indice => $atividade) {
             // Verifica se já existe registro para este aluno, atividade e fase
@@ -178,8 +168,9 @@ class MonitoramentoAtividadeController extends Controller
             ]);
 
             // Validação linha a linha: só salva se data_aplicacao estiver preenchida E pelo menos um dos checkboxes de apoio estiver marcado
-            if (empty($atividade['data_inicial']) || 
-                (!isset($atividade['sim_inicial']) && !isset($atividade['nao_inicial']))) {
+            $sim = isset($atividade['sim_inicial']) && $atividade['sim_inicial'] == '1';
+            $nao = isset($atividade['nao_inicial']) && $atividade['nao_inicial'] == '1';
+            if (empty($atividade['data_inicial']) || (!$sim && !$nao)) {
                 Log::info("Linha ignorada por faltar data_inicial ou apoio (sim/nao)", ['atividade' => $atividade]);
                 continue; // Pula linhas incompletas
             }
@@ -212,6 +203,15 @@ class MonitoramentoAtividadeController extends Controller
                     'valor' => $dadosSalvar['observacoes'],
                     'tipo' => gettype($dadosSalvar['observacoes'])
                 ]);
+            }
+
+            // TENTATIVA DE INSERÇÃO DIRETA
+            try {
+                $model::create($dadosSalvar);
+                Log::info("Registro inserido com sucesso na tabela do eixo $eixo", ['dados' => $dadosSalvar]);
+                $registrosSalvos++;
+            } catch (\Exception $e) {
+                Log::error("Erro ao inserir registro na tabela do eixo $eixo: " . $e->getMessage(), ['dados' => $dadosSalvar]);
             }
 
             // Remove valores vazios, exceto os campos obrigatórios

@@ -1646,214 +1646,49 @@ function formatarDadosFormulario() {
     return formData;
 }
 
-
-
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Carregar dados salvos ao iniciar a página
-    const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
-    if (alunoId) {
-        carregarDadosMonitoramento(alunoId);
-    }
-    
-
-    
-    // Código para gerenciar checkboxes mutuamente exclusivos
-    document.querySelectorAll('.sim-checkbox, .nao-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const eixo = this.dataset.eixo;
-            const idx = this.dataset.idx;
-            const isSim = this.classList.contains('sim-checkbox');
-            
-            // Encontra o checkbox oposto
-            const outroCheckbox = document.querySelector(`.${isSim ? 'nao' : 'sim'}-checkbox[data-eixo="${eixo}"][data-idx="${idx}"]`);
-            
-            // Se este checkbox foi marcado, desmarca o oposto
-            if (this.checked && outroCheckbox) {
-                outroCheckbox.checked = false;
-            }
-            
-            // Se este checkbox foi desmarcado e o outro também, marca o oposto (se for o caso)
-            if (!this.checked && outroCheckbox && !outroCheckbox.checked) {
-                outroCheckbox.checked = true;
-            }
-        });
-    });
-    
-    // Código para o PDF
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    let y = 15;
-    
-    // ... código do PDF ...
-    
-    // Função para formatar data para o input type="date" (YYYY-MM-DD)
-    function formatarDataParaInput(dataString) {
-        if (!dataString) return '';
-        const data = new Date(dataString);
-        if (isNaN(data)) return '';
-        return data.toISOString().split('T')[0];
-    }
-    
-    // Função auxiliar para definir valores de formulário
-    function setFormValue(name, value) {
-        if (value === null || value === undefined) return;
-        const element = document.querySelector(`[name="${name}"]`);
-        if (element) {
-            element.value = value;
-        }
-    }
-    
-    // Função auxiliar para definir valores de checkbox
-    function setCheckboxValue(name, checked) {
-        const element = document.querySelector(`[name="${name}"]`);
-        if (element) {
-            element.checked = checked;
-        }
-    }
-    
-    // Função para formatar os dados do formulário para o formato esperado pelo backend
-    function formatarDadosFormulario() {
-        const formData = new FormData();
-        
-        // Adiciona o ID do aluno e o token CSRF
-        const alunoId = '{{ $alunoId ?? '' }}';
-        formData.append('aluno_id', alunoId);
-        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-        
-        // Formata os dados de cada eixo
-        const dados = {
-            comunicacao: formatarDadosEixo('comunicacao'),
-            comportamento: formatarDadosEixo('comportamento'),
-            socioemocional: formatarDadosEixo('socioemocional')
-        };
-        
-        // Adiciona os dados de cada eixo ao FormData como JSON
-        Object.entries(dados).forEach(([eixo, dadosEixo]) => {
-            formData.append(eixo, JSON.stringify(dadosEixo));
-        });
-        
-        return formData;
-    }
-    
-    // Já temos uma implementação desta função na formatarDadosFormulario()
-    
-    // Função para exibir mensagem de feedback ao usuário
-    function showMessage(message, type = 'success') {
-        // Remove mensagens anteriores
-        const existingAlerts = document.querySelectorAll('.alert');
-        existingAlerts.forEach(alert => alert.remove());
-        
-        // Cria a nova mensagem
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-        alertDiv.role = 'alert';
-        alertDiv.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-        `;
-        
-        // Adiciona a mensagem antes do formulário
-        const form = document.getElementById('monitoramentoForm');
-        form.parentNode.insertBefore(alertDiv, form);
-        
-        // Remove a mensagem após 5 segundos
-        setTimeout(() => {
-            alertDiv.classList.remove('show');
-            setTimeout(() => alertDiv.remove(), 150);
-        }, 5000);
-    }
-    
-// Script para garantir checkbox exclusivos e botão salvar funcionando
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Iniciando script de monitoramento');
-
-    // CORREÇÃO 1: APLICAR EXCLUSIVIDADE NOS CHECKBOXES
+    // Função para garantir que checkboxes de apoio (Sim/Não) sejam mutuamente exclusivos
     function aplicarExclusividadeCheckboxes() {
-        console.log('Aplicando exclusividade nos checkboxes');
-        
-        // Selecionar todos os checkboxes sim e não
-        const simCheckboxes = document.querySelectorAll('.sim-checkbox');
-        const naoCheckboxes = document.querySelectorAll('.nao-checkbox');
-        
-        console.log('Sim checkboxes encontrados:', simCheckboxes.length);
-        console.log('Não checkboxes encontrados:', naoCheckboxes.length);
-        
-        // Remover eventos antigos (se existirem) para evitar duplicação
-        simCheckboxes.forEach(checkbox => {
-            checkbox.removeEventListener('click', handleSimClick);
-            checkbox.addEventListener('click', handleSimClick);
-        });
-        
-        naoCheckboxes.forEach(checkbox => {
-            checkbox.removeEventListener('click', handleNaoClick);
-            checkbox.addEventListener('click', handleNaoClick);
+        document.querySelectorAll('.sim-checkbox, .nao-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (!this.checked) return;
+                const eixo = this.dataset.eixo;
+                const idx = this.dataset.idx;
+                const isSim = this.classList.contains('sim-checkbox');
+                const outroCheckbox = document.querySelector(
+                    `.${isSim ? 'nao-checkbox' : 'sim-checkbox'}[data-eixo="${eixo}"][data-idx="${idx}"]`
+                );
+                if (outroCheckbox) {
+                    outroCheckbox.checked = false;
+                }
+            });
         });
     }
-    
-    // Função manipuladora para checkbox SIM
-    function handleSimClick(e) {
-        const checkbox = e.target;
-        const eixo = checkbox.getAttribute('data-eixo');
-        const idx = checkbox.getAttribute('data-idx');
-        
-        console.log(`Clique em SIM: eixo=${eixo}, idx=${idx}`);
-        
-        const naoCheckbox = document.querySelector(`.nao-checkbox[data-eixo="${eixo}"][data-idx="${idx}"]`);
-        if (naoCheckbox && checkbox.checked) {
-            console.log('Desmarcando checkbox NÃO correspondente');
-            naoCheckbox.checked = false;
+
+    // Função para configurar o botão de salvar
+    function configurarBotaoSalvar() {
+        const btnSalvar = document.getElementById('btn-salvar');
+        const form = document.getElementById('monitoramentoForm');
+        if (btnSalvar && form) {
+            btnSalvar.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Confirma o salvamento dos dados de monitoramento?')) {
+                    form.submit();
+                }
+            });
         }
     }
-    
-    // Função manipuladora para checkbox NÃO
-    function handleNaoClick(e) {
-        const checkbox = e.target;
-        const eixo = checkbox.getAttribute('data-eixo');
-        const idx = checkbox.getAttribute('data-idx');
-        
-        console.log(`Clique em NÃO: eixo=${eixo}, idx=${idx}`);
-        
-        const simCheckbox = document.querySelector(`.sim-checkbox[data-eixo="${eixo}"][data-idx="${idx}"]`);
-        if (simCheckbox && checkbox.checked) {
-            console.log('Desmarcando checkbox SIM correspondente');
-            simCheckbox.checked = false;
-        }
-    }
-    
-    // CORREÇÃO 2: BOTÃO SALVAR FUNCIONANDO
-    const btnSalvar = document.getElementById('btn-salvar');
-    const form = document.getElementById('monitoramentoForm');
-    
-    if (btnSalvar && form) {
-        console.log('Botão salvar e formulário encontrados');
-        
-        btnSalvar.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Botão salvar clicado');
-            
-            if (confirm('Confirma o salvamento dos dados de monitoramento?')) {
-                console.log('Salvamento confirmado, enviando formulário');
-                form.submit(); // MÉTODO SIMPLES E DIRETO
-            }
-        });
-    } else {
-        console.error('Botão salvar ou formulário não encontrados!');
-    }
-    
-    // Aplicar exclusividade imediatamente
+
+    // Execução
     aplicarExclusividadeCheckboxes();
-    
-    // Se já houver uma função de carregamento de dados, sobrescrever para configurar checkboxes após carregamento
-    if (typeof carregarDadosMonitoramento === 'function') {
-        const originalCarregar = carregarDadosMonitoramento;
-        window.carregarDadosMonitoramento = function(alunoId) {
-            console.log('Interceptando chamada de carregamento para ID:', alunoId);
-            const result = originalCarregar(alunoId);
-            
-            // Garantir exclusividade depois que os dados forem carregados
-            setTimeout(aplicarExclusividadeCheckboxes, 1000);
-            return result;
-        };
+    configurarBotaoSalvar();
+
+    const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
+    if (alunoId && typeof carregarDadosMonitoramento === 'function') {
+        carregarDadosMonitoramento(alunoId).then(() => {
+            aplicarExclusividadeCheckboxes();
+        });
     }
 });
 </script>
