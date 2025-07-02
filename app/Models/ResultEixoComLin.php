@@ -14,6 +14,7 @@ class ResultEixoComLin extends Model
         'fk_result_alu_id_ecomling',
         'date_cadastro',
         'tipo_fase_com_lin',
+        'flag'
     ];
     public function proposta()
     {

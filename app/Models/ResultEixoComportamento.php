@@ -19,5 +19,6 @@ class ResultEixoComportamento extends Model
         'fk_result_alu_id_comportamento',
         'date_cadastro',
         'tipo_fase_comportamento',
+        'flag'
     ];
 }

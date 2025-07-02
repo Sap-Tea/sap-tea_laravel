@@ -177,11 +177,13 @@ class MonitoramentoAtividadeController extends Controller
                 'tipo_observacoes' => gettype($atividade['observacoes'] ?? null)
             ]);
 
-            // Validação cautelosa: só salva se data_aplicacao e realizado estiverem preenchidos
-            if (empty($atividade['data_inicial']) || !isset($atividade['realizado']) || $atividade['realizado'] === '') {
-                Log::info("Linha ignorada por faltar data_inicial ou realizado", ['atividade' => $atividade]);
+            // Validação linha a linha: só salva se data_aplicacao estiver preenchida E pelo menos um dos checkboxes de apoio estiver marcado
+            if (empty($atividade['data_inicial']) || 
+                (!isset($atividade['sim_inicial']) && !isset($atividade['nao_inicial']))) {
+                Log::info("Linha ignorada por faltar data_inicial ou apoio (sim/nao)", ['atividade' => $atividade]);
                 continue; // Pula linhas incompletas
             }
+
             // Prepara os dados para salvar
             $registro_timestamp = $timestampBase + $indice; // Garante valor único por linha
             $dadosSalvar = [

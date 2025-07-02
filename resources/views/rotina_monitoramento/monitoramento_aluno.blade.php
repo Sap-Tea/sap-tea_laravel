@@ -713,7 +713,7 @@ if ($total_atividades_geral > 0) {
                 <input type="hidden" name="comunicacao[{{$idx}}][flag]" value="{{ $q + 1 }}">
             </td>
             <td>{{ $linha->desc_ati_com_lin }}</td>
-            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
+            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control" value="" required></td>
             <td class="text-center">
                 <input type="checkbox" name="comunicacao[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
             </td>
@@ -835,7 +835,7 @@ if ($total_atividades_geral > 0) {
                        <input type="hidden" name="comportamento[{{$idx}}][flag]" value="{{ ($contadoresComp[$linha->cod_ati_comportamento] ?? 0) + $q + 1 }}">
                    </td>
                    <td>{{ $linha->desc_ati_comportamento }}</td>
-                   <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
+                   <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" class="form-control" value="" required></td>
                    <td class="text-center">
                        <input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
                    </td>
@@ -962,7 +962,7 @@ if ($total_atividades_geral > 0) {
                            <input type="hidden" name="socioemocional[{{$idx}}][flag]" value="{{ ($contadoresSoc[$cod] ?? 0) + $q + 1 }}">
                        </td>
                        <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
-                       <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
+                       <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" class="form-control" value="" required></td>
                        <td class="text-center">
                            <input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
                        </td>
