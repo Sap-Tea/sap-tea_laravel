@@ -722,7 +722,7 @@ if ($total_atividades_geral > 0) {
             </td>
             <td><textarea name="comunicacao[{{$idx}}][observacoes]" class="form-control"></textarea></td>
             <td class="text-center">
-                <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="comunicacao" data-idx="{{$idx}}">Salvar linha</button>
+                <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="comunicacao" data-idx="{{$idx}}">Salvar atividade</button>
             </td>
         </tr>
         @php $idx++; @endphp
@@ -846,6 +846,9 @@ if ($total_atividades_geral > 0) {
                        <input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
                    </td>
                    <td><textarea name="comportamento[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+<td class="text-center">
+    <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="comportamento" data-idx="{{$idx}}">Salvar atividade</button>
+</td>
                </tr>
                @php $idx++; @endphp
            @endfor
@@ -973,6 +976,9 @@ if ($total_atividades_geral > 0) {
                            <input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
                        </td>
                        <td><textarea name="socioemocional[{{$idx}}][observacoes]" class="form-control"></textarea></td>
+<td class="text-center">
+    <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="socioemocional" data-idx="{{$idx}}">Salvar atividade</button>
+</td>
                    </tr>
                    @php $idx++; @endphp
                @endfor
