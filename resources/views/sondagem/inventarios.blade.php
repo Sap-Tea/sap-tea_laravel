@@ -45,7 +45,7 @@
         <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" class="logo-right">
 
         <h1>SONDAGEM PEDAGÓGICA 1 - INICIAL</h1>
-        <p>Secretaria de Educação do Município</p>
+        
         <div class="fields">
             <div class="fields">
                 <p>Data de inicio inventario:
