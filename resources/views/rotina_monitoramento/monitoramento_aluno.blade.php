@@ -1599,18 +1599,24 @@ function formatarDadosFormulario() {
             
             console.log(`Dados formatados para ${codAtividade}:`, item);
             
-            // Verifica se há dados relevantes para salvar
-            const temDadosRelevantes = (
-                (realizado !== null) ||  // Tem um valor de realizado
-                (dataAplicacao && dataAplicacao.trim() !== '') || // Tem data de aplicação
-                (observacoes && observacoes.trim() !== '')  // Tem observações (mesmo que vazias, o backend trata)
-            );
-            
-            if (temDadosRelevantes) {
-                dados.push(item);
-                console.log(`Item adicionado para ${codAtividade}`);
+            // NOVA VALIDAÇÃO: só valida linhas "preenchidas"
+            const dataPreenchida = dataAplicacao && dataAplicacao.trim() !== '';
+            const algumCheckboxMarcado = simInicial || naoInicial;
+            const doisCheckboxMarcados = simInicial && naoInicial;
+
+            // Só valida se pelo menos um campo foi preenchido (data OU algum checkbox)
+            if (dataPreenchida || algumCheckboxMarcado) {
+                if (dataPreenchida && algumCheckboxMarcado && !doisCheckboxMarcados) {
+                    dados.push(item);
+                    console.log(`Item VÁLIDO adicionado para ${codAtividade}`);
+                } else {
+                    window._erroValidacaoMonitoramento = true;
+                    window._msgErroMonitoramento = 'Preencha a data de aplicação E marque apenas Sim OU Não para cada linha preenchida.';
+                    console.warn(`Linha INVÁLIDA para ${codAtividade}: data ou checkbox faltando ou ambos checkboxes marcados.`);
+                }
             } else {
-                console.log(`Item ignorado para ${codAtividade} - sem dados relevantes`);
+                // Ambos vazios, ignora (não bloqueia submit)
+                console.log(`Item ignorado para ${codAtividade} - ambos campos vazios`);
             }
         });
         
@@ -1662,6 +1668,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (outroCheckbox) {
                     outroCheckbox.checked = false;
                 }
+                // Garante que nunca ambos fiquem marcados
+                setTimeout(() => {
+                    if (isSim && outroCheckbox && outroCheckbox.checked) outroCheckbox.checked = false;
+                    if (!isSim && outroCheckbox && outroCheckbox.checked) outroCheckbox.checked = false;
+                }, 10);
             });
         });
     }
@@ -1683,6 +1694,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // Execução
     aplicarExclusividadeCheckboxes();
     configurarBotaoSalvar();
+
+    // Validação global antes do envio
+    const form = document.getElementById('monitoramentoForm');
+    if(form) {
+        form.addEventListener('submit', function(e) {
+            // Limpa mensagem de erro
+            const erroDiv = document.getElementById('erro-validacao-monitoramento');
+            if(erroDiv) erroDiv.style.display = 'none';
+            window._erroValidacaoMonitoramento = false;
+            window._msgErroMonitoramento = '';
+
+            // Executa a função de formatação (que seta os flags de erro)
+            if(typeof formatarDadosFormulario === 'function') {
+                formatarDadosFormulario();
+            }
+            if(window._erroValidacaoMonitoramento) {
+                e.preventDefault();
+                if(erroDiv) {
+                    erroDiv.textContent = window._msgErroMonitoramento || 'Há linhas inválidas. Corrija antes de enviar.';
+                    erroDiv.style.display = 'block';
+                } else {
+                    alert(window._msgErroMonitoramento || 'Há linhas inválidas. Corrija antes de enviar.');
+                }
+                return false;
+            }
+        });
+    }
 
     const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
     if (alunoId && typeof carregarDadosMonitoramento === 'function') {
