@@ -182,33 +182,39 @@
         </div>
         <div class="inventory-data">
             <!-- Seção Responsável e Suporte -->
-            <div class="section">
-                <h3>Responsável pelo Preenchimento:</h3>
-                <p>
-                    @if($preenchimento->professor_responsavel == 1)
-                        Professor de sala Regular
-                    @else
-                        Professor do Atendimento Educacional Especializado (AEE)
-                    @endif
-                </p>
-
-                <h3>Nível de Suporte:</h3>
-                <p>
-                    @switch($preenchimento->nivel_suporte)
-                        @case(1) Nível 1 - Pouco apoio @break
-                        @case(2) Nível 2 - Apoio substancial @break
-                        @case(3) Nível 3 - Apoio muito substancial @break
-                    @endswitch
-                </p>
-
-                <h3>Forma de Comunicação:</h3>
-                <p>
-                    @switch($preenchimento->nivel_comunicacao)
-                        @case(1) Verbal @break
-                        @case(2) Não verbal com métodos alternativos @break
-                        @case(3) Não verbal @break
-                    @endswitch
-                </p>
+            <div class="section" style="max-width: 500px; margin: 0 0 16px 0;">
+                <table style="width:100%; background: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 8px #0001;">
+                    <tr>
+                        <th style="text-align:left; width: 50%;">Responsável pelo Preenchimento:</th>
+                        <td>
+                            @if($preenchimento->professor_responsavel == 1)
+                                Professor de sala Regular
+                            @else
+                                Professor do Atendimento Educacional Especializado (AEE)
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:left;">Nível de Suporte:</th>
+                        <td>
+                            @switch($preenchimento->nivel_suporte)
+                                @case(1) Nível 1 - Pouco apoio @break
+                                @case(2) Nível 2 - Apoio substancial @break
+                                @case(3) Nível 3 - Apoio muito substancial @break
+                            @endswitch
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:left;">Forma de Comunicação:</th>
+                        <td>
+                            @switch($preenchimento->nivel_comunicacao)
+                                @case(1) Verbal @break
+                                @case(2) Não verbal com métodos alternativos @break
+                                @case(3) Não verbal @break
+                            @endswitch
+                        </td>
+                    </tr>
+                </table>
             </div>
 
             <!-- Eixo Comunicação/Linguagem -->
