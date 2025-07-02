@@ -177,16 +177,22 @@ class MonitoramentoAtividadeController extends Controller
                 'tipo_observacoes' => gettype($atividade['observacoes'] ?? null)
             ]);
 
+            // Validação cautelosa: só salva se data_aplicacao e realizado estiverem preenchidos
+            if (empty($atividade['data_inicial']) || !isset($atividade['realizado']) || $atividade['realizado'] === '') {
+                Log::info("Linha ignorada por faltar data_inicial ou realizado", ['atividade' => $atividade]);
+                continue; // Pula linhas incompletas
+            }
             // Prepara os dados para salvar
             $registro_timestamp = $timestampBase + $indice; // Garante valor único por linha
             $dadosSalvar = [
                 'aluno_id' => $alunoId,
                 'cod_atividade' => $codAtividade,
                 'fase_cadastro' => $faseCadastro,
-                'data_aplicacao' => $atividade['data_inicial'] ?? null,
+                'data_aplicacao' => $atividade['data_inicial'],
                 'realizado' => $realizado,
                 'observacoes' => isset($atividade['observacoes']) ? (string)$atividade['observacoes'] : '', // Força string
-                'registro_timestamp' => $registro_timestamp // Agora único por linha
+                'registro_timestamp' => $registro_timestamp, // Agora único por linha
+                'flag' => isset($atividade['flag']) ? intval($atividade['flag']) : 1 // Sempre inteiro
             ];
             
             Log::debug('Dados preparados para salvar', [
@@ -224,14 +230,8 @@ class MonitoramentoAtividadeController extends Controller
             $camposRelevantes = array_diff(array_keys($dadosSalvar), ['aluno_id', 'cod_atividade', 'fase_cadastro']);
             if (!empty($camposRelevantes)) {
                 try {
-                    // Para o eixo de comunicação, usamos uma chave única que inclui o timestamp
-                    if ($eixo === 'comunicacao') {
-                        // Cria um novo registro com o timestamp atual
-                        $model::create($dadosSalvar);
-                    } else {
-                        // Para comportamento e socioemocional, usar create() para garantir múltiplos registros
-                        $model::create($dadosSalvar);
-                    }
+                    // Cria um novo registro com os dados fornecidos, incluindo o flag
+                    $model::create($dadosSalvar);
                     $registrosSalvos++;
                 } catch (\Exception $e) {
                     Log::error("Erro ao salvar atividade do eixo $eixo: " . $e->getMessage(), [
@@ -307,6 +307,12 @@ class MonitoramentoAtividadeController extends Controller
             ];
             $dados = [];
             $faseCadastro = $this->obterFaseAtual();
+            // Adiciona também uma lista de combinações já cadastradas para marcação na view
+            $jaCadastradas = [
+                'comunicacao' => [],
+                'comportamento' => [],
+                'socioemocional' => []
+            ];
             foreach ($eixos as $tipo => $modelClass) {
                 // Busca todos os registros do aluno e fase
                 $registros = $modelClass::where('aluno_id', $alunoId)
@@ -315,6 +321,10 @@ class MonitoramentoAtividadeController extends Controller
                     ->get();
                 $dados[$tipo] = [];
                 foreach ($registros as $item) {
+                    // Marca a combinação já cadastrada
+                    $chaveFlag = $item->cod_atividade . '-' . ($item->flag ?? 1);
+                    $jaCadastradas[$tipo][$chaveFlag] = true;
+
                     $dados[$tipo][$item->cod_atividade][] = [
                         'id' => $item->id,
                         'registro_timestamp' => $item->registro_timestamp,
@@ -324,6 +334,7 @@ class MonitoramentoAtividadeController extends Controller
                         'realizado' => (bool)$item->realizado,
                         'observacoes' => $item->observacoes,
                         'fase_cadastro' => $item->fase_cadastro,
+                        'flag' => $item->flag ?? 1, // Inclui o campo flag com valor padrão 1
                         'created_at' => ($item->created_at && method_exists($item->created_at, 'toDateTimeString'))
                             ? $item->created_at->toDateTimeString() : ($item->created_at ?? null),
                         'updated_at' => ($item->updated_at && method_exists($item->updated_at, 'toDateTimeString'))
@@ -331,7 +342,11 @@ class MonitoramentoAtividadeController extends Controller
                     ];
                 }
             }
-            return $dados;
+            // Retorna os dados e as combinações já cadastradas para a view
+            return [
+                'dados' => $dados,
+                'jaCadastradas' => $jaCadastradas
+            ];
         } catch (\Throwable $e) {
             \Log::error("Erro ao carregar dados de monitoramento: " . $e->getMessage());
             return [];
@@ -381,29 +396,31 @@ class MonitoramentoAtividadeController extends Controller
             ];
             
             foreach ($eixos as $tipo => $modelClass) {
-    $dados[$tipo] = $modelClass::where('aluno_id', $alunoId)
-        ->where('fase_cadastro', $this->obterFaseAtual())
-        ->orderBy('registro_timestamp', 'desc')
-        ->get()
-        ->mapWithKeys(function ($item) {
-            return [
-                $item->cod_atividade => [
-                    'id' => $item->id,
-                    'data_aplicacao' => (is_object($item->data_aplicacao) && method_exists($item->data_aplicacao, 'format'))
-                        ? $item->data_aplicacao->format('Y-m-d')
-                        : ($item->data_aplicacao ?? null),
-                    'realizado' => (bool)$item->realizado,
-                    'observacoes' => $item->observacoes,
-                    'fase_cadastro' => $item->fase_cadastro,
-                    'created_at' => ($item->created_at && method_exists($item->created_at, 'toDateTimeString'))
-                        ? $item->created_at->toDateTimeString() : ($item->created_at ?? null),
-                    'updated_at' => ($item->updated_at && method_exists($item->updated_at, 'toDateTimeString'))
-                        ? $item->updated_at->toDateTimeString() : ($item->updated_at ?? null),
-                ]
-            ];
-        })
-        ->toArray();
-}
+                $dados[$tipo] = $modelClass::where('aluno_id', $alunoId)
+                    ->where('fase_cadastro', $this->obterFaseAtual())
+                    ->orderBy('registro_timestamp', 'desc')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        return [
+                            $item->cod_atividade => [
+                                'id' => $item->id,
+                                'data_aplicacao' => (is_object($item->data_aplicacao) && method_exists($item->data_aplicacao, 'format'))
+                                    ? $item->data_aplicacao->format('Y-m-d')
+                                    : ($item->data_aplicacao ?? null),
+                                'realizado' => (bool)$item->realizado,
+                                'observacoes' => $item->observacoes,
+                                'fase_cadastro' => $item->fase_cadastro,
+                                'flag' => $item->flag ?? 1, // Inclui o campo flag com valor padrão 1
+                                'registro_timestamp' => $item->registro_timestamp, // Inclui o registro_timestamp
+                                'created_at' => ($item->created_at && method_exists($item->created_at, 'toDateTimeString'))
+                                    ? $item->created_at->toDateTimeString() : ($item->created_at ?? null),
+                                'updated_at' => ($item->updated_at && method_exists($item->updated_at, 'toDateTimeString'))
+                                    ? $item->updated_at->toDateTimeString() : ($item->updated_at ?? null),
+                            ]
+                        ];
+                    })
+                    ->toArray();
+            }
 
             return response()->json([
                 'success' => true,

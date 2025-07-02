@@ -708,8 +708,9 @@ if ($total_atividades_geral > 0) {
     @for($q=0; $q<$qtd; $q++)
         <tr data-eixo="comunicacao" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_com_lin }}">
             <td>
-                {{ $linha->cod_ati_com_lin }}
+                {{ $linha->cod_ati_com_lin }}-{{ $q + 1 }}
                 <input type="hidden" name="comunicacao[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_com_lin }}">
+                <input type="hidden" name="comunicacao[{{$idx}}][flag]" value="{{ $q + 1 }}">
             </td>
             <td>{{ $linha->desc_ati_com_lin }}</td>
             <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
@@ -829,8 +830,9 @@ if ($total_atividades_geral > 0) {
            @for($q=0; $q<$qtd; $q++)
                <tr data-eixo="comportamento" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_comportamento }}">
                    <td>
-                       {{ $linha->cod_ati_comportamento }}
+                       {{ $linha->cod_ati_comportamento }}-{{ ($contadoresComp[$linha->cod_ati_comportamento] ?? 0) + $q + 1 }}
                        <input type="hidden" name="comportamento[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_comportamento }}">
+                       <input type="hidden" name="comportamento[{{$idx}}][flag]" value="{{ ($contadoresComp[$linha->cod_ati_comportamento] ?? 0) + $q + 1 }}">
                    </td>
                    <td>{{ $linha->desc_ati_comportamento }}</td>
                    <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>
@@ -955,8 +957,9 @@ if ($total_atividades_geral > 0) {
                @for($q=0; $q<$qtd; $q++)
                    <tr data-eixo="socioemocional" data-idx="{{$idx}}" data-cod-atividade="{{ $cod }}">
                        <td>
-                           {{ $cod ?? 'N/A' }}
+                           {{ $cod ?? 'N/A' }}-{{ ($contadoresSoc[$cod] ?? 0) + $q + 1 }}
                            <input type="hidden" name="socioemocional[{{$idx}}][cod_atividade]" value="{{ $cod }}">
+                           <input type="hidden" name="socioemocional[{{$idx}}][flag]" value="{{ ($contadoresSoc[$cod] ?? 0) + $q + 1 }}">
                        </td>
                        <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
                        <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" class="form-control" value="{{$hoje}}"></td>

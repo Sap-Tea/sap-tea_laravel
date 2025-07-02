@@ -25,7 +25,8 @@ class AtividadeComunicacao extends Model
         'realizado',
         'observacoes',
         'fase_cadastro',
-        'registro_timestamp'  // Adicionado o campo registro_timestamp
+        'registro_timestamp',
+        'flag'  // Adicionado o campo flag
     ];
     
     /**
@@ -35,6 +36,7 @@ class AtividadeComunicacao extends Model
      */
     protected $attributes = [
         'registro_timestamp' => null,
+        'flag' => 1  // Valor padrão 1 para o campo flag
     ];
     
     /**
@@ -47,7 +49,8 @@ class AtividadeComunicacao extends Model
         'realizado' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'registro_timestamp' => 'integer'  // bigint no banco, inteiro no PHP
+        'registro_timestamp' => 'integer',  // bigint no banco, inteiro no PHP
+        'flag' => 'integer'  // flag é um inteiro
     ];
     
     /**
