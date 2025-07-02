@@ -82,7 +82,7 @@
             <p><input type="radio" name="suporte" class="radio-toggle" value = "3"> Nível 3 de Suporte - Exige apoio muito substancial</p>
             <p><strong>Assinale a forma de comunicação utilizada pelo estudante:</strong></p>
             <p><input type="radio" name="comunicacao" class="radio-toggle" value = "1"> Comunicação verbal com uso de recursos alternativos de comunicação</p>
-            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "2"> Comunicação não verbal com uso de métodos alternativos de comunicação</p>
+            <p><input type="radio" name="comunicacao" class="radio-toggle" value = "2"> Comunicação não verbal com uso de recursos alternativos de comunicação</p>
             <p><input type="radio" name="comunicacao" class="radio-toggle" value = "3"> Comunicação não Verbal</p>
         </div>
         <!-- INSTRUÇÕES PARA O USUÁRIO -->
