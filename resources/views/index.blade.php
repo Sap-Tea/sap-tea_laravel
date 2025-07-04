@@ -252,7 +252,7 @@
             </ul>
 
             <h3 style="margin:20px 15px 10px;">Download de Materiais</h3>
-            <ul>
+EM            <ul>
                 <li>
                     <a href="{{ route('download.material', ['tipo' => 'como-eu-sou']) }}" class="menu-link">
                         <i class="fa-solid fa-user"></i> Eu como sou
@@ -303,29 +303,32 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="videoModalLabel">Bem-vindo ao Sistema SAP-TEA</h5>
+                                
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                             </div>
                             <div class="modal-body">
                                 <!-- Importação da fonte Quicksand do Google Fonts -->
                                 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
-                                
-                                <!-- Texto de boas-vindas com as configurações solicitadas -->
-                                <div class="text-center mb-4">
-                                    <p style="font-family: 'Quicksand', sans-serif; font-size: 25pt; color: #D67A3B; margin-bottom: 10px; text-align: center;">
-                                        Caro(a) Professor(a), bem-vindo(a) ao Supergando TEA Digital!
+
+                                <!-- Container para o texto -->
+                                <div class="text-container" style="padding: 1.5rem; border: 1px solid #dee2e6; border-radius: .3rem; margin-bottom: 1rem; background-color: #f8f9fa;">
+                                    <p style="font-family: 'Quicksand', sans-serif; font-size: 22pt; color: #D67A3B; margin-bottom: 10px; text-align: center;">
+                                        Caro(a) Professor(a), bem-vindo(a)!
                                     </p>
-                                    <p style="font-family: 'Quicksand', sans-serif; font-size: 15pt; color: #000000; margin-bottom: 20px; text-align: center; font-weight: bold;">
-                                        Esta é uma ferramenta do Programa Supergando TEA, criada para acompanhar o desenvolvimento do estudante com TEA por meio do mapeamento, monitoramento e emissão de relatórios que orientam suas ações pedagógicas, integrando um projeto de intervenção personalizado, contínuo e gradual.
+                                    <p style="font-family: 'Quicksand', sans-serif; font-size: 14pt; color: #000000; text-align: center; font-weight: bold;">
+                                        Esta é uma ferramenta do Programa Supergando TEA, criada para acompanhar o desenvolvimento do estudante com TEA.
                                     </p>
                                 </div>
-                                
-                                <div class="d-flex justify-content-center align-items-center w-100">
-                                    <div class="ratio ratio-16x9" style="width:100%; max-width:700px;">
-                                        <video id="videoPlayer" controls playsinline style="width:100%; height:100%; object-fit:cover;">
-                                            <source src="{{ asset('videos/exemplo.mp4') }}" type="video/mp4">
-                                            Seu navegador não suporta o elemento de vídeo.
-                                        </video>
+
+                                <!-- Container para o vídeo -->
+                                <div class="video-container" style="padding: 1rem; border: 1px solid #dee2e6; border-radius: .3rem; background-color: #f8f9fa;">
+                                    <div class="d-flex justify-content-center align-items-center w-100">
+                                        <div class="ratio ratio-16x9" style="width:100%; max-width:700px;">
+                                            <video id="videoPlayer" controls playsinline style="width:100%; height:100%; object-fit:cover; border-radius: .25rem;">
+                                                <source src="{{ asset('videos/exemplo.mp4') }}" type="video/mp4">
+                                                Seu navegador não suporta o elemento de vídeo.
+                                            </video>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
