@@ -476,6 +476,8 @@ if ($total_atividades_geral > 0) {
         @php
             $detalhe = is_array($alunoDetalhado) ? (object)($alunoDetalhado[0] ?? []) : $alunoDetalhado;
         @endphp
+        <div class="container">
+            @include('rotina_monitoramento.partials.scripts_monitoramento')
         <div class="monitoring-container">
         <!-- CABEÇALHO -->
         <div class="header">
@@ -1686,24 +1688,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Função para configurar o botão de salvar
-    function configurarBotaoSalvar() {
-        const btnSalvar = document.getElementById('btn-salvar');
-        const form = document.getElementById('monitoramentoForm');
-        if (btnSalvar && form) {
-            btnSalvar.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('Confirma o salvamento dos dados de monitoramento?')) {
-                    form.submit();
-                }
-            });
-        }
-    }
-
-    // Execução
-    aplicarExclusividadeCheckboxes();
-    configurarBotaoSalvar();
-
     // Validação minimalista antes do envio
     function validarLinhasMonitoramento() {
         let erro = false;
@@ -1760,4 +1744,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+@include('rotina_monitoramento.partials.teste_include')
 @endsection
