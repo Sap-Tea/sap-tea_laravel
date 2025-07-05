@@ -795,8 +795,7 @@ if ($total_atividades_geral > 0) {
         }
     }
 @endphp
-{{-- Debug comportamento --}}
-<pre style="color:blue; font-size:11px;">Códigos já registrados hoje (comportamento): {{ print_r($comportamentoRegistrosHoje, true) }}</pre>
+{{-- Removido debug comportamento --}}
 @php
     $contadoresComp = [];
 @endphp
@@ -807,8 +806,6 @@ if ($total_atividades_geral > 0) {
     @endif
     @php
         $codigo = $linha->cod_ati_comportamento;
-        // Debug cada código
-        echo "<div style='color:blue'>Código: $codigo | Já registrados hoje: ".($comportamentoRegistrosHoje[$codigo] ?? 0)."</div>";
         $contadoresComp[$codigo] = ($contadoresComp[$codigo] ?? 0) + 1;
         $totalJaRegistrado = $comportamentoRegistrosHoje[$codigo] ?? 0;
     @endphp
@@ -921,8 +918,7 @@ if ($total_atividades_geral > 0) {
         }
     }
 @endphp
-{{-- Debug socioemocional --}}
-<pre style="color:green; font-size:11px;">Códigos já registrados hoje (socioemocional): {{ print_r($socioemocionalRegistrosHoje, true) }}</pre>
+{{-- Removido debug socioemocional --}}
 @php
     $contadoresSoc = [];
 @endphp
@@ -937,8 +933,6 @@ if ($total_atividades_geral > 0) {
     @php
         $codigo = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
         if (!$codigo) continue;
-        // Debug cada código
-        echo "<div style='color:green'>Código: $codigo | Já registrados hoje: ".($socioemocionalRegistrosHoje[$codigo] ?? 0)."</div>";
         $contadoresSoc[$codigo] = ($contadoresSoc[$codigo] ?? 0) + 1;
         $totalJaRegistrado = $socioemocionalRegistrosHoje[$codigo] ?? 0;
     @endphp

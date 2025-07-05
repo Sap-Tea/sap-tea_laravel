@@ -106,6 +106,21 @@ function adicionarListenersSalvarLinhaGenerico() {
             .then(data => {
                 if (data.success) {
                     alert('Atividade salva com sucesso!');
+                    
+                    // Desabilitar o botão e mudar a cor para vermelho
+                    const botao = linha.querySelector('.btn-salvar-linha');
+                    if (botao) {
+                        botao.disabled = true;
+                        botao.classList.remove('btn-success');
+                        botao.classList.add('btn-danger');
+                        botao.textContent = 'Atividade Salva';
+                        
+                        // Desabilitar os inputs da linha também
+                        const inputs = linha.querySelectorAll('input, textarea');
+                        inputs.forEach(input => {
+                            input.disabled = true;
+                        });
+                    }
                 } else {
                     alert('Erro ao salvar: ' + (data.message || 'Erro desconhecido.'));
                 }
