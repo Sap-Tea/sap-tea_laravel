@@ -1039,11 +1039,7 @@ if ($total_atividades_geral > 0) {
                 <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
                     <i class="fas fa-arrow-left me-2"></i>Voltar
                 </button>
-                <button type="submit" class="btn btn-primary me-2">
-    <i class="fas fa-save me-2"></i>
-    <span class="btn-text">Salvar</span>
-</button>
-<button type="button" class="pdf-button btn btn-warning">
+                <button type="button" class="pdf-button btn btn-warning">
     <i class="fas fa-file-pdf me-2"></i>Gerar PDF
 </button>
             </div>
@@ -1051,9 +1047,7 @@ if ($total_atividades_geral > 0) {
     </form>
   </div>
 </div>
-
-<!-- Modal de carregamento -->
-<div class="modal fade" id="carregandoModal" tabindex="-1" aria-labelledby="carregandoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+-1" aria-labelledby="carregandoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-body text-center p-5">

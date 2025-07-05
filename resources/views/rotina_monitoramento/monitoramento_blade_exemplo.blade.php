@@ -61,6 +61,5 @@
         <label>Observações:</label>
         <input type="text" name="observacoes">
         <br>
-        <button type="submit">Cadastrar Nova Atividade</button>
     </form>
 @endsection
