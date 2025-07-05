@@ -11,6 +11,7 @@ use App\Models\ResultEixoComLin;
 use App\Models\ResultEixoComport;
 use App\Models\ResultEixoSocio;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class MonitoramentoAtividadeController extends Controller
@@ -25,6 +26,19 @@ class MonitoramentoAtividadeController extends Controller
     
     public function salvar(Request $request)
     {
+        // Logs detalhados para debug
+        \Log::debug('=================== INÍCIO DO SALVAMENTO ===================');
+        \Log::debug('[monitoramento] Payload completo recebido', $request->all());
+        \Log::debug('[monitoramento] aluno_id recebido:', ['aluno_id' => $request->input('aluno_id')]);
+        \Log::debug('[monitoramento] Tipo do aluno_id:', ['tipo' => gettype($request->input('aluno_id'))]);
+        \Log::debug('[monitoramento] Headers da requisição:', ['headers' => $request->header()]);
+        \Log::debug('[monitoramento] Método da requisição:', ['método' => $request->method()]);
+        \Log::debug('[monitoramento] Content-Type:', ['content-type' => $request->header('Content-Type')]);
+        \Log::debug('[monitoramento] Request tem JSON?', ['isJson' => $request->isJson()]);
+        \Log::debug('[monitoramento] Request é AJAX?', ['ajax' => $request->ajax()]);
+        \Log::debug('[monitoramento] Comunicação recebida:', ['comunicacao' => $request->input('comunicacao')]);
+        \Log::debug('[monitoramento] Comportamento recebido:', ['comportamento' => $request->input('comportamento')]);
+        \Log::debug('[monitoramento] Socioemocional recebido:', ['socioemocional' => $request->input('socioemocional')]);
         
         // Código para salvar os dados do monitoramento
         try {
@@ -110,9 +124,24 @@ class MonitoramentoAtividadeController extends Controller
      */
     protected function salvarEixo($alunoId, $eixo, $dados)
     {
+        // Logs detalhados para debug
+        \Log::debug('=================== INICIANDO SALVAR EIXO ' . $eixo . ' ===================');
+        \Log::debug('ID do aluno recebido: ' . $alunoId);
+        \Log::debug('Tipo do ID do aluno: ' . gettype($alunoId));
+        
+        // Garantir que aluno_id seja um inteiro válido
+        if (empty($alunoId) || !is_numeric($alunoId)) {
+            \Log::error("ERRO CRÍTICO: aluno_id inválido ou vazio: " . var_export($alunoId, true));
+            return;
+        }
+        
+        // Forçar conversão para inteiro
+        $alunoId = (int)$alunoId;
+        \Log::debug('ID do aluno após conversão para int: ' . $alunoId);
+        
         $model = $this->getModelPorEixo($eixo);
         if (!$model) {
-            Log::error("Model não encontrada para o eixo: " . $eixo);
+            \Log::error("Model não encontrada para o eixo: " . $eixo);
             return;
         }
 
@@ -121,22 +150,24 @@ class MonitoramentoAtividadeController extends Controller
         $timestampBase = now()->timestamp;
 
         // Loga o array recebido do request antes de qualquer filtro
-        Log::debug('Recebido do request para o eixo ' . $eixo, ['dados_recebidos' => $dados]);
+        \Log::debug('Recebido do request para o eixo ' . $eixo, ['dados_recebidos' => $dados]);
 
         // NÃO filtra nada aqui, apenas garante que é array
         $dados = array_filter($dados, function($a) {
             return is_array($a);
         });
-        Log::debug('Filtro apenas para garantir array para o eixo ' . $eixo, ['dados_recebidos' => $dados]);
+        \Log::debug('Filtro apenas para garantir array para o eixo ' . $eixo, ['dados_recebidos' => $dados]);
 
         foreach ($dados as $indice => $atividade) {
-            // Verifica se já existe registro para este aluno, atividade e fase
+            // Verifica se já existe registro para este aluno, atividade, fase e flag
+            $flag = isset($atividade['flag']) ? intval($atividade['flag']) : 1;
             $existe = $model::where('aluno_id', $alunoId)
                 ->where('cod_atividade', $atividade['cod_atividade'])
                 ->where('fase_cadastro', $faseCadastro)
+                ->where('flag', $flag)
                 ->exists();
             if ($existe) {
-                Log::info("Atividade já cadastrada para o aluno {$alunoId}, eixo {$eixo}, atividade {$atividade['cod_atividade']} - ignorando novo cadastro.");
+                Log::info("Atividade já cadastrada para o aluno {$alunoId}, eixo {$eixo}, atividade {$atividade['cod_atividade']}, flag {$flag} - ignorando novo cadastro.");
                 continue;
             }
             Log::debug('Preparando para salvar registro', [
@@ -185,13 +216,15 @@ class MonitoramentoAtividadeController extends Controller
                 'realizado' => $realizado,
                 'observacoes' => isset($atividade['observacoes']) ? (string)$atividade['observacoes'] : '', // Força string
                 'registro_timestamp' => $registro_timestamp, // Agora único por linha
-                'flag' => isset($atividade['flag']) ? intval($atividade['flag']) : 1 // Sempre inteiro
+                'flag' => isset($atividade['flag']) ? intval($atividade['flag']) : 1 // Usa o valor exato do flag da linha
             ];
             
             Log::debug('Dados preparados para salvar', [
                 'dados_salvar' => $dadosSalvar,
                 'tem_observacoes' => isset($dadosSalvar['observacoes']),
-                'valor_observacoes' => $dadosSalvar['observacoes']
+                'valor_observacoes' => $dadosSalvar['observacoes'],
+                'flag_recebido' => $atividade['flag'] ?? 'não definido',
+                'flag_processado' => $dadosSalvar['flag']
             ]);
 
             // Garante que observacoes sempre exista no array, mesmo que vazio
@@ -205,54 +238,59 @@ class MonitoramentoAtividadeController extends Controller
                 ]);
             }
 
-            // TENTATIVA DE INSERÇÃO DIRETA
             try {
-                $model::create($dadosSalvar);
+                // Logs detalhados antes de salvar
+                Log::debug("Salvando registro {$model}", [
+                    'dados' => $dadosSalvar,
+                    'observacoes' => $dadosSalvar['observacoes'],
+                    'isDirty_observacoes' => true,
+                    'original_observacoes' => 'N/A'
+                ]);
+                
+                // Cria nova instância e salva
+                Log::debug("Criando registro {$model}", [
+                    'dados' => $dadosSalvar,
+                    'attributes' => $dadosSalvar,
+                    'observacoes' => $dadosSalvar['observacoes'],
+                    'exists' => false,
+                    'isDirty' => true,
+                    'original' => 'N/A'
+                ]);
+                
+                $registro = $model::create($dadosSalvar);
+                
+                Log::debug("Registro {$model} criado", [
+                    'id' => $registro->id ?? 'N/A',
+                    'observacoes' => $registro->observacoes ?? 'N/A',
+                    'attributes' => $registro->getAttributes() ?? []
+                ]);
+                
                 Log::info("Registro inserido com sucesso na tabela do eixo $eixo", ['dados' => $dadosSalvar]);
+                Log::info("Salvando dados para o eixo: $eixo", [
+                    'aluno_id' => $alunoId,
+                    'cod_atividade' => $codAtividade,
+                    'dados' => $dadosSalvar,
+                    'tem_observacoes' => isset($dadosSalvar['observacoes'])
+                ]);
+                
                 $registrosSalvos++;
             } catch (\Exception $e) {
-                Log::error("Erro ao inserir registro na tabela do eixo $eixo: " . $e->getMessage(), ['dados' => $dadosSalvar]);
-            }
-
-            // Remove valores vazios, exceto os campos obrigatórios
-            $dadosSalvar = array_filter($dadosSalvar, function($value, $key) {
-                $camposObrigatorios = ['registro_timestamp', 'observacoes', 'aluno_id', 'cod_atividade', 'fase_cadastro'];
-                return ($value !== null && $value !== '') || in_array($key, $camposObrigatorios);
-            }, ARRAY_FILTER_USE_BOTH);
-
-            // Log para debug
-            Log::info("Salvando dados para o eixo: {$eixo}", [
-                'aluno_id' => $alunoId, 
-                'cod_atividade' => $codAtividade,
-                'dados' => $dadosSalvar,
-                'tem_observacoes' => array_key_exists('observacoes', $dadosSalvar)
-            ]);
-
-            // Verifica se há dados para salvar (considera que sempre terá pelo menos os campos obrigatórios)
-            $camposRelevantes = array_diff(array_keys($dadosSalvar), ['aluno_id', 'cod_atividade', 'fase_cadastro']);
-            if (!empty($camposRelevantes)) {
-                try {
-                    // Cria um novo registro com os dados fornecidos, incluindo o flag
-                    $model::create($dadosSalvar);
-                    $registrosSalvos++;
-                } catch (\Exception $e) {
-                    Log::error("Erro ao salvar atividade do eixo $eixo: " . $e->getMessage(), [
-                        'aluno_id' => $alunoId,
-                        'cod_atividade' => $codAtividade,
-                        'dados' => $dadosSalvar,
-                        'trace' => $e->getTraceAsString()
-                    ]);
+                Log::error("Erro ao salvar atividade do eixo $eixo: " . $e->getMessage(), [
+                    'aluno_id' => $alunoId,
+                    'cod_atividade' => $codAtividade,
+                    'dados' => $dadosSalvar,
+                    'trace' => $e->getTraceAsString()
+                ]);
                     
-                    // Se for erro de chave duplicada no eixo de comunicação, tenta com um novo timestamp
-                    if ($e->getCode() == 23000 && $eixo === 'comunicacao') { // Código para violação de chave única
-                        try {
-                            $dadosSalvar['registro_timestamp'] = now()->timestamp + 1; // Adiciona 1 segundo
-                            $model::create($dadosSalvar);
-                            $registrosSalvos++;
-                            Log::info("Registro salvo com sucesso após ajuste do timestamp");
-                        } catch (\Exception $e2) {
-                            Log::error("Erro ao salvar após ajuste do timestamp: " . $e2->getMessage());
-                        }
+                // Se for erro de chave duplicada no eixo de comunicação, tenta com um novo timestamp
+                if ($e->getCode() == 23000 && $eixo === 'comunicacao') { // Código para violação de chave única
+                    try {
+                        $dadosSalvar['registro_timestamp'] = now()->timestamp + 1; // Adiciona 1 segundo
+                        $model::create($dadosSalvar);
+                        $registrosSalvos++;
+                        Log::info("Registro salvo com sucesso após ajuste do timestamp");
+                    } catch (\Exception $e2) {
+                        Log::error("Erro ao salvar após ajuste do timestamp: " . $e2->getMessage());
                     }
                 }
             }

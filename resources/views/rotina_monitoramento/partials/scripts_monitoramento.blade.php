@@ -19,8 +19,20 @@ function adicionarListenersSalvarLinhaGenerico() {
             // Coleta campos dinâmicos
             const idx = linha.getAttribute('data-idx') || '';
             const cod_atividade = linha.getAttribute('data-cod-atividade') || '';
-            const alunoInput = document.querySelector('input[name="aluno_id"]');
-            const aluno_id = alunoInput ? alunoInput.value : '';
+            const alunoInput = document.getElementById('aluno_id_hidden') || document.querySelector('input[name="aluno_id"]');
+            let aluno_id = alunoInput ? alunoInput.value : '';
+            if (!aluno_id) {
+                // Extrai o ID da URL, ex: /rotina_monitoramento/cadastrar/52
+                const match = window.location.pathname.match(/cadastrar\/(\d+)/);
+                if (match) {
+                    aluno_id = match[1];
+                    if (alunoInput) alunoInput.value = aluno_id;
+                }
+            }
+            if (!aluno_id) {
+                alert('ID do aluno não encontrado! Não é possível salvar.');
+                return;
+            }
             const dataInput = linha.querySelector('input[type="date"]');
             const data_aplicacao = dataInput ? dataInput.value : '';
             // Checagem dinâmica dos checkboxes
@@ -44,7 +56,9 @@ function adicionarListenersSalvarLinhaGenerico() {
                 alert('Por favor, marque apenas uma opção: "Sim" OU "Não" para realização da atividade.');
                 return;
             }
-
+            
+            console.log(`[scripts_monitoramento] Flag encontrado: ${flag}`);
+            
             // Monta os dados para envio
             // Payload exatamente como o backend espera
             const payload = {
@@ -54,23 +68,39 @@ function adicionarListenersSalvarLinhaGenerico() {
                 sim_inicial: sim_inicial,
                 nao_inicial: nao_inicial,
                 observacoes: observacoes || '',
-                flag: flag ? parseInt(flag, 10) : 1,
+                flag: flag, // Usa o valor exato do flag da linha
                 registro_timestamp: registro_timestamp
             };
             console.log(`[scripts_monitoramento] Payload FINAL para eixo ${eixo}:`, payload);
 
-            // Monta o objeto para o backend: { eixo: [payload] }
-            const dataToSend = {};
-            dataToSend[eixo] = [payload];
-            console.log('[scripts_monitoramento] Enviando para backend:', dataToSend);
+            // Monta o objeto para o backend: { eixo: [payload], aluno_id: xxx }
+            const dataToSend = {
+                aluno_id: aluno_id // Garante que aluno_id está no nível principal
+            };
+            dataToSend[eixo] = JSON.stringify([payload]); // Converte array para string JSON como o backend espera
+            
+            console.log('[scripts_monitoramento] Dados para enviar:', dataToSend);
+            
+            // Vamos criar um FormData diretamente com os dados corretos
+            const formData = new FormData();
+            
+            // Adiciona todos os campos do dataToSend ao FormData
+            for (const key in dataToSend) {
+                formData.append(key, dataToSend[key]);
+            }
+            
+            // Adiciona o token CSRF
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+            
+            console.log('[scripts_monitoramento] Enviando para backend (FormData):', formData);
+            
             fetch('{{ route('monitoramento.salvar') }}', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json',
+                    // Não definimos Content-Type para que o navegador defina automaticamente com boundary
                 },
-                body: JSON.stringify(dataToSend)
+                body: formData
             })
             .then(resp => resp.json())
             .then(data => {

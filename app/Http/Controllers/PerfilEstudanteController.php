@@ -28,6 +28,9 @@ class PerfilEstudanteController extends Controller
             return back()->withErrors(['msg' => 'Aluno não pertence ao professor logado ou não existe.']);
         }
 
+        // Garante que a view recebe o aluno_id correto, extraído da URL
+        $alunoId = $aluno_id;
+
         // Garante que existe registro nas três tabelas-eixo
         $tem_eixo_com = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $aluno_id)->exists();
         $tem_eixo_int = \App\Models\EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $aluno_id)->exists();
@@ -623,6 +626,7 @@ public function mostra_aluno_eixo($id)
             ->toArray();
 
         return view('rotina_monitoramento.monitoramento_aluno', [
+    'alunoId' => $id, 
             'alunoDetalhado' => $alunoDetalhado,
             'professor_nome' => $professor->func_nome,
             'data_inicial_com_lin' => $data_inicial_com_lin,

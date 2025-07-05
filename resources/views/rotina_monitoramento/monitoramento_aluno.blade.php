@@ -1512,14 +1512,25 @@ async function carregarDadosMonitoramento(alunoId) {
 // Função para formatar os dados do formulário para envio
 function formatarDadosFormulario() {
     const formData = new FormData();
-    const alunoId = document.querySelector('input[name="aluno_id"]')?.value;
-    
-    if (!alunoId) {
-        console.error('ID do estudante não encontrado');
-        return null;
+    let aluno_id = '';
+    // 1. Tenta pegar do input hidden
+    const alunoInput = document.querySelector('input[name="aluno_id"]');
+    if (alunoInput && alunoInput.value) {
+        aluno_id = alunoInput.value;
+    } else {
+        // 2. Fallback: tenta extrair o id da URL
+        const match = window.location.pathname.match(/\/(?:rotina_monitoramento|rotina)\/(?:cadastrar|aluno)\/(\d+)/);
+        if (match && match[1]) {
+            aluno_id = match[1];
+            // Atualiza o input hidden para manter consistência
+            if (alunoInput) alunoInput.value = aluno_id;
+        }
     }
-    
-    formData.append('aluno_id', alunoId);
+    if (!aluno_id) {
+        alert('ID do aluno não encontrado! Não é possível salvar.');
+        return;
+    }
+    formData.append('aluno_id', aluno_id);
     
     // Função auxiliar para formatar os dados de um eixo específico
     const formatarDadosEixo = (prefixo) => {
