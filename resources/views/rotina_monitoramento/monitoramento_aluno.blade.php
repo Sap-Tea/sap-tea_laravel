@@ -524,7 +524,7 @@ if ($total_atividades_geral > 0) {
         <input type="text" value="{{ $detalhe->periodo ?? '-' }}" readonly class="campo-readonly">
       </label>
       <label>
-        Seguimento:
+        Segmento:
         <input type="text" value="{{ $detalhe->desc_modalidade ?? '-' }}" readonly />
       </label>
       <label>

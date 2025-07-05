@@ -27,7 +27,7 @@
                 <th>RA do estudante</th>
                 <th>Nome do estudante</th>
                 <th>Nome da Escola</th>
-                <th>Seguimento</th>
+                <th>Segmento</th>
                 <th>Ações</th>
             </tr>
         </thead>
