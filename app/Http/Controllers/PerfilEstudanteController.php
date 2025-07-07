@@ -714,4 +714,39 @@ public function mostra_aluno_eixo($id)
         return redirect()->route('rotina.monitoramento.cadastrar', ['id' => $id])
             ->with('success', 'Rotina salva com sucesso!');
     }
+    
+    /**
+     * Lista alunos para o Indicativo Inicial
+     * Similar ao método rotina_monitoramento_inicial mas para o contexto de Indicativo Inicial
+     */
+    public function listarAlunosIndicativo()
+    {
+        $professor = auth('funcionario')->user();
+        if (!$professor) {
+            // Redireciona para login ou mostra erro amigável
+            return redirect()->route('login')->withErrors(['msg' => 'Sessão expirada ou acesso não autorizado. Faça login novamente.']);
+        }
+        $funcId = $professor->func_id;
+
+        $alunos = \App\Models\Aluno::porProfessor($funcId)
+            ->whereHas('eixoComunicacao')
+            ->whereHas('eixoSocioEmocional')
+            ->whereHas('eixoComportamento')
+            ->orderBy('alu_nome', 'asc')
+            ->get();
+
+        return view('alunos.imprime_aluno_eixo', [
+            'alunos' => $alunos,
+            'titulo' => 'Indicativo de Atividades - Inicial',
+            'botoes' => [
+                [
+                    'label' => 'Indicativo Inicial',
+                    'rota'  => 'indicativo.inicial',
+                    'classe' => 'btn-primary'
+                ]
+            ],
+            'professor_nome' => $professor->func_nome,
+            'contexto' => 'indicativo_inicial'
+        ]);
+    }
 }

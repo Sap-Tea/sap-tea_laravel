@@ -483,4 +483,97 @@ class MonitoramentoAtividadeController extends Controller
             ], 500);
         }
     }
+    
+    /**
+     * Exibe o formulário de Indicativo Inicial para o aluno selecionado
+     * 
+     * @param int $id ID do aluno
+     * @return \Illuminate\View\View
+     */
+    public function indicativoInicial($id)
+    {
+        // Verifica se o aluno pertence ao professor logado
+        $professor_logado = auth('funcionario')->user();
+        $professor_id = $professor_logado ? $professor_logado->func_id : null;
+
+        // Valida se aluno pertence ao professor
+        $aluno = \App\Models\Aluno::where('alu_id', $id)
+            ->whereHas('matriculas.turma', function($q) use ($professor_id) {
+                $q->where('fk_cod_func', $professor_id);
+            })->first();
+        if (!$aluno) {
+            return back()->withErrors(['msg' => 'Aluno não pertence ao professor logado ou não existe.']);
+        }
+
+        // Garante que existe registro nas três tabelas-eixo
+        $tem_eixo_com = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $id)->exists();
+        $tem_eixo_int = \App\Models\EixoInteracaoSocEmocional::where('fk_alu_id_eintsoc', $id)->exists();
+        $tem_eixo_comp = \App\Models\EixoComportamento::where('fk_alu_id_ecomp', $id)->exists();
+        if (!($tem_eixo_com && $tem_eixo_int && $tem_eixo_comp)) {
+            return back()->withErrors(['msg' => 'O aluno precisa ter registros em todos os eixos (Comunicação, Interação Socioemocional e Comportamento) para acessar esta rotina.']);
+        }
+
+        // Carrega os dados detalhados do aluno
+        $alunoDetalhado = \App\Models\Aluno::getAlunosDetalhados($id);
+        if (!$alunoDetalhado) {
+            return back()->withErrors(['msg' => 'Não foi possível carregar os dados do aluno.']);
+        }
+        
+        // Carrega os dados de monitoramento para a view
+        $dados = $this->carregarParaView($id);
+        
+        // Buscar data inicial do eixo comunicação linguagem, se necessário
+        $eixoCom = \App\Models\EixoComunicacaoLinguagem::where('fk_alu_id_ecomling', $id)
+            ->where('fase_inv_com_lin', 'In')
+            ->first();
+        $data_inicial_com_lin = $eixoCom ? $eixoCom->data_insert_com_lin : null;
+        
+        // Buscar resultados dos três eixos
+        $comunicacao_resultados = \App\Models\ResultEixoComLin::where('fk_id_pro_com_lin', $id)->paginate(20);
+        $comportamento_resultados = \App\Models\ResultEixoComportamento::where('fk_result_alu_id_comportamento', $id)->paginate(20);
+        $socioemocional_resultados = \App\Models\ResultEixoIntSocio::where('fk_result_alu_id_int_socio', $id)->paginate(20);
+        
+        // DATA DE HOJE PARA FILTRO
+        $hoje = date('Y-m-d');
+        // Consultar quantas vezes cada código de atividade já foi registrado HOJE por eixo
+        $comportamentoRegistrosHoje = DB::table('cad_ativ_eixo_comportamento')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+        $comunicacaoRegistrosHoje = DB::table('cad_ativ_eixo_com_lin')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+        $socioemocionalRegistrosHoje = DB::table('cad_ativ_eixo_int_socio')
+            ->select('cod_atividade', DB::raw('COUNT(*) as total'))
+            ->where('aluno_id', $id)
+            ->where('data_aplicacao', $hoje)
+            ->groupBy('cod_atividade')
+            ->pluck('total', 'cod_atividade')
+            ->toArray();
+
+        // Consulta atividades do eixo comunicação/linguagem para o aluno
+        $atividadesComunicacao = \DB::table('cad_ativ_eixo_com_lin as atv')
+            ->join('atividade_com_lin as ativ', 'atv.cod_atividade', '=', 'ativ.cod_ati_com_lin')
+            ->join('habilidade_com_lin as hab', 'atv.cod_atividade', '=', 'hab.cod_hab_com_lin')
+            ->where('atv.aluno_id', $id)
+            ->select('atv.*', 'ativ.desc_ati_com_lin as desc_atividade', 'hab.desc_hab_com_lin')
+            ->orderBy('atv.cod_atividade')
+            ->get();
+
+        // Retorna a view com os dados necessários
+        return view('rotina_monitoramento.IndicativoInicial', [
+            'alunoId' => $id,
+            'alunoDetalhado' => $alunoDetalhado,
+            'professor_nome' => $professor_logado->func_nome,
+            'contexto' => 'indicativo_inicial', // Indica que estamos no contexto de Indicativo Inicial
+            'atividadesComunicacao' => $atividadesComunicacao,
+        ]);
+    }
 }

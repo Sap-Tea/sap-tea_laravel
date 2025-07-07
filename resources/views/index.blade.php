@@ -223,7 +223,7 @@
                         <i class="fa-solid fa-tasks"></i> Indicativo de Atividades ⬇
                     </a>
                     <ul class="submenu_escola">
-                        <li><a href="#" class="disabled" title="Em breve">.1 Inicial</a></li>
+                        <li><a href="{{ route('indicativo.inicial.lista') }}" class="menu-link" data-page="Indicativo Inicial">.1 Inicial</a></li>
                         <li><a href="#" class="disabled" title="Em breve">.2 Continuada</a></li>
                         <li><a href="#" class="disabled" title="Em breve">.3 Continuada</a></li>
                         <li><a href="#" class="disabled" title="Em breve">.4 Final</a></li>

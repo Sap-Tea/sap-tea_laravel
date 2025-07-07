@@ -483,8 +483,12 @@ if ($total_atividades_geral > 0) {
         <div class="header">
           <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo Educação" />
           <div class="title">
-            ROTINA E MONITORAMENTO DE <br>
-            APLICAÇÃO DE ATIVIDADES 1 - INICIAL
+            @if(isset($contexto) && $contexto === 'indicativo_inicial')
+              INDICATIVO INICIAL
+            @else
+              ROTINA E MONITORAMENTO DE <br>
+              APLICAÇÃO DE ATIVIDADES 1 - INICIAL
+            @endif
           </div>
           <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" />
         </div>

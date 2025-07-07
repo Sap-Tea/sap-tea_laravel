@@ -45,13 +45,11 @@
                     <!-- Botões de ação flexíveis -->
                     <td>
                         @if(isset($botoes))
-                            @if(isset($botoes))
-    @foreach($botoes as $botao)
-        @if(!empty($aluno->alu_id))
-            <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $botao['classe'] }} btn-sm" @if($botao['label'] === 'Visualizar Rotina') style="display:none" @endif>{{ $botao['label'] }}</a>
-        @endif
-    @endforeach
-@endif
+                            @foreach($botoes as $botao)
+                                @if(!empty($aluno->alu_id))
+                                    <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $botao['classe'] }} btn-sm">{{ $botao['label'] }}</a>
+                                @endif
+                            @endforeach
                         @endif
 
                         @if(($exibeBotaoInventario ?? false) && $aluno->flag_inventario !== "*")

@@ -119,6 +119,14 @@ Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
 use App\Http\Controllers\ProcessaResultadosController;
 Route::get('/monitoramento/aluno', [ProcessaResultadosController::class, 'monitoramentoAluno'])->name('monitoramento.aluno');
 
+// =========================
+// INDICATIVO DE ATIVIDADES
+// =========================
+// Rota para listagem de alunos no contexto de Indicativo Inicial
+Route::get('/indicativo/alunos', [PerfilEstudanteController::class, 'listarAlunosIndicativo'])->name('indicativo.inicial.lista');
+// Rota para o formulário de Indicativo Inicial de um aluno específico
+Route::get('/indicativo/aluno/{id}/inicial', [MonitoramentoAtividadeController::class, 'indicativoInicial'])->name('indicativo.inicial');
+
 // Rota restaurada para evitar erro em views antigas
 Route::get('/rotina/visualizar/{id}', function($id) {
     return 'Visualizar rotina para aluno ' . $id;
