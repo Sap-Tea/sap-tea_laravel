@@ -567,6 +567,24 @@ class MonitoramentoAtividadeController extends Controller
             ->orderBy('atv.cod_atividade')
             ->get();
 
+        // Consulta atividades do eixo comportamento para o aluno
+        $atividadesComportamento = \DB::table('cad_ativ_eixo_comportamento as atv')
+            ->join('atividade_comportamento as ativ', 'atv.cod_atividade', '=', 'ativ.cod_ati_comportamento')
+            ->join('habilidade_comportamento as hab', 'atv.cod_atividade', '=', 'hab.cod_hab_comportamento')
+            ->where('atv.aluno_id', $id)
+            ->select('atv.*', 'ativ.desc_ati_comportamento as desc_atividade', 'hab.desc_hab_comportamento')
+            ->orderBy('atv.cod_atividade')
+            ->get();
+
+        // Consulta atividades do eixo socioemocional para o aluno
+        $atividadesSocioemocional = \DB::table('cad_ativ_eixo_int_socio as atv')
+            ->join('atividade_int_soc as ativ', 'atv.cod_atividade', '=', 'ativ.cod_ati_int_soc')
+            ->join('habilidade_int_soc as hab', 'atv.cod_atividade', '=', 'hab.cod_hab_int_soc')
+            ->where('atv.aluno_id', $id)
+            ->select('atv.*', 'ativ.desc_ati_int_soc as desc_atividade', 'hab.desc_hab_int_soc')
+            ->orderBy('atv.cod_atividade')
+            ->get();
+
         // Retorna a view com os dados necessários
         return view('rotina_monitoramento.IndicativoInicial', [
             'alunoId' => $id,
@@ -574,6 +592,10 @@ class MonitoramentoAtividadeController extends Controller
             'professor_nome' => $professor_logado->func_nome,
             'contexto' => 'indicativo_inicial', // Indica que estamos no contexto de Indicativo Inicial
             'atividadesComunicacao' => $atividadesComunicacao,
+            'atividadesComportamento' => $atividadesComportamento,
+            'atividadesSocioemocional' => $atividadesSocioemocional,
         ]);
     }
 }
+
+// ... (rest of the code remains the same)
