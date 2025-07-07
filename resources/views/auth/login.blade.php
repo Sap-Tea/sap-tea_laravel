@@ -60,7 +60,7 @@
         <div class="login-card">
             <div class="formLogin">
             <div class="login-header">
-        <h2>Bem-vindo</h2>
+     
         <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" class="logo-inside">
    
     </div>
