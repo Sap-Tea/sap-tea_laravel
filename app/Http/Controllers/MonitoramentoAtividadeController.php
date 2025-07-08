@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-
-use Illuminate\Http\Request;
 use App\Models\Aluno;
+use App\Models\Atividade;
 use App\Models\AtividadeComunicacao;
 use App\Models\AtividadeComportamento;
 use App\Models\AtividadeSocioemocional;
@@ -14,6 +11,9 @@ use App\Models\ResultEixoComLin;
 use App\Models\ResultEixoComport;
 use App\Models\ResultEixoSocio;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoramentoAtividadeController extends Controller
 {
@@ -564,23 +564,29 @@ class MonitoramentoAtividadeController extends Controller
             ->pluck('total', 'cod_atividade')
             ->toArray();
 
-        // Consulta agrupada: atividades e habilidades do eixo Comunicação/Linguagem para o aluno
-        $comunicacao_linguagem_agrupado = DB::select("
-            SELECT 
-              acl.desc_ati_com_lin AS atividade,
-              hcl.desc_hab_com_lin AS habilidade
-            FROM 
-              cad_ativ_eixo_com_lin caecl
-            INNER JOIN 
-              atividade_com_lin acl ON caecl.cod_atividade = acl.cod_ati_com_lin
-            LEFT JOIN 
-              hab_pro_com_lin hpc ON acl.id_ati_com_lin = hpc.fk_id_pro_com_lin
-            LEFT JOIN 
-              habilidade_com_lin hcl ON hpc.fk_id_hab_com_lin = hcl.id_hab_com_lin
-            WHERE caecl.aluno_id = ?
-            GROUP BY acl.id_ati_com_lin, hcl.id_hab_com_lin
-            ORDER BY acl.desc_ati_com_lin, hcl.desc_hab_com_lin
-        ", [$id]);
+        // 1. Buscar todas as atividades realizadas pelo aluno
+        $comunicacao_atividades_realizadas = DB::table('cad_ativ_eixo_com_lin as caecl')
+            ->join('atividade_com_lin as acl', 'caecl.cod_atividade', '=', 'acl.cod_ati_com_lin')
+            ->where('caecl.aluno_id', $id)
+            ->select('acl.desc_ati_com_lin as descricao_atividade', 'acl.cod_ati_com_lin as cod_atividade')
+            ->distinct()
+            ->orderBy('acl.desc_ati_com_lin')
+            ->get();
+
+        // Extrair os códigos das atividades realizadas
+        $codigos_atividades_realizadas = $comunicacao_atividades_realizadas->pluck('cod_atividade');
+
+        // 2. Buscar todas as habilidades relacionadas a essas atividades
+        $comunicacao_habilidades_encontradas = [];
+        if ($codigos_atividades_realizadas->isNotEmpty()) {
+            $comunicacao_habilidades_encontradas = DB::table('hab_pro_com_lin as hpc')
+                ->join('habilidade_com_lin as hcl', 'hpc.fk_id_hab_com_lin', '=', 'hcl.id_hab_com_lin')
+                ->whereIn('hpc.cod_atividade', $codigos_atividades_realizadas)
+                ->select('hcl.desc_hab_com_lin as descricao_habilidade')
+                ->distinct()
+                ->orderBy('hcl.desc_hab_com_lin')
+                ->get();
+        }
 
         // Consulta agrupada: atividades e habilidades do eixo Comportamento para o aluno
         $comportamento_agrupado = DB::select("
@@ -628,7 +634,8 @@ class MonitoramentoAtividadeController extends Controller
             'comportamentoRegistrosHoje' => $comportamentoRegistrosHoje,
             'comunicacaoRegistrosHoje' => $comunicacaoRegistrosHoje,
             'socioemocionalRegistrosHoje' => $socioemocionalRegistrosHoje,
-            'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
+            'comunicacao_atividades_realizadas' => $comunicacao_atividades_realizadas,
+            'comunicacao_habilidades_encontradas' => $comunicacao_habilidades_encontradas,
             'comportamento_agrupado' => $comportamento_agrupado,
             'socioemocional_agrupado' => $socioemocional_agrupado,
         ]));

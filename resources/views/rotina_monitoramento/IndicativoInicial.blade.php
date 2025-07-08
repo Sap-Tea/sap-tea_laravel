@@ -126,42 +126,43 @@
                                 Não foi possível carregar os dados do aluno. Por favor, verifique se o aluno existe e se você tem permissão para acessá-lo.
                             </div>
                         @endif
-                        </div>
+                        {{-- Eixo: Comunicação/Linguagem --}}
+                        @if (isset($comunicacao_atividades_realizadas) && $comunicacao_atividades_realizadas->isNotEmpty())
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header" style="background-color: #f8d7da; color: #721c24;">
+                                            <h5 class="card-title">Eixo: Comunicação/Linguagem</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <h6 class="mt-2">Atividades Realizadas</h6>
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    @foreach ($comunicacao_atividades_realizadas as $atividade)
+                                                        <tr>
+                                                            <td>{{ $atividade->descricao_atividade }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
 
-                        <!-- Bloco Eixo Comunicação/Linguagem -->
-                        <div class="eixo-bloco-comunicacao" style="margin-top: 30px;">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr class="linha-eixo-comunicacao">
-                                        <th colspan="3" style="text-align:center;">INVENTÁRIO DE HABILIDADES - EIXO COMUNICAÇÃO/LINGUAGEM</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-    $atividades = [];
-    foreach($comunicacao_linguagem_agrupado as $item) {
-        $atividades[$item->atividade][] = $item->habilidade;
-    }
-@endphp
-
-@foreach($atividades as $atividade => $habilidades)
-    <tr>
-        <td colspan="2"><strong>{{ $atividade }}</strong></td>
-    </tr>
-    @php
-    $descHabUnicas = array_unique($habilidades);
-@endphp
-@foreach ($descHabUnicas as $habilidade)
-    @if($habilidade)
-    <tr class="linha-eixo-comunicacao">
-        <td style="padding-left: 32px;">{{ $habilidade }}</td>
-    </tr>
-    @endif
-@endforeach
-@endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                            @if (isset($comunicacao_habilidades_encontradas) && $comunicacao_habilidades_encontradas->isNotEmpty())
+                                                <h6 class="mt-4">Habilidades Encontradas</h6>
+                                                <table class="table table-bordered">
+                                                    <tbody>
+                                                        @foreach ($comunicacao_habilidades_encontradas as $habilidade)
+                                                            <tr>
+                                                                <td>{{ $habilidade->descricao_habilidade }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
                         <!-- Bloco Eixo Comportamento -->
                         <div class="eixo-bloco-comportamento" style="margin-top: 30px;">
