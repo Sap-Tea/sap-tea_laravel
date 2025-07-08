@@ -33,28 +33,22 @@ class ProcessaResultadosController extends Controller
         
         // Consulta agrupada Comunicação/Linguagem para o aluno específico
         $comunicacao_linguagem_agrupado = DB::select("
-            SELECT 
-                r.fk_id_pro_com_lin,
-                r.fk_result_alu_id_ecomling,
-                r.tipo_fase_com_lin,
-                a.cod_ati_com_lin,
-                a.desc_ati_com_lin,
-                COUNT(*) AS total
-            FROM 
-                result_eixo_com_lin r
-            JOIN 
-                atividade_com_lin a ON r.fk_id_pro_com_lin = a.id_ati_com_lin
-            WHERE
-                r.fk_result_alu_id_ecomling = ?
-            GROUP BY
-                r.fk_id_pro_com_lin,
-                r.fk_result_alu_id_ecomling,
-                r.tipo_fase_com_lin,
-                a.cod_ati_com_lin,
-                a.desc_ati_com_lin
-            ORDER BY
-                COUNT(*) DESC
-        ", [$alunoId]);
+    SELECT 
+      acl.desc_ati_com_lin AS atividade,
+      hcl.desc_hab_com_lin AS habilidade
+    FROM 
+      cad_ativ_eixo_com_lin caecl
+    INNER JOIN 
+      atividade_com_lin acl ON caecl.cod_atividade = acl.cod_ati_com_lin
+    LEFT JOIN 
+      hab_pro_com_lin hpc ON acl.id_ati_com_lin = hpc.fk_id_pro_com_lin
+    LEFT JOIN 
+      habilidade_com_lin hcl ON hpc.fk_id_hab_com_lin = hcl.id_hab_com_lin
+    GROUP BY 
+      acl.id_ati_com_lin, hcl.id_hab_com_lin
+    ORDER BY 
+      acl.desc_ati_com_lin, hcl.desc_hab_com_lin
+");
         // Consulta agrupada Comportamento - EXCLUINDO a atividade ECP03 (id=3) para o aluno específico
         $comportamento_agrupado = DB::select("
             SELECT 

@@ -105,29 +105,61 @@ function adicionarListenersSalvarLinhaGenerico() {
             .then(resp => resp.json())
             .then(data => {
                 if (data.success) {
-                    alert('Atividade salva com sucesso!');
-                    
-                    // Desabilitar o botão e mudar a cor para vermelho
-                    const botao = linha.querySelector('.btn-salvar-linha');
-                    if (botao) {
-                        botao.disabled = true;
-                        botao.classList.remove('btn-success');
-                        botao.classList.add('btn-danger');
-                        botao.textContent = 'Atividade Salva';
-                        
-                        // Desabilitar os inputs da linha também
-                        const inputs = linha.querySelectorAll('input, textarea');
-                        inputs.forEach(input => {
-                            input.disabled = true;
-                        });
-                    }
+                    // MODAL DE SUCESSO ROBUSTO
+const modalMsg = document.getElementById('modalDuplicidadeMsg');
+if (modalMsg) {
+    modalMsg.textContent = 'Atividade salva com sucesso!';
+}
+const modalEl = document.getElementById('modalDuplicidadeMonitoramento');
+if (modalEl) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+}
+const botao = linha.querySelector('.btn-salvar-linha');
+if (botao) {
+    botao.disabled = true;
+    botao.classList.remove('btn-success');
+    botao.classList.add('btn-danger');
+    botao.style.backgroundColor = '#dc3545'; // força cor vermelha
+    botao.textContent = 'Atividade Salva';
+    // Desabilitar os inputs da linha também
+    const inputs = linha.querySelectorAll('input, textarea');
+    inputs.forEach(input => { input.disabled = true; });
+    console.log('[scripts_monitoramento] Botão desabilitado e cor alterada para vermelho (sucesso)');
+}
+return;
                 } else {
-                    alert('Erro ao salvar: ' + (data.message || 'Erro desconhecido.'));
+                    // MODAL DE ERRO DE DUPLICIDADE OU OUTRO ERRO (ROBUSTO)
+const modalMsg = document.getElementById('modalDuplicidadeMsg');
+if (modalMsg) {
+    modalMsg.textContent = data.message || 'Erro desconhecido ao salvar.';
+}
+const modalEl = document.getElementById('modalDuplicidadeMonitoramento');
+if (modalEl) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+}
+const botao = linha.querySelector('.btn-salvar-linha');
+if (botao) {
+    botao.disabled = true;
+    botao.classList.remove('btn-success');
+    botao.classList.add('btn-danger');
+    botao.style.backgroundColor = '#dc3545';
+    botao.textContent = 'Já cadastrado!';
+    console.log('[scripts_monitoramento] Botão desabilitado e cor alterada para vermelho (erro/duplicidade)');
+}
+return;
                 }
             })
             .catch(err => {
                 console.error('Erro AJAX:', err);
-                alert('Erro na requisição: ' + err.message);
+                const modalMsg = document.getElementById('modalDuplicidadeMsg');
+if (modalMsg) {
+    modalMsg.textContent = 'Erro na requisição: ' + err.message;
+}
+const modal = new bootstrap.Modal(document.getElementById('modalDuplicidadeMonitoramento'));
+modal.show();
+return;
             });
         });
     });

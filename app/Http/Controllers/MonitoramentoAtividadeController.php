@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 use App\Models\Aluno;
 use App\Models\AtividadeComunicacao;
@@ -10,8 +13,6 @@ use App\Models\AtividadeSocioemocional;
 use App\Models\ResultEixoComLin;
 use App\Models\ResultEixoComport;
 use App\Models\ResultEixoSocio;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class MonitoramentoAtividadeController extends Controller
@@ -78,11 +79,24 @@ class MonitoramentoAtividadeController extends Controller
             }
 
             // Salvar os dados de cada eixo
-            $this->salvarEixo($alunoId, 'comunicacao', $dadosProcessados['comunicacao'] ?? []);
-            $this->salvarEixo($alunoId, 'comportamento', $dadosProcessados['comportamento'] ?? []);
-            $this->salvarEixo($alunoId, 'socioemocional', $dadosProcessados['socioemocional'] ?? []);
+            $salvos = 0;
+            $salvos += $this->salvarEixo($alunoId, 'comunicacao', $dadosProcessados['comunicacao'] ?? []);
+            $salvos += $this->salvarEixo($alunoId, 'comportamento', $dadosProcessados['comportamento'] ?? []);
+            $salvos += $this->salvarEixo($alunoId, 'socioemocional', $dadosProcessados['socioemocional'] ?? []);
 
             DB::commit();
+
+            if ($salvos === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nenhum registro foi salvo porque todos já existem para este aluno, atividade, flag e fase de cadastro.',
+                    'data' => [
+                        'aluno_id' => $alunoId,
+                        'fase_cadastro' => $faseCadastro,
+                        'registros_salvos' => 0
+                    ]
+                ], 409);
+            }
 
             return response()->json([
                 'success' => true,
@@ -90,7 +104,7 @@ class MonitoramentoAtividadeController extends Controller
                 'data' => [
                     'aluno_id' => $alunoId,
                     'fase_cadastro' => $faseCadastro,
-                    'registros_salvos' => array_sum(array_map('count', $dadosProcessados))
+                    'registros_salvos' => $salvos
                 ]
             ]);
 
@@ -109,18 +123,10 @@ class MonitoramentoAtividadeController extends Controller
     /**
      * Salva os dados de um eixo específico
      *
-     * @param  int  $alunoId
-     * @param  string  $eixo
-     * @param  array  $dados
-     * @return void
-     */
-    /**
-     * Salva os dados de um eixo específico
-     *
      * @param int $alunoId ID do aluno
      * @param string $eixo Nome do eixo (comunicacao, comportamento, socioemocional)
      * @param array $dados Dados a serem salvos
-     * @return void
+     * @return int
      */
     protected function salvarEixo($alunoId, $eixo, $dados)
     {
@@ -132,7 +138,7 @@ class MonitoramentoAtividadeController extends Controller
         // Garantir que aluno_id seja um inteiro válido
         if (empty($alunoId) || !is_numeric($alunoId)) {
             \Log::error("ERRO CRÍTICO: aluno_id inválido ou vazio: " . var_export($alunoId, true));
-            return;
+            return 0;
         }
         
         // Forçar conversão para inteiro
@@ -142,7 +148,7 @@ class MonitoramentoAtividadeController extends Controller
         $model = $this->getModelPorEixo($eixo);
         if (!$model) {
             \Log::error("Model não encontrada para o eixo: " . $eixo);
-            return;
+            return 0;
         }
 
         $faseCadastro = $this->obterFaseAtual();
@@ -558,43 +564,74 @@ class MonitoramentoAtividadeController extends Controller
             ->pluck('total', 'cod_atividade')
             ->toArray();
 
-        // Consulta atividades do eixo comunicação/linguagem para o aluno
-        $atividadesComunicacao = \DB::table('cad_ativ_eixo_com_lin as atv')
-            ->join('atividade_com_lin as ativ', 'atv.cod_atividade', '=', 'ativ.cod_ati_com_lin')
-            ->join('habilidade_com_lin as hab', 'atv.cod_atividade', '=', 'hab.cod_hab_com_lin')
-            ->where('atv.aluno_id', $id)
-            ->select('atv.*', 'ativ.desc_ati_com_lin as desc_atividade', 'hab.desc_hab_com_lin')
-            ->orderBy('atv.cod_atividade')
-            ->get();
+        // Consulta agrupada: atividades e habilidades do eixo Comunicação/Linguagem para o aluno
+        $comunicacao_linguagem_agrupado = DB::select("
+            SELECT 
+              acl.desc_ati_com_lin AS atividade,
+              hcl.desc_hab_com_lin AS habilidade
+            FROM 
+              cad_ativ_eixo_com_lin caecl
+            INNER JOIN 
+              atividade_com_lin acl ON caecl.cod_atividade = acl.cod_ati_com_lin
+            LEFT JOIN 
+              hab_pro_com_lin hpc ON acl.id_ati_com_lin = hpc.fk_id_pro_com_lin
+            LEFT JOIN 
+              habilidade_com_lin hcl ON hpc.fk_id_hab_com_lin = hcl.id_hab_com_lin
+            WHERE caecl.aluno_id = ?
+            GROUP BY acl.id_ati_com_lin, hcl.id_hab_com_lin
+            ORDER BY acl.desc_ati_com_lin, hcl.desc_hab_com_lin
+        ", [$id]);
 
-        // Consulta atividades do eixo comportamento para o aluno
-        $atividadesComportamento = \DB::table('cad_ativ_eixo_comportamento as atv')
-            ->join('atividade_comportamento as ativ', 'atv.cod_atividade', '=', 'ativ.cod_ati_comportamento')
-            ->join('habilidade_comportamento as hab', 'atv.cod_atividade', '=', 'hab.cod_hab_comportamento')
-            ->where('atv.aluno_id', $id)
-            ->select('atv.*', 'ativ.desc_ati_comportamento as desc_atividade', 'hab.desc_hab_comportamento')
-            ->orderBy('atv.cod_atividade')
-            ->get();
+        // Consulta agrupada: atividades e habilidades do eixo Comportamento para o aluno
+        $comportamento_agrupado = DB::select("
+            SELECT 
+              ac.desc_ati_comportamento AS atividade,
+              hc.desc_hab_comportamento AS habilidade
+            FROM 
+              cad_ativ_eixo_comportamento cae
+            INNER JOIN 
+              atividade_comportamento ac ON cae.cod_atividade = ac.cod_ati_comportamento
+            LEFT JOIN 
+              hab_pro_comportamento hpc ON ac.id_ati_comportamento = hpc.fk_id_pro_comportamento
+            LEFT JOIN 
+              habilidade_comportamento hc ON hpc.fk_id_hab_comportamento = hc.id_hab_comportamento
+            WHERE cae.aluno_id = ?
+            GROUP BY ac.id_ati_comportamento, hc.id_hab_comportamento
+            ORDER BY ac.desc_ati_comportamento, hc.desc_hab_comportamento
+        ", [$id]);
 
-        // Consulta atividades do eixo socioemocional para o aluno
-        $atividadesSocioemocional = \DB::table('cad_ativ_eixo_int_socio as atv')
-            ->join('atividade_int_soc as ativ', 'atv.cod_atividade', '=', 'ativ.cod_ati_int_soc')
-            ->join('habilidade_int_soc as hab', 'atv.cod_atividade', '=', 'hab.cod_hab_int_soc')
-            ->where('atv.aluno_id', $id)
-            ->select('atv.*', 'ativ.desc_ati_int_soc as desc_atividade', 'hab.desc_hab_int_soc')
-            ->orderBy('atv.cod_atividade')
-            ->get();
+        // Consulta agrupada: atividades e habilidades do eixo Socioemocional para o aluno
+        $socioemocional_agrupado = DB::select("
+            SELECT 
+              ais.desc_ati_int_soc AS atividade,
+              his.desc_hab_int_soc AS habilidade
+            FROM 
+              cad_ativ_eixo_int_socio caeis
+            INNER JOIN 
+              atividade_int_soc ais ON caeis.cod_atividade = ais.cod_ati_int_soc
+            LEFT JOIN 
+              hab_pro_int_soc hpis ON ais.id_ati_int_soc = hpis.fk_id_pro_int_soc
+            LEFT JOIN 
+              habilidade_int_soc his ON hpis.fk_id_hab_int_soc = his.id_hab_int_soc
+            WHERE caeis.aluno_id = ?
+            GROUP BY ais.id_ati_int_soc, his.id_hab_int_soc
+            ORDER BY ais.desc_ati_int_soc, his.desc_hab_int_soc
+        ", [$id]);
 
         // Retorna a view com os dados necessários
-        return view('rotina_monitoramento.IndicativoInicial', [
-            'alunoId' => $id,
+        return view('rotina_monitoramento.IndicativoInicial', array_merge($dados, [
             'alunoDetalhado' => $alunoDetalhado,
-            'professor_nome' => $professor_logado->func_nome,
-            'contexto' => 'indicativo_inicial', // Indica que estamos no contexto de Indicativo Inicial
-            'atividadesComunicacao' => $atividadesComunicacao,
-            'atividadesComportamento' => $atividadesComportamento,
-            'atividadesSocioemocional' => $atividadesSocioemocional,
-        ]);
+            'data_inicial_com_lin' => $data_inicial_com_lin,
+            'comunicacao_resultados' => $comunicacao_resultados,
+            'comportamento_resultados' => $comportamento_resultados,
+            'socioemocional_resultados' => $socioemocional_resultados,
+            'comportamentoRegistrosHoje' => $comportamentoRegistrosHoje,
+            'comunicacaoRegistrosHoje' => $comunicacaoRegistrosHoje,
+            'socioemocionalRegistrosHoje' => $socioemocionalRegistrosHoje,
+            'comunicacao_linguagem_agrupado' => $comunicacao_linguagem_agrupado,
+            'comportamento_agrupado' => $comportamento_agrupado,
+            'socioemocional_agrupado' => $socioemocional_agrupado,
+        ]));
     }
 }
 

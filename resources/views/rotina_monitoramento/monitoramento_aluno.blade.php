@@ -1736,6 +1736,72 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 return false;
             }
+
+            // --- AJAX SUBMIT COM ALERTA DE DUPLICIDADE ---
+            e.preventDefault();
+            const btnSalvar = form.querySelector('button[type="submit"], .btn-salvar-monitoramento');
+            if (btnSalvar) {
+                btnSalvar.disabled = true;
+                btnSalvar.classList.remove('btn-danger', 'btn-success');
+                btnSalvar.classList.add('btn-primary');
+                btnSalvar.textContent = 'Salvando...';
+            }
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                },
+                body: formData
+            })
+            .then(async response => {
+                const btnSalvar = form.querySelector('button[type="submit"], .btn-salvar-monitoramento');
+                if (response.status === 409) {
+                    // Duplicidade detectada
+                    const data = await response.json();
+                    const msg = data.message || 'Já existe um registro igual para este aluno, atividade, flag e fase. Nenhum dado foi salvo.';
+                    const modalMsg = document.getElementById('modalDuplicidadeMsg');
+                    if (modalMsg) modalMsg.textContent = msg;
+                    const modal = new bootstrap.Modal(document.getElementById('modalDuplicidadeMonitoramento'));
+                    modal.show();
+                    // Feedback visual no botão
+                    if (btnSalvar) {
+                        btnSalvar.classList.remove('btn-primary', 'btn-success');
+                        btnSalvar.classList.add('btn-danger');
+                        btnSalvar.disabled = false;
+                        btnSalvar.textContent = 'Já cadastrado!';
+                    }
+                    // Permitir novo envio ao editar campos
+                    form.querySelectorAll('input, textarea, select').forEach(el => {
+                        el.addEventListener('input', function handler() {
+                            if (btnSalvar) {
+                                btnSalvar.classList.remove('btn-danger', 'btn-success');
+                                btnSalvar.classList.add('btn-primary');
+                                btnSalvar.disabled = false;
+                                btnSalvar.textContent = 'Salvar';
+                            }
+                            el.removeEventListener('input', handler);
+                        });
+                    });
+                    return;
+                }
+                if (!response.ok) {
+                    alert('Erro ao salvar monitoramento. Tente novamente.');
+                    return;
+                }
+                // Sucesso
+                if (btnSalvar) {
+                    btnSalvar.classList.remove('btn-primary', 'btn-danger');
+                    btnSalvar.classList.add('btn-success');
+                    btnSalvar.disabled = true;
+                    btnSalvar.textContent = 'Salvo com sucesso!';
+                }
+                const data = await response.json();
+                setTimeout(() => { window.location.reload(); }, 1200);
+            })
+            .catch(() => {
+                alert('Erro inesperado ao salvar monitoramento.');
+            });
         });
     }
 
@@ -1748,4 +1814,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @include('rotina_monitoramento.partials.teste_include')
+
+<!-- Modal de erro de duplicidade -->
+<div class="modal fade" id="modalDuplicidadeMonitoramento" tabindex="-1" aria-labelledby="modalDuplicidadeLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning-subtle">
+        <h5 class="modal-title text-warning" id="modalDuplicidadeLabel">Cadastro já existe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body" id="modalDuplicidadeMsg">
+        Já existe um registro igual para este aluno, atividade, flag e fase. Nenhum dado foi salvo.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS (caso não esteja incluso) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 @endsection

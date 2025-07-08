@@ -135,29 +135,28 @@
                                     <tr class="linha-eixo-comunicacao">
                                         <th colspan="3" style="text-align:center;">INVENTÁRIO DE HABILIDADES - EIXO COMUNICAÇÃO/LINGUAGEM</th>
                                     </tr>
-                                    <tr class="linha-eixo-comunicacao">
-                                        <th>Atividade / Habilidade</th>
-                                        <th></th>
-                                    </tr>
                                 </thead>
                                 <tbody>
                                     @php
-    $atividadeAgrupada = [];
-    foreach ($atividadesComunicacao as $item) {
-        $atividadeAgrupada[$item->desc_atividade][] = $item;
+    $atividades = [];
+    foreach($comunicacao_linguagem_agrupado as $item) {
+        $atividades[$item->atividade][] = $item->habilidade;
     }
 @endphp
-@foreach ($atividadeAgrupada as $atividadeNome => $habilidades)
-    <tr class="linha-eixo-comunicacao">
-        <td colspan="2"><strong>{{ $atividadeNome }}</strong></td>
+
+@foreach($atividades as $atividade => $habilidades)
+    <tr>
+        <td colspan="2"><strong>{{ $atividade }}</strong></td>
     </tr>
     @php
-    $descHabUnicas = collect($habilidades)->unique('desc_hab_com_lin');
+    $descHabUnicas = array_unique($habilidades);
 @endphp
 @foreach ($descHabUnicas as $habilidade)
-    <tr style="background-color: #E3F4FD;">
-        <td style="padding-left: 32px;">{{ $habilidade->desc_hab_com_lin }}</td>
+    @if($habilidade)
+    <tr class="linha-eixo-comunicacao">
+        <td style="padding-left: 32px;">{{ $habilidade }}</td>
     </tr>
+    @endif
 @endforeach
 @endforeach
                                 </tbody>
@@ -178,23 +177,25 @@
                                 </thead>
                                 <tbody>
                                     @php
-    $atividadeAgrupadaComp = [];
-    foreach ($atividadesComportamento as $item) {
-        $atividadeAgrupadaComp[$item->desc_atividade][] = $item;
+    $atividadesComp = [];
+    foreach($comportamento_agrupado as $item) {
+        $atividadesComp[$item->atividade][] = $item->habilidade;
     }
 @endphp
-@foreach ($atividadeAgrupadaComp as $atividadeNome => $habilidades)
-    <tr class="linha-eixo-comportamento">
-        <td colspan="2"><strong>{{ $atividadeNome }}</strong></td>
+@foreach($atividadesComp as $atividade => $habilidades)
+    <tr style="background:#fff;">
+        <td colspan="2"><strong>{{ $atividade }}</strong></td>
     </tr>
     @php
-    $descHabUnicas = collect($habilidades)->unique('desc_hab_comportamento');
-@endphp
-@foreach ($descHabUnicas as $habilidade)
-    <tr style="background-color: #FFF5E3;">
-        <td style="padding-left: 32px;">{{ $habilidade->desc_hab_comportamento }}</td>
-    </tr>
-@endforeach
+        $descHabUnicas = array_unique($habilidades);
+    @endphp
+    @foreach ($descHabUnicas as $habilidade)
+        @if($habilidade)
+        <tr class="linha-eixo-comportamento">
+            <td style="padding-left: 32px;">{{ $habilidade }}</td>
+        </tr>
+        @endif
+    @endforeach
 @endforeach
                                 </tbody>
                             </table>
@@ -213,23 +214,25 @@
                                 </thead>
                                 <tbody>
                                     @php
-    $atividadeAgrupadaSocio = [];
-    foreach ($atividadesSocioemocional as $item) {
-        $atividadeAgrupadaSocio[$item->desc_atividade][] = $item;
+    $atividadesSocio = [];
+    foreach($socioemocional_agrupado as $item) {
+        $atividadesSocio[$item->atividade][] = $item->habilidade;
     }
 @endphp
-@foreach ($atividadeAgrupadaSocio as $atividadeNome => $habilidades)
-    <tr class="linha-eixo-socio">
-        <td colspan="2"><strong>{{ $atividadeNome }}</strong></td>
+@foreach($atividadesSocio as $atividade => $habilidades)
+    <tr style="background:#fff;">
+        <td colspan="2"><strong>{{ $atividade }}</strong></td>
     </tr>
     @php
-    $descHabUnicas = collect($habilidades)->unique('desc_hab_int_soc');
-@endphp
-@foreach ($descHabUnicas as $habilidade)
-    <tr style="background-color: #E3FDEB;">
-        <td style="padding-left: 32px;">{{ $habilidade->desc_hab_int_soc }}</td>
-    </tr>
-@endforeach
+        $descHabUnicas = array_unique($habilidades);
+    @endphp
+    @foreach ($descHabUnicas as $habilidade)
+        @if($habilidade)
+        <tr class="linha-eixo-socio">
+            <td style="padding-left: 32px;">{{ $habilidade }}</td>
+        </tr>
+        @endif
+    @endforeach
 @endforeach
                                 </tbody>
                             </table>
