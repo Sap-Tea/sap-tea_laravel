@@ -8,16 +8,19 @@
 .linha-eixo-comunicacao > th,
 .linha-eixo-comunicacao > td {
     background-color: #7EC3EA !important;
+    color: #003366 !important;
 }
 .linha-eixo-comportamento,
 .linha-eixo-comportamento > th,
 .linha-eixo-comportamento > td {
     background-color: #FFD591 !important;
+    color: #7a5b00 !important;
 }
 .linha-eixo-socio,
 .linha-eixo-socio > th,
 .linha-eixo-socio > td {
     background-color: #A2F5C8 !important;
+    color: #006644 !important;
 }
 
     .header-container {
@@ -131,7 +134,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="card">
-                                        <div class="card-header" style="background-color: #f8d7da; color: #721c24;">
+                                        <div class="card-header linha-eixo-comunicacao" style="background-color: #7EC3EA; color: #003366;">
                                             <h5 class="card-title">Eixo: Comunicação/Linguagem</h5>
                                         </div>
                                         <div class="card-body">
@@ -139,6 +142,7 @@
                                             <table class="table table-bordered">
                                                 <tbody>
                                                     @foreach ($comunicacao_atividades_realizadas as $atividade)
+                                                        <tr class="linha-eixo-comunicacao">
                                                         <tr>
                                                             <td>{{ $atividade->descricao_atividade }}</td>
                                                         </tr>
@@ -177,27 +181,48 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-    $atividadesComp = [];
-    foreach($comportamento_agrupado as $item) {
-        $atividadesComp[$item->atividade][] = $item->habilidade;
-    }
-@endphp
-@foreach($atividadesComp as $atividade => $habilidades)
-    <tr style="background:#fff;">
-        <td colspan="2"><strong>{{ $atividade }}</strong></td>
-    </tr>
-    @php
-        $descHabUnicas = array_unique($habilidades);
-    @endphp
-    @foreach ($descHabUnicas as $habilidade)
-        @if($habilidade)
-        <tr class="linha-eixo-comportamento">
-            <td style="padding-left: 32px;">{{ $habilidade }}</td>
-        </tr>
-        @endif
-    @endforeach
-@endforeach
+                                    @if(isset($comportamento_agrupado) && count($comportamento_agrupado) > 0)
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header linha-eixo-comportamento" style="background-color: #FFD591; color: #7a5b00;">
+                    <h5 class="card-title">Eixo: Comportamento</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mt-2">Atividades Realizadas</h6>
+                    <table class="table table-bordered">
+                        <tbody>
+                            @php
+                                $atividadesComportamento = collect($comportamento_agrupado)->pluck('atividade')->unique();
+                            @endphp
+                            @foreach ($atividadesComportamento as $atividade)
+                                <tr>
+                                    <td>{{ $atividade }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
+                    @php
+                        $habilidadesComportamento = collect($comportamento_agrupado)->pluck('habilidade')->unique();
+                    @endphp
+                    @if($habilidadesComportamento->isNotEmpty())
+                        <h6 class="mt-4">Habilidades Encontradas</h6>
+                        <table class="table table-bordered">
+                            <tbody>
+                                @foreach ($habilidadesComportamento as $habilidade)
+                                    <tr>
+                                        <td>{{ $habilidade }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
                                 </tbody>
                             </table>
                         </div>
@@ -214,27 +239,48 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-    $atividadesSocio = [];
-    foreach($socioemocional_agrupado as $item) {
-        $atividadesSocio[$item->atividade][] = $item->habilidade;
-    }
-@endphp
-@foreach($atividadesSocio as $atividade => $habilidades)
-    <tr style="background:#fff;">
-        <td colspan="2"><strong>{{ $atividade }}</strong></td>
-    </tr>
-    @php
-        $descHabUnicas = array_unique($habilidades);
-    @endphp
-    @foreach ($descHabUnicas as $habilidade)
-        @if($habilidade)
-        <tr class="linha-eixo-socio">
-            <td style="padding-left: 32px;">{{ $habilidade }}</td>
-        </tr>
-        @endif
-    @endforeach
-@endforeach
+                                    @if(isset($socioemocional_agrupado) && count($socioemocional_agrupado) > 0)
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header linha-eixo-socio" style="background-color: #A2F5C8; color: #006644;">
+                    <h5 class="card-title">Eixo: Interação/Socioemocional</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mt-2">Atividades Realizadas</h6>
+                    <table class="table table-bordered">
+                        <tbody>
+                            @php
+                                $atividadesSocio = collect($socioemocional_agrupado)->pluck('atividade')->unique();
+                            @endphp
+                            @foreach ($atividadesSocio as $atividade)
+                                <tr>
+                                    <td>{{ $atividade }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
+                    @php
+                        $habilidadesSocio = collect($socioemocional_agrupado)->pluck('habilidade')->unique();
+                    @endphp
+                    @if($habilidadesSocio->isNotEmpty())
+                        <h6 class="mt-4">Habilidades Encontradas</h6>
+                        <table class="table table-bordered">
+                            <tbody>
+                                @foreach ($habilidadesSocio as $habilidade)
+                                    <tr>
+                                        <td>{{ $habilidade }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
                                 </tbody>
                             </table>
                         </div>
