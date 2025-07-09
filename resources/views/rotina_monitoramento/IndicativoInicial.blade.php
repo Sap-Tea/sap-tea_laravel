@@ -133,7 +133,25 @@
                         @if (isset($comunicacao_atividades_realizadas) && $comunicacao_atividades_realizadas->isNotEmpty())
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="card">
+                                    <div class="card linha-eixo-comunicacao" style="background-color: #7EC3EA;">
+    <style>
+        .linha-eixo-comunicacao .card-body, .linha-eixo-comunicacao table {
+            background-color: #7EC3EA !important;
+        }
+        .linha-eixo-comunicacao table.table-bordered {
+            border-collapse: collapse !important;
+        }
+        .linha-eixo-comunicacao .table-bordered th,
+        .linha-eixo-comunicacao .table-bordered td {
+            border: 2px solid #329fce !important;
+        }
+        .linha-eixo-comunicacao .table-bordered {
+            border: 2px solid #329fce !important;
+        }
+        .linha-eixo-comunicacao.card {
+            border: 2px solid #329fce !important;
+        }
+    </style>
                                         <div class="card-header linha-eixo-comunicacao" style="background-color: #7EC3EA; color: #003366;">
                                             <h5 class="card-title">Eixo: Comunicação/Linguagem</h5>
                                         </div>
@@ -169,22 +187,46 @@
                         @endif
 
                         <!-- Bloco Eixo Comportamento -->
-                        <div class="eixo-bloco-comportamento" style="margin-top: 30px;">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr class="linha-eixo-comportamento">
-                                        <th colspan="3" style="text-align:center;">INVENTÁRIO DE HABILIDADES - EIXO COMPORTAMENTO</th>
-                                    </tr>
-                                    <tr class="linha-eixo-comportamento">
-                                        <th>Atividade / Habilidade</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if(isset($comportamento_agrupado) && count($comportamento_agrupado) > 0)
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
+@if(isset($comportamento_agrupado) && count($comportamento_agrupado) > 0)
+<div class="row">
+    <div class="col-md-12">
+        <div class="card linha-eixo-comportamento" style="background-color: #FFD591;">
+            <style>
+                .linha-eixo-comportamento .card-body, .linha-eixo-comportamento table {
+                    background-color: #FFD591 !important;
+                }
+                .linha-eixo-comportamento table.table-bordered {
+                    border-collapse: collapse !important;
+                }
+                .linha-eixo-comportamento .table-bordered th,
+                .linha-eixo-comportamento .table-bordered td {
+                    border: 2px solid #bfa100 !important;
+                }
+                .linha-eixo-comportamento .table-bordered {
+                    border: 2px solid #bfa100 !important;
+                }
+                .linha-eixo-comportamento.card {
+                    border: 2px solid #bfa100 !important;
+                }
+            </style>
+            <div class="card-header linha-eixo-comportamento" style="background-color: #FFD591; color: #7a5b00;">
+                <h5 class="card-title">Eixo: Comportamento</h5>
+            background-color: #FFD591 !important;
+        }
+        .linha-eixo-comportamento table.table-bordered {
+            border-collapse: collapse !important;
+        }
+        .linha-eixo-comportamento .table-bordered th,
+        .linha-eixo-comportamento .table-bordered td {
+            border: 2px solid #bfa100 !important;
+        }
+        .linha-eixo-comportamento .table-bordered {
+            border: 2px solid #bfa100 !important;
+        }
+        .linha-eixo-comportamento.card {
+            border: 2px solid #bfa100 !important;
+        }
+    </style>
                 <div class="card-header linha-eixo-comportamento" style="background-color: #FFD591; color: #7a5b00;">
                     <h5 class="card-title">Eixo: Comportamento</h5>
                 </div>
@@ -223,26 +265,50 @@
         </div>
     </div>
 @endif
-                                </tbody>
-                            </table>
-                        </div>
 
                         <!-- Bloco Eixo Interação/Socioemocional -->
-                        <div class="eixo-bloco-socio" style="margin-top: 30px;">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr class="linha-eixo-socio">
-                                        <th colspan="3" style="text-align:center;">INVENTÁRIO DE HABILIDADES - EIXO INTERAÇÃO/SOCIOEMOCIONAL</th>
-                                    </tr>
-                                    <tr class="linha-eixo-socio">
-                                        <th>Atividade / Habilidade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if(isset($socioemocional_agrupado) && count($socioemocional_agrupado) > 0)
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
+@if(isset($socioemocional_agrupado) && count($socioemocional_agrupado) > 0)
+<div class="row">
+    <div class="col-md-12">
+        <div class="card linha-eixo-socio" style="background-color: #A2F5C8;">
+            <style>
+                .linha-eixo-socio .card-body, .linha-eixo-socio table {
+                    background-color: #A2F5C8 !important;
+                }
+                .linha-eixo-socio table.table-bordered {
+                    border-collapse: collapse !important;
+                }
+                .linha-eixo-socio .table-bordered th,
+                .linha-eixo-socio .table-bordered td {
+                    border: 2px solid #24996b !important;
+                }
+                .linha-eixo-socio .table-bordered {
+                    border: 2px solid #24996b !important;
+                }
+                .linha-eixo-socio.card {
+                    border: 2px solid #24996b !important;
+                }
+            </style>
+            <div class="card-header linha-eixo-socio" style="background-color: #A2F5C8; color: #006644;">
+                <h5 class="card-title">Eixo: Interação/Socioemocional</h5>
+    <style>
+        .linha-eixo-socio .card-body, .linha-eixo-socio table {
+            background-color: #A2F5C8 !important;
+        }
+        .linha-eixo-socio table.table-bordered {
+            border-collapse: collapse !important;
+        }
+        .linha-eixo-socio .table-bordered th,
+        .linha-eixo-socio .table-bordered td {
+            border: 2px solid #24996b !important;
+        }
+        .linha-eixo-socio .table-bordered {
+            border: 2px solid #24996b !important;
+        }
+        .linha-eixo-socio.card {
+            border: 2px solid #24996b !important;
+        }
+    </style>
                 <div class="card-header linha-eixo-socio" style="background-color: #A2F5C8; color: #006644;">
                     <h5 class="card-title">Eixo: Interação/Socioemocional</h5>
                 </div>
