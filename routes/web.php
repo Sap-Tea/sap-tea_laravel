@@ -86,6 +86,8 @@ Route::post('/formulario-teste', function (Illuminate\Http\Request $request) {
 // MONITORAMENTO EXEMPLO DEBUG
 Route::get('/monitoramento/exemplo/{alunoId}', [\App\Http\Controllers\MonitoramentoAtividadeController::class, 'exemploMonitoramento']);
 // =========================
+// ROTA POST PARA SALVAR MONITORAMENTO
+Route::post('/monitoramento/salvar', [\App\Http\Controllers\MonitoramentoAtividadeController::class, 'salvar'])->name('monitoramento.salvar');
 // SONDAGEM
 // =========================
 Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
@@ -126,6 +128,15 @@ Route::get('/monitoramento/aluno', [ProcessaResultadosController::class, 'monito
 Route::get('/indicativo/alunos', [PerfilEstudanteController::class, 'listarAlunosIndicativo'])->name('indicativo.inicial.lista');
 // Rota para o formulário de Indicativo Inicial de um aluno específico
 Route::get('/indicativo/aluno/{id}/inicial', [MonitoramentoAtividadeController::class, 'indicativoInicial'])->name('indicativo.inicial');
+
+// =========================
+// PERFIL FAMÍLIA
+// =========================
+// Rota para listagem de alunos no contexto de Perfil Família
+Route::get('/familia/alunos', [PerfilEstudanteController::class, 'listarAlunosFamilia'])->name('familia.inicial.lista');
+
+// Rota para o perfil inicial de um aluno específico no contexto da família
+Route::get('/familia/aluno/{id}/perfil', [\App\Http\Controllers\FamiliaController::class, 'perfilInicialAluno'])->name('familia.inicial');
 
 // Rota restaurada para evitar erro em views antigas
 Route::get('/rotina/visualizar/{id}', function($id) {

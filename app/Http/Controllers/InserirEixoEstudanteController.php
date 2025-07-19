@@ -17,7 +17,7 @@ class InserirEixoEstudanteController extends Controller
         // Removeu o dd() para permitir inserção normalmente
         // Corrige o parse da data para aceitar d-m-Y
         $data_inventario = $request->input('data_inicio_inventario');
-        $fase_inventario = "In";
+        $fase_inventario = $request->input('fase_inv_preenchimento', 'In');
         try {
             $dataInventario_formatada = Carbon::createFromFormat('d-m-Y', $data_inventario)->format('Y-m-d');
         } catch (\Exception $e) {
@@ -240,7 +240,7 @@ class InserirEixoEstudanteController extends Controller
                 'eis18' => $request->input('eis18'),    
                 'fk_alu_id_eintsoc' => $alunoId ,
                 'data_insert_int_socio'=> $dataInventario_formatada,
-                'fase_inv_int_socio'=> $fase_inventario
+                'tipo_fase_int_socio'=> $fase_inventario
 
 
             ]);
@@ -261,7 +261,7 @@ class InserirEixoEstudanteController extends Controller
             // Gera o JSON de debug dos três eixos juntos e retorna ao usuário
             try {
                 $processaResultadosController = app(\App\Http\Controllers\ProcessaResultadosController::class);
-                $resultado = $processaResultadosController->inserirTodosEixos($request);
+                $resultado = $processaResultadosController->inserirTodosEixos($request, $alunoId, $fase_inventario);
                 return redirect('sondagem/eixos-estudante')->with('success', 'Inventário salvo com sucesso! Aguarde, estamos gerando as atividades.');
             } catch (\Exception $e) {
                 \Log::error('Erro ao inserir resultados dos eixos: ' . $e->getMessage());

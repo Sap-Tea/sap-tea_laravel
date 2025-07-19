@@ -21,12 +21,13 @@ class AtividadeComportamento extends Model
     protected $fillable = [
         'aluno_id',
         'cod_atividade',
+        'flag',
+        'data_monitoramento',
+        'observacoes',
+        'registro_timestamp',
         'data_aplicacao',
         'realizado',
-        'observacoes',
-        'fase_cadastro',
-        'registro_timestamp',
-        'flag'  // Adicionado o campo flag
+        'fase_cadastro'
     ];
     
     /**

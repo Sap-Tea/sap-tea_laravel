@@ -22,12 +22,10 @@ class AtividadeSocioemocional extends Model
     protected $fillable = [
         'aluno_id',
         'cod_atividade',
-        'data_aplicacao',
-        'realizado',
+        'flag',
+        'data_monitoramento',
         'observacoes',
-        'fase_cadastro',
-        'registro_timestamp',
-        'flag'  // Adicionado o campo flag
+        'registro_timestamp'
     ];
     
     /**

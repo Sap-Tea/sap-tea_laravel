@@ -33,6 +33,10 @@ function adicionarListenersSalvarLinhaGenerico() {
                 alert('ID do aluno não encontrado! Não é possível salvar.');
                 return;
             }
+            // Sempre garantir que o campo hidden está preenchido antes de enviar
+            if (alunoInput && alunoInput.value !== aluno_id) {
+                alunoInput.value = aluno_id;
+            }
             const dataInput = linha.querySelector('input[type="date"]');
             const data_aplicacao = dataInput ? dataInput.value : '';
             // Checagem dinâmica dos checkboxes
@@ -98,57 +102,43 @@ function adicionarListenersSalvarLinhaGenerico() {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
-                    // Não definimos Content-Type para que o navegador defina automaticamente com boundary
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: formData
             })
-            .then(resp => resp.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    // MODAL DE SUCESSO ROBUSTO
-const modalMsg = document.getElementById('modalDuplicidadeMsg');
-if (modalMsg) {
-    modalMsg.textContent = 'Atividade salva com sucesso!';
-}
-const modalEl = document.getElementById('modalDuplicidadeMonitoramento');
-if (modalEl) {
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
-}
-const botao = linha.querySelector('.btn-salvar-linha');
-if (botao) {
-    botao.disabled = true;
-    botao.classList.remove('btn-success');
-    botao.classList.add('btn-danger');
-    botao.style.backgroundColor = '#dc3545'; // força cor vermelha
-    botao.textContent = 'Atividade Salva';
-    // Desabilitar os inputs da linha também
-    const inputs = linha.querySelectorAll('input, textarea');
-    inputs.forEach(input => { input.disabled = true; });
-    console.log('[scripts_monitoramento] Botão desabilitado e cor alterada para vermelho (sucesso)');
-}
-return;
+                    const sucessoModal = new bootstrap.Modal(document.getElementById('sucessoModal'));
+                    sucessoModal.show();
+
+                    // Desabilitar a linha após o sucesso
+                    const botao = linha.querySelector('.btn-salvar-linha');
+                    if (botao) {
+                        botao.disabled = true;
+                        botao.classList.remove('btn-success');
+                        botao.classList.add('btn-secondary');
+                        botao.textContent = 'Salvo';
+                    }
+                    const inputs = linha.querySelectorAll('input, textarea');
+                    inputs.forEach(input => { 
+                        input.setAttribute('readonly', true);
+                        if(input.type === 'checkbox') input.disabled = true;
+                    });
+
                 } else {
-                    // MODAL DE ERRO DE DUPLICIDADE OU OUTRO ERRO (ROBUSTO)
-const modalMsg = document.getElementById('modalDuplicidadeMsg');
-if (modalMsg) {
-    modalMsg.textContent = data.message || 'Erro desconhecido ao salvar.';
-}
-const modalEl = document.getElementById('modalDuplicidadeMonitoramento');
-if (modalEl) {
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
-}
-const botao = linha.querySelector('.btn-salvar-linha');
-if (botao) {
-    botao.disabled = true;
-    botao.classList.remove('btn-success');
-    botao.classList.add('btn-danger');
-    botao.style.backgroundColor = '#dc3545';
-    botao.textContent = 'Já cadastrado!';
-    console.log('[scripts_monitoramento] Botão desabilitado e cor alterada para vermelho (erro/duplicidade)');
-}
-return;
+                    // Lidar com erro de backend (ex: validação falhou)
+                    const erroModalMsg = document.getElementById('modalDuplicidadeMsg');
+                    if (erroModalMsg) {
+                        erroModalMsg.textContent = data.message || 'Ocorreu um erro ao salvar.';
+                    }
+                    const erroModal = new bootstrap.Modal(document.getElementById('modalDuplicidadeMonitoramento'));
+                    erroModal.show();
                 }
             })
             .catch(err => {

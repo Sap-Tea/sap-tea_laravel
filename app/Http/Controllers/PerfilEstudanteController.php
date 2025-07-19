@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Aluno; // Importa o modelo Aluno
 use Carbon\Carbon; // Para manipulação de datas
 use App\Models\PerfilEstudante;
@@ -747,6 +748,40 @@ public function mostra_aluno_eixo($id)
             ],
             'professor_nome' => $professor->func_nome,
             'contexto' => 'indicativo_inicial'
+        ]);
+    }
+
+    /**
+     * Lista alunos para o Perfil Família
+     * Similar ao método listarAlunosIndicativo mas para o contexto de Perfil Família
+     */
+    public function listarAlunosFamilia()
+    {
+        $professor = auth('funcionario')->user();
+        if (!$professor) {
+            return redirect()->route('login')->withErrors(['msg' => 'Sessão expirada ou acesso não autorizado. Faça login novamente.']);
+        }
+        $funcId = $professor->func_id;
+
+        $alunos = \App\Models\Aluno::porProfessor($funcId)
+            ->whereHas('eixoComunicacao')
+            ->whereHas('eixoSocioEmocional')
+            ->whereHas('eixoComportamento')
+            ->orderBy('alu_nome', 'asc')
+            ->get();
+
+        return view('familia.lista_alunos', [
+            'alunos' => $alunos,
+            'titulo' => 'Perfil Família - Inicial',
+            'botoes' => [
+                [
+                    'label' => 'Perfil Inicial',
+                    'rota'  => 'familia.inicial',
+                    'classe' => 'btn-primary'
+                ]
+            ],
+            'professor_nome' => $professor->func_nome,
+            'contexto' => 'familia_inicial'
         ]);
     }
 }

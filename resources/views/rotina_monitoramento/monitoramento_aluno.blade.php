@@ -543,20 +543,76 @@ if ($total_atividades_geral > 0) {
       </label>
     </div>
 
+    <!-- BLOCO DE LIBERAÇÃO DE FASES -->
+    @php
+        // Busca datas das fases já realizadas
+        $faseIn = isset($comunicacao_resultados) ? $comunicacao_resultados->where('tipo_fase_com_lin', 'In')->sortBy('date_cadastro')->first() : null;
+        $faseC2 = isset($comunicacao_resultados) ? $comunicacao_resultados->where('tipo_fase_com_lin', 'C2')->sortBy('date_cadastro')->first() : null;
+        $faseC3 = isset($comunicacao_resultados) ? $comunicacao_resultados->where('tipo_fase_com_lin', 'C3')->sortBy('date_cadastro')->first() : null;
+        $faseFi = isset($comunicacao_resultados) ? $comunicacao_resultados->where('tipo_fase_com_lin', 'Fi')->sortBy('date_cadastro')->first() : null;
+
+        $hoje = \Carbon\Carbon::now();
+        $liberaC2 = false; $liberaC3 = false; $liberaFi = false;
+        $diasC2 = $diasC3 = $diasFi = 0;
+        if ($faseIn) {
+            $diasC2 = $hoje->diffInDays(\Carbon\Carbon::parse($faseIn->date_cadastro));
+            $liberaC2 = $diasC2 >= 40;
+        }
+        if ($faseC2) {
+            $diasC3 = $hoje->diffInDays(Carbon::parse($faseC2->date_cadastro));
+            $liberaC3 = $diasC3 >= 40;
+        }
+        if ($faseC3) {
+            $diasFi = $hoje->diffInDays(Carbon::parse($faseC3->date_cadastro));
+            $liberaFi = $diasFi >= 40;
+        }
+    @endphp
+    <div class="period-section" style="margin-bottom: 24px;">
+      <strong>Fases disponíveis:</strong>
+      <ul style="list-style:none; padding-left:0; margin-bottom:0;">
+        <li>
+          <span style="font-weight:bold; color:#0056b3;">.1 Inicial</span> -
+          <span style="color:green;">Liberada</span>
+        </li>
+        <li>
+          @if($liberaC2)
+            <a href="{{ route('eixos.alunos', ['fase' => 'continuada2', 'id' => $alunoId ?? '']) }}" class="btn btn-success btn-sm">.2 Continuada</a>
+            <span style="color:green;">Liberada ({{ $diasC2 }} dias após Inicial)</span>
+          @else
+            <button class="btn btn-secondary btn-sm" disabled>.2 Continuada</button>
+            <span style="color:#b30000;">Disponível após 40 dias da Inicial (faltam {{ max(0, 40-$diasC2) }})</span>
+          @endif
+        </li>
+        <li>
+          @if($liberaC3)
+            <a href="{{ route('eixos.alunos', ['fase' => 'continuada3', 'id' => $alunoId ?? '']) }}" class="btn btn-success btn-sm">.3 Continuada</a>
+            <span style="color:green;">Liberada ({{ $diasC3 }} dias após C2)</span>
+          @else
+            <button class="btn btn-secondary btn-sm" disabled>.3 Continuada</button>
+            <span style="color:#b30000;">Disponível após 40 dias da C2 (faltam {{ max(0, 40-$diasC3) }})</span>
+          @endif
+        </li>
+        <li>
+          @if($liberaFi)
+            <a href="{{ route('eixos.alunos', ['fase' => 'final', 'id' => $alunoId ?? '']) }}" class="btn btn-success btn-sm">.4 Final</a>
+            <span style="color:green;">Liberada ({{ $diasFi }} dias após C3)</span>
+          @else
+            <button class="btn btn-secondary btn-sm" disabled>.4 Final</button>
+            <span style="color:#b30000;">Disponível após 40 dias da C3 (faltam {{ max(0, 40-$diasFi) }})</span>
+          @endif
+        </li>
+      </ul>
+    </div>
     <!-- PERÍODO DE APLICAÇÃO -->
     <div class="period-section">
       <span class="period">
         <strong>Data da sondagem</strong>
         <input type="text" name="periodo_inicial" value="{{ $data_inicial_com_lin ? \Carbon\Carbon::parse($data_inicial_com_lin)->format('d/m/Y') : '' }}" readonly />
       </span>
-
     </div>
-
     @if($data_inicial_com_lin)
       <div style="color: #b30000; font-weight: bold; margin-bottom: 10px; font-size: 16px;">
         Já se passaram {{ \Carbon\Carbon::parse($data_inicial_com_lin)->diffInDays(\Carbon\Carbon::now()) }} dias desde a realização da sondagem
-
-       
       </div>
     @endif
 
@@ -1201,6 +1257,120 @@ if (document.readyState === 'loading') {
             console.error('ID do estudante não encontrado');
         }
     });
+
+</script>
+
+<script>
+// Script para salvar linhas de monitoramento injetado diretamente para garantir execução
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[MONITORAMENTO] DOM carregado. Adicionando listeners aos botões de salvar...');
+
+    const botoesSalvar = document.querySelectorAll('.btn-salvar-linha');
+    console.log(`[MONITORAMENTO] Encontrados ${botoesSalvar.length} botões para salvar.`);
+
+    botoesSalvar.forEach(botao => {
+        botao.addEventListener('click', function(e) {
+            try {
+                e.preventDefault();
+                console.log('[MONITORAMENTO] Botão Salvar clicado.');
+
+                const linha = this.closest('tr');
+                if (!linha) {
+                    console.error('Não foi possível encontrar a linha (tr) parente do botão.');
+                    alert('Erro de interface: a linha da tabela não foi encontrada.');
+                    return;
+                }
+
+                const alunoIdInput = document.querySelector('#aluno_id_hidden') || document.querySelector('input[name="aluno_id"]');
+                const aluno_id = alunoIdInput ? alunoIdInput.value : null;
+
+                if (!aluno_id) {
+                    alert('Erro crítico: ID do aluno não encontrado. Não é possível salvar.');
+                    return;
+                }
+
+                const data_aplicacao = linha.querySelector('input[type="date"]')?.value;
+                const sim_inicial = linha.querySelector('input[name$="[sim_inicial]"]')?.checked ? 1 : 0;
+                const nao_inicial = linha.querySelector('input[name$="[nao_inicial]"]')?.checked ? 1 : 0;
+                const observacoes = linha.querySelector('textarea[name$="[observacoes]"]')?.value || '';
+                const cod_atividade = linha.querySelector('input[name$="[cod_atividade]"]')?.value;
+                const eixo = linha.getAttribute('data-eixo');
+                const flag = linha.getAttribute('data-flag');
+                const registro_timestamp = linha.querySelector('input[name$="[registro_timestamp]"]')?.value;
+
+                if (!data_aplicacao) {
+                    alert('Por favor, preencha a data da atividade.');
+                    return;
+                }
+                if (sim_inicial === 0 && nao_inicial === 0) {
+                    alert('Por favor, marque "Sim" ou "Não" para a atividade.');
+                    return;
+                }
+
+                const payload = {
+                    aluno_id: parseInt(aluno_id, 10),
+                    cod_atividade: cod_atividade,
+                    data_inicial: data_aplicacao,
+                    sim_inicial: sim_inicial,
+                    nao_inicial: nao_inicial,
+                    observacoes: observacoes,
+                    flag: flag,
+                    registro_timestamp: registro_timestamp
+                };
+
+                const formData = new FormData();
+                formData.append('aluno_id', payload.aluno_id);
+                formData.append(eixo, JSON.stringify([payload]));
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+                console.log(`[MONITORAMENTO] Enviando payload para o eixo '${eixo}':`, payload);
+
+                fetch('{{ route('monitoramento.salvar') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                })
+                .then(response => {
+                    // Lê a resposta como texto para poder inspecionar antes de dar erro de JSON
+                    return response.text().then(text => {
+                        if (!response.ok) {
+                            let errorMsg = `Erro no Servidor (Status: ${response.status}).`;
+                            try {
+                                const errorData = JSON.parse(text);
+                                errorMsg = errorData.message || JSON.stringify(errorData);
+                            } catch (e) {
+                                errorMsg += `\nO servidor não retornou um JSON válido. Resposta: ${text.substring(0, 500)}...`;
+                            }
+                            throw new Error(errorMsg);
+                        }
+                        return JSON.parse(text); // Se a resposta foi OK, parseia o texto para JSON
+                    });
+                })
+                .then(data => {
+                    if (data.success) {
+                        new bootstrap.Modal(document.getElementById('sucessoModal')).show();
+                        botao.textContent = 'Salvo';
+                        botao.disabled = true;
+                        linha.querySelectorAll('input, textarea').forEach(el => el.readOnly = true);
+                    } else {
+                        // Erro de lógica de negócio (ex: 'nenhuma linha válida para salvar')
+                        throw new Error(data.message || 'O servidor indicou uma falha, mas não especificou o motivo.');
+                    }
+                })
+                .catch(error => {
+                    console.error('ERRO DETALHADO CAPTURADO:', error);
+                    alert(`FALHA NA OPERAÇÃO:\n\n${error.message}`);
+                });
+
+            } catch (err) {
+                console.error('Ocorreu um erro inesperado no script do botão:', err);
+                alert(`Um erro inesperado ocorreu: ${err.message}. Verifique o console para mais detalhes.`);
+            }
+        });
+    });
+});
 </script>
 <script src="{{ asset('js/validacao_monitoramento.js') }}"></script>
 <script>

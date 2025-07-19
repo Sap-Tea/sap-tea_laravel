@@ -201,10 +201,10 @@
                         <i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇
                     </a>
                     <ul class="submenu">
-                       <li><a href="{{ route('eixos.alunos') }}" class="menu-link" data-page="Sondagem Inicial">.1 Inicial</a></li>
-                        <li><a href="{{ route('sondagem.continuada1') }}" class="disabled" title="Em breve">.2 Continuada</a></li>
-                        <li><a href="{{ route('sondagem.continuada2') }}" class="disabled" title="Em breve">.3 Continuada</a></li>
-                        <li><a href="{{ route('sondagem.final') }}" class="disabled" title="Em breve">.4 Final</a></li>
+                       <li><a href="{{ route('eixos.alunos', ['fase' => 'inicial']) }}" class="menu-link" data-page="Sondagem Inicial">.1 Inicial</a></li>
+                        <li><a href="{{ route('eixos.alunos', ['fase' => 'continuada2']) }}" class="menu-link disabled" title="Em breve">.2 Continuada</a></li>
+                        <li><a href="{{ route('eixos.alunos', ['fase' => 'continuada3']) }}" class="menu-link disabled" title="Em breve">.3 Continuada</a></li>
+                        <li><a href="{{ route('eixos.alunos', ['fase' => 'final']) }}" class="menu-link disabled" title="Em breve">.4 Final</a></li>
                     </ul>
                 </li>
                 <li>
@@ -224,6 +224,17 @@
                     </a>
                     <ul class="submenu_escola">
                         <li><a href="{{ route('indicativo.inicial.lista') }}" class="menu-link" data-page="Indicativo Inicial">.1 Inicial</a></li>
+                        <li><a href="#" class="disabled" title="Em breve">.2 Continuada</a></li>
+                        <li><a href="#" class="disabled" title="Em breve">.3 Continuada</a></li>
+                        <li><a href="#" class="disabled" title="Em breve">.4 Final</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="menu-toggle" data-page="Perfil Familia">
+                        <i class="fa-solid fa-users"></i> Perfil Família ⬇
+                    </a>
+                    <ul class="submenu_escola">
+                        <li><a href="{{ route('familia.inicial.lista') }}" class="menu-link" data-page="Perfil Inicial">.1 Inicial</a></li>
                         <li><a href="#" class="disabled" title="Em breve">.2 Continuada</a></li>
                         <li><a href="#" class="disabled" title="Em breve">.3 Continuada</a></li>
                         <li><a href="#" class="disabled" title="Em breve">.4 Final</a></li>

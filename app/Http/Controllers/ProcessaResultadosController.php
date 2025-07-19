@@ -872,8 +872,17 @@ public function debugEixoIntSocio(Request $request)
     ];
 }
 
-public function inserirTodosEixos(Request $request)
+public function inserirTodosEixos(Request $request, $alunoId = null, $fase_inventario = null)
 {
+    // Se o ID não foi passado como parâmetro, tenta obter da rota
+    $alunoId = $alunoId ?? $request->route('id');
+    
+    if (!$alunoId) {
+        \Log::error('ID do aluno não fornecido em inserirTodosEixos');
+        return ['error' => 'ID do aluno não fornecido'];
+    }
+
+    $resultados = [];
     $alunoId = $request->route('id');
     $resultados = [];
     // Comunicação/Linguagem
@@ -959,6 +968,7 @@ public function inserirTodosEixos(Request $request)
                     'fk_hab_pro_int_socio' => $proposta->fk_id_hab_int_soc,
                     'fk_id_pro_int_socio' => $proposta->fk_id_pro_int_soc,
                     'fk_result_alu_id_int_socio' => $alunoId,
+                    'tipo_fase_int_socio' => $fase_inventario,
                 ];
             }
             if (count($registros)) {

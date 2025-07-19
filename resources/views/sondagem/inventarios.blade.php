@@ -40,6 +40,7 @@
     <input type="hidden" name="rota_anterior" id="rota_anterior" value="">
         <input type="hidden" name="aluno_id" value="{{ $aluno->alu_id }}">
 @csrf
+    <input type="hidden" name="fase_inv_preenchimento" value="{{ $fase ?? 'In' }}">
     <div class="menu">
         <img src="{{ asset('img/LOGOTEA.png') }}" alt="Logo" class="logo">
         <img src="{{ asset('img/logo_sap.png') }}" alt="Logo SAP" class="logo-right">
