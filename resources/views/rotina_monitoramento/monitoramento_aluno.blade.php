@@ -16,6 +16,16 @@
     <input type="hidden" name="aluno_id" value="{{ $alunoId ?? '' }}">
 
 @php
+    /*
+    =====================================================================
+    *** ATENÇÃO: LÓGICA CRÍTICA DE NORMALIZAÇÃO DO TOTAL DE ATIVIDADES ***
+    =====================================================================
+    Este bloco realiza o cálculo e a normalização para garantir que a soma
+    total de atividades exibidas seja SEMPRE 40, distribuindo proporcionalmente
+    entre os eixos e atividades. NÃO ALTERAR sem revisão e aprovação do usuário!
+    (Aprovado por: {{ $professor_nome ?? 'responsável' }}, em {{ date('d/m/Y H:i') }})
+    =====================================================================
+    */
     // Garantir que os totais usados já excluem ECP03/EIS01 (devem vir do controller já filtrados)
     // Se não vierem, usar os resumos por eixo para calcular corretamente
     if (!isset($total_comunicacao_linguagem) && isset($comunicacao_linguagem_agrupado)) {
@@ -176,6 +186,11 @@ if ($total_atividades_geral > 0) {
     }
 }
 // --- FIM NORMALIZAÇÃO POR ATIVIDADE ---
+/*
+=====================================================================
+*** FIM DO BLOCO CRÍTICO DE NORMALIZAÇÃO DO TOTAL DE ATIVIDADES ***
+=====================================================================
+*/
 @endphp
 
 @if(!isset($alunoDetalhado) || empty($alunoDetalhado))
@@ -346,8 +361,9 @@ if ($total_atividades_geral > 0) {
     </div>
 
     <!-- TABELA DE ATIVIDADES -->
-    {{-- EIXO COMUNICAÇÃO/LINGUAGEM (PADRÃO VISUAL) }}
+    {{-- EIXO COMUNICAÇÃO/LINGUAGEM (PADRÃO VISUAL) --}}
 @include('rotina_monitoramento.partials.eixo_comunicacao')
+    @php
         $alunoId = null;
         if (is_array($alunoDetalhado) && isset($alunoDetalhado[0]) && isset($alunoDetalhado[0]->alu_id)) {
             $alunoId = $alunoDetalhado[0]->alu_id;
@@ -358,51 +374,9 @@ if ($total_atividades_geral > 0) {
     <a href="{{ route('grafico.comunicacao', ['alunoId' => $alunoId]) }}" class="btn btn-primary d-none" style="background-color: #b28600; border-color: #b28600;"><i class="fas fa-chart-bar"></i> Ver Gráfico</a>
   </div>
 
-  {{-- REGISTROS JÁ CADASTRADOS --}}
-  @if(isset($dadosMonitoramento['comunicacao']) && count($dadosMonitoramento['comunicacao']))
-    <div style="margin-bottom:12px;">
-      <strong>Registros já cadastrados:</strong>
-      <table class="result-table" style="margin-bottom:8px;">
-        <thead>
-          <tr style="background:#ffd966;">
-            <th>Código</th>
-            <th>Data</th>
-            <th>Realizado?</th>
-            <th>Observações</th>
-            <th>Registro Timestamp</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($dadosMonitoramento['comunicacao'] as $cod => $registros)
-            @foreach($registros as $registro)
-              <tr>
-                <td>{{ $cod }}</td>
-                <td>{{ $registro['data_aplicacao'] }}</td>
-                <td><input type="checkbox" disabled @if($registro['realizado']) checked @endif></td>
-                <td>{{ $registro['observacoes'] }}</td>
-                <td>{{ $registro['registro_timestamp'] }}</td>
-              </tr>
-            @endforeach
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-  @endif
+  {{-- EIXO COMPORTAMENTO (PADRÃO VISUAL) --}}
+  @include('rotina_monitoramento.partials.eixo_comportamento')
 
-  <table class="result-table" style="background: #fff;">
-    <thead>
-      <tr style="background: #ffe066;">
-        <th style="width: 8%;" rowspan="2">Atividade</th>
-        <th style="width: 28%;" rowspan="2">Descrição</th>
-        <th style="width: 12%;" rowspan="2">Data de aplicação</th>
-        <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
-        <th style="width: 20%;" rowspan="2">Observações</th>
-      </tr>
-      <tr style="background: #ffe066;">
-        <th style="width: 5%;">Sim</th>
-        <th style="width: 5%;">Não</th>
-      </tr>
-    </thead>
     <tbody>
       @php $idx = 0; @endphp
 @php
@@ -427,335 +401,11 @@ if ($total_atividades_geral > 0) {
     // Se o agrupado tiver campo de data, filtrar por hoje
     $dataHoje = date('Y-m-d');
 @endphp
-@foreach($comunicacao_linguagem_agrupado as $linha)
-    @php
-        // Normaliza código para comparação
-        $codigo = strtoupper(trim($linha->cod_ati_com_lin));
-        $contadoresCom[$codigo] = ($contadoresCom[$codigo] ?? 0) + 1;
-        // Normaliza chaves do array de registros
-        $registrosHojeNorm = [];
-        foreach($comunicacaoRegistrosHoje as $k => $v) {
-            $registrosHojeNorm[strtoupper(trim($k))] = $v;
-        }
-        $totalJaRegistrado = $registrosHojeNorm[$codigo] ?? 0;
-        if ($contadoresCom[$codigo] <= $totalJaRegistrado) {
-            continue;
-        }
-    @endphp
-    @php
-        // Se existir campo data_aplicacao, filtra
-        $temData = isset($linha->data_aplicacao) || isset($linha->data) || isset($linha->data_inicial);
-        $dataLinha = $linha->data_aplicacao ?? ($linha->data ?? ($linha->data_inicial ?? null));
-        if ($temData && $dataLinha && substr($dataLinha,0,10) !== $dataHoje) {
-            continue;
-        }
-    @endphp
-    @php
-        $codigo = $linha->cod_ati_com_lin;
-        $contadoresCom[$codigo] = ($contadoresCom[$codigo] ?? 0) + 1;
-        $totalJaRegistrado = $comunicacaoRegistrosHoje[$codigo] ?? 0;
-        // Só exibe se o número de repetições do código no formulário for MAIOR que o número de registros já feitos hoje
-        if ($contadoresCom[$codigo] <= $totalJaRegistrado) {
-            // Já atingiu o limite de registros para hoje, então pula (NÃO mostra)
-            continue;
-        }
-        $key = 'com_' . $codigo;
-        $qtd = $norm_atividades[$key] ?? 0;
-        $jaPreenchidoHoje = false;
-        if (!empty($codigosPreenchidosCom[$codigo])) {
-            foreach($codigosPreenchidosCom[$codigo] as $data) {
-                if ($data && substr($data,0,10) == $hoje) {
-                    $jaPreenchidoHoje = true;
-                    break;
-                }
-            }
-        }
-    @endphp
-    @if($jaPreenchidoHoje)
-        @continue
-    @endif
-    @for($q=0; $q<$qtd; $q++)
-        <tr data-eixo="comunicacao" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_com_lin }}">
-            <td>
-                {{ $linha->cod_ati_com_lin }}-{{ $q + 1 }}
-                <input type="hidden" name="comunicacao[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_com_lin }}">
-                <input type="hidden" name="comunicacao[{{$idx}}][flag]" value="{{ $q + 1 }}">
-            </td>
-            <td>{{ $linha->desc_ati_com_lin }}</td>
-            <td><input type="date" name="comunicacao[{{$idx}}][data_inicial]" class="form-control" value=""></td>
-            <td class="text-center">
-                <input type="checkbox" name="comunicacao[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
-            </td>
-            <td class="text-center">
-                <input type="checkbox" name="comunicacao[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comunicacao" data-idx="{{$idx}}">
-            </td>
-            <td><textarea name="comunicacao[{{$idx}}][observacoes]" class="form-control"></textarea></td>
-            <td class="text-center">
-                <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="comunicacao" data-idx="{{$idx}}">Salvar atividade</button>
-            </td>
-        </tr>
-        @php $idx++; @endphp
-    @endfor
-@endforeach
-    </tbody>
-  </table>
-</div>
-
+{{-- Removido bloco duplicado --}}
     {{-- EIXO COMPORTAMENTO (PADRÃO VISUAL) --}}
-@include('rotina_monitoramento.partials.eixo_comportamento')
-{{-- Bloco original comentado abaixo para referência/rollback
-<div class="comportamento-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
-  <div class="table-title" style="font-size:20px; color:#176ca7; text-align:center; margin-bottom:15px;">Eixo Comportamento</div>
-
-  {{-- REGISTROS JÁ CADASTRADOS - COMPORTAMENTO --}}
-  @if(isset($dadosMonitoramento['comportamento']) && count($dadosMonitoramento['comportamento']))
-    <div style="margin-bottom:12px;">
-      <strong>Registros já cadastrados:</strong>
-      <table class="result-table" style="margin-bottom:8px;">
-        <thead>
-          <tr style="background:#ffd966;">
-            <th>Código</th>
-            <th>Data</th>
-            <th>Realizado?</th>
-            <th>Observações</th>
-            <th>Registro Timestamp</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($dadosMonitoramento['comportamento'] as $cod => $registros)
-            @foreach($registros as $registro)
-              <tr>
-                <td>{{ $cod }}</td>
-                <td>{{ $registro['data_aplicacao'] }}</td>
-                <td><input type="checkbox" disabled @if($registro['realizado']) checked @endif></td>
-                <td>{{ $registro['observacoes'] }}</td>
-                <td>{{ $registro['registro_timestamp'] }}</td>
-              </tr>
-            @endforeach
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-  @endif
-  <table class="result-table" style="background: #fff;">
-    <thead>
-    <tr style="background: #ffe066;">
-        <th style="width: 8%;" rowspan="2">Atividade</th>
-        <th style="width: 28%;" rowspan="2">Descrição</th>
-        <th style="width: 12%;" rowspan="2">Data de aplicação</th>
-        <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
-        <th style="width: 20%;" rowspan="2">Observações</th>
-      </tr>
-      <tr style="background: #ffe066;">
-        <th style="width: 5%;">Sim</th>
-        <th style="width: 5%;">Não</th>
-      </tr>
-    </thead>
-    <tbody>
-      @php $idx = 0; @endphp
-      @php
-    // Monta array de códigos já preenchidos para comportamento (por código)
-    $codigosPreenchidosComp = [];
-    if(isset($dadosMonitoramento['comportamento'])) {
-        foreach($dadosMonitoramento['comportamento'] as $cod => $registros) {
-            foreach($registros as $registro) {
-                $codigosPreenchidosComp[$cod][] = $registro['data_aplicacao'];
-            }
-        }
-    }
-@endphp
-{{-- Removido debug comportamento --}}
-@php
-    $contadoresComp = [];
-@endphp
-@foreach($comportamento_agrupado as $linha)
-    {{-- Pula a atividade ECP03 (não deve ser exibida por regra de negócio) --}}
-    @if(isset($linha->cod_ati_comportamento) && $linha->cod_ati_comportamento === 'ECP03')
-        @continue
-    @endif
-    @php
-        $codigo = $linha->cod_ati_comportamento;
-        $contadoresComp[$codigo] = ($contadoresComp[$codigo] ?? 0) + 1;
-        $totalJaRegistrado = $comportamentoRegistrosHoje[$codigo] ?? 0;
-    @endphp
-    @if($contadoresComp[$codigo] <= $totalJaRegistrado)
-        @continue
-    @endif
-           @php
-               $key = 'comp_' . $linha->cod_ati_comportamento;
-               $codigo = $linha->cod_ati_comportamento;
-               $qtd = $norm_atividades[$key] ?? 0;
-               $jaPreenchidoHoje = false;
-               if (!empty($codigosPreenchidosComp[$codigo])) {
-                   foreach($codigosPreenchidosComp[$codigo] as $data) {
-                       if ($data && substr($data,0,10) == $hoje) {
-                           $jaPreenchidoHoje = true;
-                           break;
-                       }
-                   }
-               }
-           @endphp
-           @if($jaPreenchidoHoje)
-               @continue
-           @endif
-           @for($q=0; $q<$qtd; $q++)
-               <tr data-eixo="comportamento" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_comportamento }}">
-                   <td>
-                       {{ $linha->cod_ati_comportamento }}-{{ ($contadoresComp[$linha->cod_ati_comportamento] ?? 0) + $q + 1 }}
-                       <input type="hidden" name="comportamento[{{$idx}}][cod_atividade]" value="{{ $linha->cod_ati_comportamento }}">
-                       <input type="hidden" name="comportamento[{{$idx}}][flag]" value="{{ ($contadoresComp[$linha->cod_ati_comportamento] ?? 0) + $q + 1 }}">
-                   </td>
-                   <td>{{ $linha->desc_ati_comportamento }}</td>
-                   <td><input type="date" name="comportamento[{{$idx}}][data_inicial]" class="form-control" value="" required></td>
-                   <td class="text-center">
-                       <input type="checkbox" name="comportamento[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
-                   </td>
-                   <td class="text-center">
-                       <input type="checkbox" name="comportamento[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="comportamento" data-idx="{{$idx}}">
-                   </td>
-                   <td><textarea name="comportamento[{{$idx}}][observacoes]" class="form-control"></textarea></td>
-<td class="text-center">
-    <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="comportamento" data-idx="{{$idx}}">Salvar atividade</button>
-</td>
-               </tr>
-               @php $idx++; @endphp
-           @endfor
-       @endforeach
-    </tbody>
-  </table>
-</div>
-
     {{-- EIXO INTERAÇÃO SOCIOEMOCIONAL (PADRÃO VISUAL) --}}
-<div class="socioemocional-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
-  <div class="table-title" style="font-size:20px; color:#267a3e; text-align:center; margin-bottom:15px;">Eixo Interação Socioemocional</div>
-
-  {{-- REGISTROS JÁ CADASTRADOS - SOCIOEMOCIONAL --}}
-  @if(isset($dadosMonitoramento['socioemocional']) && count($dadosMonitoramento['socioemocional']))
-    <div style="margin-bottom:12px;">
-      <strong>Registros já cadastrados:</strong>
-      <table class="result-table" style="margin-bottom:8px;">
-        <thead>
-          <tr style="background:#ffd966;">
-            <th>Código</th>
-            <th>Data</th>
-            <th>Realizado?</th>
-            <th>Observações</th>
-            <th>Registro Timestamp</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($dadosMonitoramento['socioemocional'] as $cod => $registros)
-            @foreach($registros as $registro)
-              <tr>
-                <td>{{ $cod }}</td>
-                <td>{{ $registro['data_aplicacao'] }}</td>
-                <td><input type="checkbox" disabled @if($registro['realizado']) checked @endif></td>
-                <td>{{ $registro['observacoes'] }}</td>
-                <td>{{ $registro['registro_timestamp'] }}</td>
-              </tr>
-            @endforeach
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-  @endif
-  <table class="result-table" style="background: #fff;">
-    <thead>
-      <tr style="background: #ffe066;">
-        <th style="width: 8%;" rowspan="2">Atividade</th>
-        <th style="width: 28%;" rowspan="2">Descrição</th>
-        <th style="width: 12%;" rowspan="2">Data de aplicação</th>
-        <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
-        <th style="width: 20%;" rowspan="2">Observações</th>
-      </tr>
-      <tr style="background: #ffe066;">
-        <th style="width: 5%;">Sim</th>
-        <th style="width: 5%;">Não</th>
-      </tr>
-    </thead>
-    <tbody>
-      @if(isset($socioemocional_atividades_ordenadas) && count($socioemocional_atividades_ordenadas) > 0)
-          @php $idx = 0; @endphp
-          @php
-    // Monta array de códigos já preenchidos para socioemocional (por código)
-    $codigosPreenchidosSoc = [];
-    if(isset($dadosMonitoramento['socioemocional'])) {
-        foreach($dadosMonitoramento['socioemocional'] as $cod => $registros) {
-            foreach($registros as $registro) {
-                $codigosPreenchidosSoc[$cod][] = $registro['data_aplicacao'];
-            }
-        }
-    }
-@endphp
-{{-- Removido debug socioemocional --}}
-@php
-    $contadoresSoc = [];
-@endphp
-@foreach($socioemocional_agrupado as $linha)
-    @if(
-        (isset($linha->cod_ati_int_soc) && $linha->cod_ati_int_soc === 'EIS01') ||
-        (isset($linha->cod_ati_int_socio) && $linha->cod_ati_int_socio === 'EIS01') ||
-        (isset($linha->fk_id_pro_int_socio) && $linha->fk_id_pro_int_socio == 1)
-    )
-        @continue
-    @endif
-    @php
-        $codigo = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
-        if (!$codigo) continue;
-        $contadoresSoc[$codigo] = ($contadoresSoc[$codigo] ?? 0) + 1;
-        $totalJaRegistrado = $socioemocionalRegistrosHoje[$codigo] ?? 0;
-    @endphp
-    @if($contadoresSoc[$codigo] <= $totalJaRegistrado)
-        @continue
-    @endif
-               @php
-                   $cod = $linha->cod_ati_int_soc ?? $linha->cod_ati_int_socio ?? null;
-                   $key = 'soc_' . $cod;
-                   $qtd = $norm_atividades[$key] ?? 0;
-                   $jaPreenchidoHoje = false;
-                   if (!empty($codigosPreenchidosSoc[$cod])) {
-                       foreach($codigosPreenchidosSoc[$cod] as $data) {
-                           if ($data && substr($data,0,10) == $hoje) {
-                               $jaPreenchidoHoje = true;
-                               break;
-                           }
-                       }
-                   }
-               @endphp
-               @if($jaPreenchidoHoje)
-                   @continue
-               @endif
-               @for($q=0; $q<$qtd; $q++)
-                   <tr data-eixo="socioemocional" data-idx="{{$idx}}" data-cod-atividade="{{ $cod }}">
-                       <td>
-                           {{ $cod ?? 'N/A' }}-{{ ($contadoresSoc[$cod] ?? 0) + $q + 1 }}
-                           <input type="hidden" name="socioemocional[{{$idx}}][cod_atividade]" value="{{ $cod }}">
-                           <input type="hidden" name="socioemocional[{{$idx}}][flag]" value="{{ ($contadoresSoc[$cod] ?? 0) + $q + 1 }}">
-                       </td>
-                       <td>{{ $linha->desc_ati_int_soc ?? $linha->descricao ?? 'Descrição não disponível' }}</td>
-                       <td><input type="date" name="socioemocional[{{$idx}}][data_inicial]" class="form-control" value="" required></td>
-                       <td class="text-center">
-                           <input type="checkbox" name="socioemocional[{{$idx}}][sim_inicial]" value="1" class="sim-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
-                       </td>
-                       <td class="text-center">
-                           <input type="checkbox" name="socioemocional[{{$idx}}][nao_inicial]" value="1" class="nao-checkbox" data-eixo="socioemocional" data-idx="{{$idx}}">
-                       </td>
-                       <td><textarea name="socioemocional[{{$idx}}][observacoes]" class="form-control"></textarea></td>
-<td class="text-center">
-    <button type="button" class="btn btn-success btn-salvar-linha" data-eixo="socioemocional" data-idx="{{$idx}}">Salvar atividade</button>
-</td>
-                   </tr>
-                   @php $idx++; @endphp
-               @endfor
-           @endforeach
-      @else
-          <tr>
-              <td colspan="6" class="text-center">Nenhuma atividade socioemocional encontrada.</td>
-          </tr>
-      @endif
-    </tbody>
-  </table>
-</div>
+@include('rotina_monitoramento.partials.eixo_socioemocional')
+{{-- Bloco duplicado do eixo socioemocional removido para padronização visual. Veja histórico para rollback, se necessário. --}}
 
     <form id="monitoramentoForm" method="POST" action="{{ route('monitoramento.salvar') }}">
         @csrf

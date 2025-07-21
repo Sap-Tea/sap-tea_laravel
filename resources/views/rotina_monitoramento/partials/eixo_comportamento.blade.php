@@ -1,5 +1,5 @@
 {{-- Partial isolado do eixo Comportamento --}}
-<div class="comportamento-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
+<div class="comportamento-bg" style="background: #fffbe6 !important; border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
   <div class="table-title" style="font-size:20px; color:#176ca7; text-align:center; margin-bottom:15px;">Eixo Comportamento</div>
 
   {{-- REGISTROS JÁ CADASTRADOS - COMPORTAMENTO --}}
@@ -7,15 +7,6 @@
     <div style="margin-bottom:12px;">
       <strong>Registros já cadastrados:</strong>
       <table class="result-table" style="margin-bottom:8px;">
-        <thead>
-          <tr style="background:#ffd966;">
-            <th>Código</th>
-            <th>Data</th>
-            <th>Realizado?</th>
-            <th>Observações</th>
-            <th>Registro Timestamp</th>
-          </tr>
-        </thead>
         <tbody>
           @foreach($dadosMonitoramento['comportamento'] as $cod => $registros)
             @foreach($registros as $registro)
@@ -32,7 +23,12 @@
       </table>
     </div>
   @endif
-  <table class="result-table" style="background: #fff;">
+  <table class="result-table" style="background: #fffbe6 !important;">
+    <style>
+      .comportamento-bg, .comportamento-bg table, .comportamento-bg th, .comportamento-bg td, .comportamento-bg thead, .comportamento-bg tbody {
+        background: #fffbe6 !important;
+      }
+    </style>
     <thead>
     <tr style="background: #ffe066;">
         <th style="width: 8%;" rowspan="2">Atividade</th>
@@ -48,11 +44,21 @@
     </thead>
     <tbody>
       {{-- Aqui deve ser inserido o loop das atividades de comportamento, igual ao bloco original --}}
-      @php $idx = 0; @endphp
+      @php 
+        $idx = 0; 
+        $rendered_codes = []; // Array para rastrear códigos já renderizados
+      @endphp
       @foreach($comportamento_agrupado as $linha)
         @php
+            // Pular se este código de atividade já foi renderizado
+            if(in_array($linha->cod_ati_comportamento, $rendered_codes)) continue;
+            $rendered_codes[] = $linha->cod_ati_comportamento; // Marcar como renderizado
+        @endphp
+        @php
             $codigo = $linha->cod_ati_comportamento;
-            $qtd = $linha->total ?? 0;
+            // Correção: Usar o valor normalizado para a contagem de linhas, em vez do total bruto.
+            $key = 'comp_' . $codigo;
+            $qtd = $norm_atividades[$key] ?? 0;
         @endphp
         @for($q=0; $q<$qtd; $q++)
           <tr data-eixo="comportamento" data-idx="{{$idx}}" data-cod-atividade="{{ $linha->cod_ati_comportamento }}">
