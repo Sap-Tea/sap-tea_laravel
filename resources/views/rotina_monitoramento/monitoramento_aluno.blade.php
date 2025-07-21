@@ -346,12 +346,8 @@ if ($total_atividades_geral > 0) {
     </div>
 
     <!-- TABELA DE ATIVIDADES -->
-    {{-- EIXO COMUNICAÇÃO/LINGUAGEM (PADRÃO VISUAL) --}}
-<div class="comunicacao-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:15px;"
-    ><div class="table-title" style="font-size:20px; color:#b28600; text-align:center;">Eixo Comunicação/Linguagem</div>
-    @php
-        // Determina o ID do estudante de forma segura
+    {{-- EIXO COMUNICAÇÃO/LINGUAGEM (PADRÃO VISUAL) }}
+@include('rotina_monitoramento.partials.eixo_comunicacao')
         $alunoId = null;
         if (is_array($alunoDetalhado) && isset($alunoDetalhado[0]) && isset($alunoDetalhado[0]->alu_id)) {
             $alunoId = $alunoDetalhado[0]->alu_id;
