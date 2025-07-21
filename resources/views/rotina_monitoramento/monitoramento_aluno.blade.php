@@ -502,6 +502,8 @@ if ($total_atividades_geral > 0) {
 </div>
 
     {{-- EIXO COMPORTAMENTO (PADRÃO VISUAL) --}}
+@include('rotina_monitoramento.partials.eixo_comportamento')
+{{-- Bloco original comentado abaixo para referência/rollback
 <div class="comportamento-bg" style="border-radius: 8px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px #0001;">
   <div class="table-title" style="font-size:20px; color:#176ca7; text-align:center; margin-bottom:15px;">Eixo Comportamento</div>
 
