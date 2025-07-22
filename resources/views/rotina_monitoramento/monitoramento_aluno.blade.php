@@ -1343,6 +1343,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @include('rotina_monitoramento.partials.teste_include')
+@include('rotina_monitoramento.partials.scripts_monitoramento')
 
 <!-- Modal de erro de duplicidade -->
 <div class="modal fade" id="modalDuplicidadeMonitoramento" tabindex="-1" aria-labelledby="modalDuplicidadeLabel" aria-hidden="true">

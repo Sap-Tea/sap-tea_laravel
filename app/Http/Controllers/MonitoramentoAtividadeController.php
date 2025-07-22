@@ -66,22 +66,26 @@ class MonitoramentoAtividadeController extends Controller
                             }
 
                             if ($modelClass) {
-                                // Determina o valor do 'flag' com base nos checkboxes
-                                $flag = $dadosLinha['sim_inicial'] == 1 ? 2 : 1; // 2 para 'Sim', 1 para 'Não'
+                                // Usa o valor do flag enviado pelo frontend e garante que seja inteiro
+                                $flag = isset($dadosLinha['flag']) ? (int)$dadosLinha['flag'] : ($dadosLinha['sim_inicial'] == 1 ? 2 : 1);
 
                                 $modelClass::updateOrCreate(
-                                    [
-                                        'aluno_id' => $aluno_id,
-                                        'cod_atividade' => $dadosLinha['cod_atividade'],
-                                        'data_monitoramento' => $dadosLinha['data_inicial'],
-                                        'flag' => $flag
-                                    ],
-                                    [
-                                        'flag' => $flag,
-                                        'observacoes' => $dadosLinha['observacoes'] ?? '',
-                                        'registro_timestamp' => round(microtime(true) * 1000)
-                                    ]
-                                );
+    [
+        'aluno_id' => $aluno_id,
+        'cod_atividade' => $dadosLinha['cod_atividade'],
+        'data_monitoramento' => $dadosLinha['data_inicial'], // valor do JS
+        'flag' => $flag,
+        'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In'
+    ],
+    [
+        'flag' => $flag,
+        'observacoes' => $dadosLinha['observacoes'] ?? '',
+        'registro_timestamp' => round(microtime(true) * 1000),
+        'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In',
+        'realizado' => $dadosLinha['sim_inicial'] ?? null,
+        'data_monitoramento' => $dadosLinha['data_inicial']
+    ]
+);
                                 $linhasSalvas++;
                             }
                         }

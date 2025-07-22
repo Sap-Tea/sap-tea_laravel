@@ -73,15 +73,29 @@ function adicionarListenersSalvarLinhaGenerico() {
                 nao_inicial: nao_inicial,
                 observacoes: observacoes || '',
                 flag: flag, // Usa o valor exato do flag da linha
-                registro_timestamp: registro_timestamp
+                registro_timestamp: registro_timestamp,
+                fase_cadastro: "In" // Valor fixo para padronização
             };
             console.log(`[scripts_monitoramento] Payload FINAL para eixo ${eixo}:`, payload);
+
+            // Confirmação antes de salvar
+            if (!confirm('Confirma o salvamento desta atividade? Após salvar, não será possível editar.')) {
+                console.log('[scripts_monitoramento] Salvamento cancelado pelo usuário');
+                return;
+            }
 
             // Monta o objeto para o backend: { eixo: [payload], aluno_id: xxx }
             const dataToSend = {
                 aluno_id: aluno_id // Garante que aluno_id está no nível principal
             };
-            dataToSend[eixo] = JSON.stringify([payload]); // Converte array para string JSON como o backend espera
+            
+            // Mapeia o nome do eixo para o formato esperado pelo backend
+            let eixoBackend = eixo;
+            if (eixo === 'comunicacao') {
+                eixoBackend = 'com_lin'; // O backend espera 'com_lin' em vez de 'comunicacao'
+            }
+            
+            dataToSend[eixoBackend] = JSON.stringify([payload]); // Converte array para string JSON como o backend espera
             
             console.log('[scripts_monitoramento] Dados para enviar:', dataToSend);
             
@@ -90,11 +104,16 @@ function adicionarListenersSalvarLinhaGenerico() {
             
             // Adiciona todos os campos do dataToSend ao FormData
             for (const key in dataToSend) {
-                formData.append(key, dataToSend[key]);
+                if (Object.prototype.hasOwnProperty.call(dataToSend, key)) {
+                    formData.append(key, dataToSend[key]);
+                }
             }
             
-            // Adiciona o token CSRF
-            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+            // Adiciona o token CSRF - busca em várias fontes possíveis
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+                            || document.querySelector('input[name="_token"]')?.value 
+                            || '';
+            formData.append('_token', csrfToken);
             
             console.log('[scripts_monitoramento] Enviando para backend (FormData):', formData);
             
@@ -114,15 +133,26 @@ function adicionarListenersSalvarLinhaGenerico() {
             })
             .then(data => {
                 if (data.success) {
-                    const sucessoModal = new bootstrap.Modal(document.getElementById('sucessoModal'));
-                    sucessoModal.show();
+                    // Tenta usar o Bootstrap Modal com tratamento de erro
+                    try {
+                        const sucessoModalElement = document.getElementById('sucessoModal');
+                        if (sucessoModalElement) {
+                            const sucessoModal = new bootstrap.Modal(sucessoModalElement);
+                            sucessoModal.show();
+                        } else {
+                            alert('Operação realizada com sucesso!');
+                        }
+                    } catch (error) {
+                        console.warn('Erro ao mostrar modal de sucesso:', error);
+                        alert('Operação realizada com sucesso!');
+                    }
 
                     // Desabilitar a linha após o sucesso
                     const botao = linha.querySelector('.btn-salvar-linha');
                     if (botao) {
                         botao.disabled = true;
                         botao.classList.remove('btn-success');
-                        botao.classList.add('btn-secondary');
+                        botao.classList.add('btn-danger');
                         botao.textContent = 'Salvo';
                     }
                     const inputs = linha.querySelectorAll('input, textarea');
@@ -133,23 +163,48 @@ function adicionarListenersSalvarLinhaGenerico() {
 
                 } else {
                     // Lidar com erro de backend (ex: validação falhou)
-                    const erroModalMsg = document.getElementById('modalDuplicidadeMsg');
-                    if (erroModalMsg) {
-                        erroModalMsg.textContent = data.message || 'Ocorreu um erro ao salvar.';
+                    // Tenta usar o modal de erro com tratamento de erro
+                    try {
+                        const erroModalMsg = document.getElementById('modalDuplicidadeMsg');
+                        if (erroModalMsg) {
+                            erroModalMsg.textContent = data.message || 'Ocorreu um erro ao salvar.';
+                        }
+                        
+                        const erroModalElement = document.getElementById('modalDuplicidadeMonitoramento');
+                        if (erroModalElement) {
+                            const erroModal = new bootstrap.Modal(erroModalElement);
+                            erroModal.show();
+                        } else {
+                            alert(data.message || 'Ocorreu um erro ao salvar.');
+                        }
+                    } catch (error) {
+                        console.warn('Erro ao mostrar modal de erro:', error);
+                        alert(data.message || 'Ocorreu um erro ao salvar.');
                     }
-                    const erroModal = new bootstrap.Modal(document.getElementById('modalDuplicidadeMonitoramento'));
-                    erroModal.show();
                 }
             })
             .catch(err => {
                 console.error('Erro AJAX:', err);
-                const modalMsg = document.getElementById('modalDuplicidadeMsg');
-if (modalMsg) {
-    modalMsg.textContent = 'Erro na requisição: ' + err.message;
-}
-const modal = new bootstrap.Modal(document.getElementById('modalDuplicidadeMonitoramento'));
-modal.show();
-return;
+                
+                // Tratamento de erro com fallback para alert
+                try {
+                    const modalMsg = document.getElementById('modalDuplicidadeMsg');
+                    if (modalMsg) {
+                        modalMsg.textContent = 'Erro na requisição: ' + err.message;
+                    }
+                    
+                    const modalElement = document.getElementById('modalDuplicidadeMonitoramento');
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    } else {
+                        alert('Erro na requisição: ' + err.message);
+                    }
+                } catch (error) {
+                    console.warn('Erro ao mostrar modal de erro:', error);
+                    alert('Erro na requisição: ' + err.message);
+                }
+                return;
             });
         });
     });

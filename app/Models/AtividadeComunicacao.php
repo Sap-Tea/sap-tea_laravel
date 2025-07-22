@@ -24,7 +24,9 @@ class AtividadeComunicacao extends Model
         'flag',
         'data_monitoramento',
         'observacoes',
-        'registro_timestamp'
+        'registro_timestamp',
+        'fase_cadastro',
+        'realizado'
     ];
     
     /**
