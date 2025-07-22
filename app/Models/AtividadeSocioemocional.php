@@ -24,8 +24,11 @@ class AtividadeSocioemocional extends Model
         'cod_atividade',
         'flag',
         'data_monitoramento',
+        'data_aplicacao',
+        'realizado',
         'observacoes',
-        'registro_timestamp'
+        'registro_timestamp',
+        'fase_cadastro'
     ];
     
     /**

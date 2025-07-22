@@ -89,11 +89,23 @@ function adicionarListenersSalvarLinhaGenerico() {
                 aluno_id: aluno_id // Garante que aluno_id está no nível principal
             };
             
+            // Verificação adicional para garantir que aluno_id não seja nulo ou vazio
+            if (!aluno_id) {
+                console.error('[scripts_monitoramento] ERRO: aluno_id está vazio ou nulo!');
+                alert('Erro: ID do aluno não encontrado. Não é possível salvar.');
+                return;
+            } else {
+                console.log('[scripts_monitoramento] aluno_id válido:', aluno_id);
+            }
+            
             // Mapeia o nome do eixo para o formato esperado pelo backend
             let eixoBackend = eixo;
             if (eixo === 'comunicacao') {
                 eixoBackend = 'com_lin'; // O backend espera 'com_lin' em vez de 'comunicacao'
+            } else if (eixo === 'socioemocional') {
+                eixoBackend = 'int_socio'; // O backend espera 'int_socio' em vez de 'socioemocional'
             }
+            // O eixo 'comportamento' já tem o mesmo nome no frontend e backend
             
             dataToSend[eixoBackend] = JSON.stringify([payload]); // Converte array para string JSON como o backend espera
             

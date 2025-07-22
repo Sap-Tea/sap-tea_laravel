@@ -69,23 +69,44 @@ class MonitoramentoAtividadeController extends Controller
                                 // Usa o valor do flag enviado pelo frontend e garante que seja inteiro
                                 $flag = isset($dadosLinha['flag']) ? (int)$dadosLinha['flag'] : ($dadosLinha['sim_inicial'] == 1 ? 2 : 1);
 
-                                $modelClass::updateOrCreate(
-    [
-        'aluno_id' => $aluno_id,
-        'cod_atividade' => $dadosLinha['cod_atividade'],
-        'data_monitoramento' => $dadosLinha['data_inicial'], // valor do JS
-        'flag' => $flag,
-        'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In'
-    ],
-    [
-        'flag' => $flag,
-        'observacoes' => $dadosLinha['observacoes'] ?? '',
-        'registro_timestamp' => round(microtime(true) * 1000),
-        'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In',
-        'realizado' => $dadosLinha['sim_inicial'] ?? null,
-        'data_monitoramento' => $dadosLinha['data_inicial']
-    ]
-);
+                                // Log detalhado para depuração
+                                Log::info('Tentando salvar dados do eixo: ' . $eixo, [
+                                    'aluno_id' => $aluno_id,
+                                    'cod_atividade' => $dadosLinha['cod_atividade'] ?? 'Não informado',
+                                    'data_monitoramento' => $dadosLinha['data_inicial'] ?? 'Não informada',
+                                    'flag' => $flag,
+                                    'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In',
+                                    'sim_inicial' => $dadosLinha['sim_inicial'] ?? 'Não informado',
+                                    'model' => $modelClass
+                                ]);
+                                
+                                try {
+                                    $modelClass::updateOrCreate(
+                                        [
+                                            'aluno_id' => $aluno_id,
+                                            'cod_atividade' => $dadosLinha['cod_atividade'],
+                                            'data_monitoramento' => $dadosLinha['data_inicial'], // valor do JS
+                                            'flag' => $flag,
+                                            'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In'
+                                        ],
+                                        [
+                                            'flag' => $flag,
+                                            'observacoes' => $dadosLinha['observacoes'] ?? '',
+                                            'registro_timestamp' => round(microtime(true) * 1000),
+                                            'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In',
+                                            'realizado' => $dadosLinha['sim_inicial'] ?? null,
+                                            'data_aplicacao' => $dadosLinha['data_inicial'], // Garantir que data_aplicacao também seja preenchida
+                                            'data_monitoramento' => $dadosLinha['data_inicial']
+                                        ]
+                                    );
+                                    Log::info('Dados salvos com sucesso para o eixo: ' . $eixo);
+                                } catch (\Exception $e) {
+                                    Log::error('Erro ao salvar dados do eixo ' . $eixo . ': ' . $e->getMessage(), [
+                                        'exception' => $e,
+                                        'aluno_id' => $aluno_id,
+                                        'cod_atividade' => $dadosLinha['cod_atividade'] ?? 'Não informado'
+                                    ]);
+                                }
                                 $linhasSalvas++;
                             }
                         }
