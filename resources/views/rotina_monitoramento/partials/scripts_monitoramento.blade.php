@@ -118,13 +118,14 @@ function processarAtividadesCadastradas(eixoFrontend, atividades) {
                     flagInput.value = atividade.flag;
                 }
                 
-                // Desabilitar o botão e mudar para vermelho
-                const botao = linha.querySelector('.btn-salvar-linha');
-                if (botao) {
-                    botao.disabled = true;
-                    botao.classList.remove('btn-success');
-                    botao.classList.add('btn-danger');
-                    botao.textContent = 'Salvo';
+                // Desabilitar o botão de salvar e alterar a cor para vermelho
+                const botaoSalvar = linha.querySelector('.btn-salvar-linha');
+                if (botaoSalvar) {
+                    botaoSalvar.disabled = true;
+                    botaoSalvar.classList.remove('btn-success');
+                    botaoSalvar.classList.add('btn-danger');
+                    botaoSalvar.style.width = '100%'; // Aumentar largura para igualar ao botão verde
+                    botaoSalvar.innerHTML = 'Cadastrada';
                 }
             }
         });
@@ -289,12 +290,13 @@ function adicionarListenersSalvarLinhaGenerico() {
                     }
 
                     // Desabilitar a linha após o sucesso
-                    const botao = linha.querySelector('.btn-salvar-linha');
-                    if (botao) {
-                        botao.disabled = true;
-                        botao.classList.remove('btn-success');
-                        botao.classList.add('btn-danger');
-                        botao.textContent = 'Salvo';
+                    const botaoSalvar = linha.querySelector('.btn-salvar-linha');
+                    if (botaoSalvar) {
+                        botaoSalvar.disabled = true;
+                        botaoSalvar.classList.remove('btn-success');
+                        botaoSalvar.classList.add('btn-danger');
+                        botaoSalvar.style.width = '100%'; // Aumentar largura para igualar ao botão verde
+                        botaoSalvar.innerHTML = 'Cadastrada';
                     }
                     const inputs = linha.querySelectorAll('input, textarea');
                     inputs.forEach(input => { 

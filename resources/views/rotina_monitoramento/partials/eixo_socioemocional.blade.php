@@ -40,6 +40,7 @@
         <th style="width: 12%;" rowspan="2">Data de aplicação</th>
         <th colspan="2" style="text-align:center;">Realizou a atividade com apoio?</th>
         <th style="width: 20%;" rowspan="2">Observações</th>
+        <th style="width: 12%;" rowspan="2">Atividades:</th>
       </tr>
       <tr style="background: #ffe066;">
         <th style="width: 5%;">Sim</th>
