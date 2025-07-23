@@ -88,6 +88,8 @@ Route::get('/monitoramento/exemplo/{alunoId}', [\App\Http\Controllers\Monitorame
 // =========================
 // ROTA POST PARA SALVAR MONITORAMENTO
 Route::post('/monitoramento/salvar', [\App\Http\Controllers\MonitoramentoAtividadeController::class, 'salvar'])->name('monitoramento.salvar');
+// ROTA PARA BUSCAR ATIVIDADES CADASTRADAS
+Route::get('/monitoramento/atividades-cadastradas/{aluno_id}', [\App\Http\Controllers\MonitoramentoAtividadeController::class, 'buscarAtividadesCadastradas'])->name('monitoramento.atividades-cadastradas');
 // SONDAGEM
 // =========================
 Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {

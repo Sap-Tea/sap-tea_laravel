@@ -164,4 +164,92 @@ class MonitoramentoAtividadeController extends Controller
             'socioemocional_agrupado' => $socioemocional_agrupado,
         ]);
     }
+    
+    /**
+     * Busca as atividades já cadastradas para um aluno específico.
+     * Este método é usado para exibir as atividades já cadastradas em modo consulta.
+     *
+     * @param int $aluno_id ID do aluno
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function buscarAtividadesCadastradas($aluno_id)
+    {
+        try {
+            // Validar o ID do aluno
+            if (!$aluno_id || !is_numeric($aluno_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ID do aluno inválido.'
+                ], 422);
+            }
+            
+            // Buscar atividades cadastradas para cada eixo
+            $atividadesComunicacao = AtividadeComunicacao::where('aluno_id', $aluno_id)
+                ->where('fase_cadastro', 'In')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'cod_atividade' => $item->cod_atividade,
+                        'data_monitoramento' => $item->data_monitoramento,
+                        'data_aplicacao' => $item->data_aplicacao,
+                        'realizado' => $item->realizado,
+                        'observacoes' => $item->observacoes,
+                        'flag' => $item->flag,
+                        'registro_timestamp' => $item->registro_timestamp
+                    ];
+                });
+                
+            $atividadesComportamento = AtividadeComportamento::where('aluno_id', $aluno_id)
+                ->where('fase_cadastro', 'In')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'cod_atividade' => $item->cod_atividade,
+                        'data_monitoramento' => $item->data_monitoramento,
+                        'data_aplicacao' => $item->data_aplicacao,
+                        'realizado' => $item->realizado,
+                        'observacoes' => $item->observacoes,
+                        'flag' => $item->flag,
+                        'registro_timestamp' => $item->registro_timestamp
+                    ];
+                });
+                
+            $atividadesSocioemocional = AtividadeSocioemocional::where('aluno_id', $aluno_id)
+                ->where('fase_cadastro', 'In')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'cod_atividade' => $item->cod_atividade,
+                        'data_monitoramento' => $item->data_monitoramento,
+                        'data_aplicacao' => $item->data_aplicacao,
+                        'realizado' => $item->realizado,
+                        'observacoes' => $item->observacoes,
+                        'flag' => $item->flag,
+                        'registro_timestamp' => $item->registro_timestamp
+                    ];
+                });
+            
+            // Retornar os dados estruturados
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'com_lin' => $atividadesComunicacao,
+                    'comportamento' => $atividadesComportamento,
+                    'int_socio' => $atividadesSocioemocional
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao buscar atividades cadastradas: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocorreu um erro ao buscar as atividades cadastradas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

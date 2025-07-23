@@ -2,6 +2,135 @@
 // Garantir que o JS está carregado
 console.log('[scripts_monitoramento] JS carregado');
 
+// Função para carregar atividades já cadastradas
+function carregarAtividadesCadastradas() {
+    console.log('[scripts_monitoramento] Carregando atividades cadastradas...');
+    
+    // Obter o ID do aluno
+    const alunoInput = document.getElementById('aluno_id_hidden') || document.querySelector('input[name="aluno_id"]');
+    let aluno_id = alunoInput ? alunoInput.value : '';
+    
+    if (!aluno_id) {
+        // Extrai o ID da URL, ex: /rotina_monitoramento/cadastrar/52
+        const match = window.location.pathname.match(/cadastrar\/(\d+)/);
+        if (match) {
+            aluno_id = match[1];
+            if (alunoInput) alunoInput.value = aluno_id;
+        }
+    }
+    
+    if (!aluno_id) {
+        console.error('[scripts_monitoramento] ID do aluno não encontrado!');
+        return;
+    }
+    
+    // URL para buscar atividades cadastradas
+    const url = `/monitoramento/atividades-cadastradas/${aluno_id}`;
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            console.log('[scripts_monitoramento] Atividades cadastradas:', data.data);
+            
+            // Processar cada eixo
+            processarAtividadesCadastradas('comunicacao', data.data.com_lin);
+            processarAtividadesCadastradas('comportamento', data.data.comportamento);
+            processarAtividadesCadastradas('socioemocional', data.data.int_socio);
+        } else {
+            console.error('[scripts_monitoramento] Erro ao carregar atividades:', data.message);
+        }
+    })
+    .catch(err => {
+        console.error('[scripts_monitoramento] Erro na requisição:', err);
+    });
+}
+
+// Função para processar e marcar atividades já cadastradas
+function processarAtividadesCadastradas(eixoFrontend, atividades) {
+    if (!atividades || !Array.isArray(atividades) || atividades.length === 0) {
+        console.log(`[scripts_monitoramento] Nenhuma atividade cadastrada para o eixo ${eixoFrontend}`);
+        return;
+    }
+    
+    console.log(`[scripts_monitoramento] Processando ${atividades.length} atividades do eixo ${eixoFrontend}`);
+    
+    // Para cada atividade cadastrada
+    atividades.forEach(atividade => {
+        // Encontrar a linha correspondente no formulário
+        const linhas = document.querySelectorAll(`tr[data-eixo="${eixoFrontend}"]`);
+        
+        linhas.forEach(linha => {
+            const codAtividade = linha.getAttribute('data-cod-atividade');
+            const linhaFlag = linha.querySelector('input[name$="[flag]"]')?.value || '';
+            
+            // Verificar tanto o código da atividade quanto o flag para garantir correspondência exata
+            if (codAtividade === atividade.cod_atividade && 
+                (linhaFlag === '' || linhaFlag === atividade.flag.toString())) {
+                console.log(`[scripts_monitoramento] Encontrada atividade cadastrada: ${codAtividade}`);
+                
+                // Preencher os campos com os dados cadastrados
+                const dataInput = linha.querySelector('input[type="date"]');
+                if (dataInput) {
+                    dataInput.value = atividade.data_monitoramento;
+                    dataInput.setAttribute('readonly', true);
+                }
+                
+                // Marcar checkbox sim ou não conforme o valor realizado
+                const simInput = linha.querySelector('input[name$="[sim_inicial]"]');
+                const naoInput = linha.querySelector('input[name$="[nao_inicial]"]');
+                
+                if (simInput && naoInput) {
+                    if (atividade.realizado === 1 || atividade.realizado === true) {
+                        simInput.checked = true;
+                        naoInput.checked = false;
+                    } else {
+                        simInput.checked = false;
+                        naoInput.checked = true;
+                    }
+                    
+                    // Desabilitar os checkboxes
+                    simInput.disabled = true;
+                    naoInput.disabled = true; // Desabilita o checkbox "Não"
+                }
+                
+                // Preencher observações
+                const obsInput = linha.querySelector('textarea[name$="[observacoes]"]');
+                if (obsInput) {
+                    obsInput.value = atividade.observacoes || '';
+                    obsInput.setAttribute('readonly', true);
+                }
+                
+                // Atualizar o campo flag (hidden)
+                const flagInput = linha.querySelector('input[name$="[flag]"]');
+                if (flagInput) {
+                    flagInput.value = atividade.flag;
+                }
+                
+                // Desabilitar o botão e mudar para vermelho
+                const botao = linha.querySelector('.btn-salvar-linha');
+                if (botao) {
+                    botao.disabled = true;
+                    botao.classList.remove('btn-success');
+                    botao.classList.add('btn-danger');
+                    botao.textContent = 'Salvo';
+                }
+            }
+        });
+    });
+}
+
 // Listener para todos os botões salvar do eixo comunicacao
 function adicionarListenersSalvarLinhaGenerico() {
     document.querySelectorAll('button.btn-salvar-linha').forEach(function(btn) {
@@ -224,9 +353,13 @@ function adicionarListenersSalvarLinhaGenerico() {
 
 // Chama imediatamente ao carregar o script
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', adicionarListenersSalvarLinhaGenerico);
+    document.addEventListener('DOMContentLoaded', function() {
+        adicionarListenersSalvarLinhaGenerico();
+        carregarAtividadesCadastradas(); // Carregar atividades já cadastradas
+    });
 } else {
     adicionarListenersSalvarLinhaGenerico();
+    carregarAtividadesCadastradas(); // Carregar atividades já cadastradas
 }
 
 
