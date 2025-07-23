@@ -11,13 +11,19 @@
     }
     .section-title {
         font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
     }
     .form-section {
-        border: 3px solid #d1d5db; /* Borda mais grossa */
-        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
         padding: 25px;
         margin-bottom: 30px;
         background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         width: 100%;
     }
@@ -62,12 +68,13 @@
             </p>
         </div>
         
-        <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" onsubmit="return confirmSubmit(event)">
+        <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" >
             @csrf
             <input type="hidden" name="is_confirmed" id="is_confirmed" value="0">
             <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
             
             <h2>Perfil do Estudante</h2>
+            <p class="text-muted mb-4">Este documento deve ser atualizado regularmente, considerando os progressos e novas demandas. Os dados devem ser tratados de forma confidencial e utilizados exclusivamente para o planejamento de ações que promovam a inclusão e o desenvolvimento dos estudantes.</p>
             @if(session('success') && (count(old()) > 0 || request()->isMethod('post') || request()->isMethod('put')))
     <div class="alert alert-success">
         {{ session('success') }}
@@ -464,7 +471,6 @@
                     </table>
                 </div>
                 <div class="form-buttons mt-3 text-center">
-                    <button type="submit" class="btn btn-success">Confirmar Alteração</button>
                     <a href="#" class="btn btn-info">Gerar PDF</a>
                 </div>
             </div>
@@ -477,71 +483,19 @@
     </div>
 @endsection
 
-@section('scripts')
-    <!-- Adicionar Font Awesome -->
+@section('styles')
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('css/perfil_estudante.css') }}">
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const stepTabs = document.querySelectorAll('.step-tab');
-        const stepContents = document.querySelectorAll('.step-content');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const progressBar = document.getElementById('progressBar');
-        let currentStep = 1;
-        const totalSteps = stepContents.length;
+    <link rel="stylesheet" href="{{ asset('css/perfil_estudante_components.css') }}">
+@endsection
 
-        function updateProgressBar() {
-            const progress = totalSteps > 1 ? ((currentStep - 1) / (totalSteps - 1)) * 100 : 0;
-            progressBar.style.width = progress + '%';
-        }
-
-        function showStep(step) {
-            // Hide all steps
-            stepContents.forEach(content => {
-                content.classList.remove('active');
-            });
-            // Show the current step
-            document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
-
-            // Update active tab
-            stepTabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`.step-tab[data-step="${step}"]`).classList.add('active');
-
-            // Update button visibility
-            prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
-            nextBtn.style.display = step === totalSteps ? 'none' : 'inline-block';
-
-            currentStep = step;
-            updateProgressBar();
-        }
-
-        // Tab click event
-        stepTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const step = parseInt(this.getAttribute('data-step'));
-                showStep(step);
-            });
-        });
-
-        // Next button click event
-        nextBtn.addEventListener('click', function() {
-            if (currentStep < totalSteps) {
-                showStep(currentStep + 1);
-            }
-        });
-
-        // Previous button click event
-        prevBtn.addEventListener('click', function() {
-            if (currentStep > 1) {
-                showStep(currentStep - 1);
-            }
-        });
-
-        // Initialize form by showing the first step
-        showStep(1);
-    });
-    </script>
+@section('scripts')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Scripts personalizados -->
+    <script src="{{ asset('js/perfil_estudante.js') }}"></script>
 @endsection

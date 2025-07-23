@@ -24,43 +24,77 @@ class InserirPerfilEstudante extends Controller
      */
     protected function validarDados(Request $request)
     {
-        // Define valores padrão para campos opcionais
-        $dadosPadrao = [
-            'diag_laudo' => 0,
-            'nivel_suporte' => 1,
-            'uso_medicamento' => 0,
-            'nec_pro_apoio' => 0,
-            'conta_pro_apoio' => 0,
-        ];
+        try {
+            // Log dos dados recebidos para depuração
+            Log::info('Dados recebidos para validação:', [
+                'request_all' => $request->all(),
+                'request_method' => $request->method(),
+                'is_ajax' => $request->ajax(),
+                'has_aluno_id' => $request->has('aluno_id')
+            ]);
+            
+            // Define valores padrão para campos opcionais
+            $dadosPadrao = [
+                'diag_laudo' => 0,
+                'nivel_suporte' => 1,
+                'uso_medicamento' => 0,
+                'nec_pro_apoio' => 0,
+                'conta_pro_apoio' => 0,
+            ];
 
-        // Valida os dados fornecidos
-        $dados = $request->validate([
-            'aluno_id' => 'required|integer|exists:aluno,alu_id',
-            'diag_laudo' => 'nullable|in:0,1',
-            'data_laudo' => 'nullable|date',
-            'cid' => 'nullable|string|max:20',
-            'nome_medico' => 'nullable|string|max:255',
-            'nivel_suporte' => 'nullable|in:1,2,3',
-            'uso_medicamento' => 'nullable|in:0,1',
-            'quais_medicamento' => 'nullable|string|max:255',
-            'nec_pro_apoio' => 'nullable|in:0,1',
-            'conta_pro_apoio' => 'nullable|in:0,1',
-            'at_especializado' => 'nullable|string|max:255',
-            'outros' => 'nullable|string|max:255',
-            'locomocao' => 'nullable|in:on',
-            'higiene' => 'nullable|in:on',
-            'alimentacao' => 'nullable|in:on',
-            'comunicacao' => 'nullable|in:on',
-        ]);
+            // Valida os dados fornecidos com regras mais flexíveis
+            $dados = $request->validate([
+                'aluno_id' => 'required|integer|exists:aluno,alu_id',
+                'diag_laudo' => 'nullable|in:0,1',
+                'data_laudo' => 'nullable|date',
+                'cid' => 'nullable|string|max:20',
+                'nome_medico' => 'nullable|string|max:255',
+                'nivel_suporte' => 'nullable|in:1,2,3',
+                'uso_medicamento' => 'nullable|in:0,1',
+                'quais_medicamento' => 'nullable|string|max:255',
+                'nec_pro_apoio' => 'nullable|in:0,1',
+                'conta_pro_apoio' => 'nullable|in:0,1',
+                'at_especializado' => 'nullable|string|max:255',
+                'outros' => 'nullable|string|max:255',
+                'locomocao' => 'nullable|in:on',
+                'higiene' => 'nullable|in:on',
+                'alimentacao' => 'nullable|in:on',
+                'comunicacao' => 'nullable|in:on',
+            ]);
 
-        // Aplica valores padrão para campos não fornecidos
-        foreach ($dadosPadrao as $campo => $valor) {
-            if (!isset($dados[$campo]) || $dados[$campo] === null) {
-                $dados[$campo] = $valor;
+            // Aplica valores padrão para campos não fornecidos
+            foreach ($dadosPadrao as $campo => $valor) {
+                if (!isset($dados[$campo]) || $dados[$campo] === null) {
+                    $dados[$campo] = $valor;
+                }
             }
-        }
 
-        return $dados;
+            Log::info('Dados validados com sucesso:', ['dados' => $dados]);
+            return $dados;
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::warning('Erro de validação:', [
+                'errors' => $e->errors(),
+                'request' => $request->all()
+            ]);
+            
+            // Retorna uma resposta JSON com os erros de validação
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro de validação dos dados',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Erro inesperado na validação:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao validar os dados: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -72,24 +106,43 @@ class InserirPerfilEstudante extends Controller
     public function inserir_perfil_estudante(Request $request)
     {
         try {
+            // Log da requisição recebida
+            Log::info('Recebida requisição para inserir/atualizar perfil do estudante', [
+                'method' => $request->method(),
+                'ajax' => $request->ajax(),
+                'content_type' => $request->header('Content-Type'),
+                'has_aluno_id' => $request->has('aluno_id'),
+                'all_data' => $request->all()
+            ]);
+            
             // Valida os dados do formulário
             $dados = $this->validarDados($request);
+            
+            // Se a validação retornou uma resposta JSON (erro), retorna-a diretamente
+            if ($dados instanceof \Illuminate\Http\JsonResponse) {
+                return $dados;
+            }
+            
             $alunoId = $dados['aluno_id'];
+            Log::info('Dados validados com sucesso', ['aluno_id' => $alunoId]);
 
             // Verifica se já existe um perfil para este aluno
             $perfilExistente = PerfilEstudante::where('fk_id_aluno', $alunoId)->first();
             
             // Se existir, atualiza em vez de retornar erro
             if ($perfilExistente) {
-                Log::info('Atualizando perfil existente para o aluno', ['aluno_id' => $alunoId]);
+                Log::info('Atualizando perfil existente para o aluno', ['aluno_id' => $alunoId, 'perfil_id' => $perfilExistente->id_perfil]);
+            } else {
+                Log::info('Criando novo perfil para o aluno', ['aluno_id' => $alunoId]);
             }
 
             // Verifica se o aluno existe
             $aluno = Aluno::find($alunoId);
             if (!$aluno) {
+                Log::warning('Aluno não encontrado', ['aluno_id' => $alunoId]);
                 return response()->json([
                     'success' => false,
-                    'message' => 'Aluno não encontrado.'
+                    'message' => 'Aluno não encontrado com o ID: ' . $alunoId
                 ], 404);
             }
 
