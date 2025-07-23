@@ -30,34 +30,76 @@ class PerfilEstudanteForm {
         this.setupEventListeners();
         this.loadSweetAlert();
         this.showStep(1);
+        
+        // Impedir submissão do formulário em abas intermediárias
+        this.form.addEventListener('submit', (e) => {
+            if (this.currentStep !== this.totalSteps) {
+                e.preventDefault();
+                console.log('Tentativa de envio do formulário bloqueada - não está na última aba');
+                return false;
+            }
+        });
     }
 
     setupEventListeners() {
-        // Navegação
-        this.nextBtn.addEventListener('click', () => this.nextStep());
-        this.prevBtn.addEventListener('click', () => this.prevStep());
+        // Navegação com botões diretos
+        document.getElementById('nextBtn').onclick = (e) => {
+            e.preventDefault();
+            const nextStep = parseInt(this.currentStep) + 1;
+            console.log(`Botão Próximo: indo para etapa ${nextStep}`);
+            this.showStep(nextStep);
+        };
         
-        // Navegação por clique nas abas
+        document.getElementById('prevBtn').onclick = (e) => {
+            e.preventDefault();
+            const prevStep = parseInt(this.currentStep) - 1;
+            console.log(`Botão Anterior: indo para etapa ${prevStep}`);
+            this.showStep(prevStep);
+        };
+        
+        // Navegação por clique nas abas - permite clicar em qualquer aba
         this.stepTabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
+                e.preventDefault();
                 const step = parseInt(e.currentTarget.getAttribute('data-step'));
-                if (step < this.currentStep) { // Só permite voltar
-                    this.showStep(step);
-                }
+                console.log(`Clique na aba ${step}`);
+                this.showStep(step);
             });
         });
     }
 
     async showStep(step) {
+        // Garante que step seja um número inteiro válido
+        step = parseInt(step);
+        
+        // Valida se o step está dentro dos limites
+        if (isNaN(step) || step < 1 || step > this.totalSteps) {
+            console.error(`Etapa inválida: ${step}`);
+            return;
+        }
+        
+        console.log(`Mostrando etapa ${step}`);
+        
         // Esconde todas as etapas
         this.stepContents.forEach(content => content.classList.remove('active'));
         
         // Mostra a etapa atual
-        document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
+        const targetContent = document.querySelector(`.step-content[data-step="${step}"]`);
+        if (targetContent) {
+            targetContent.classList.add('active');
+        } else {
+            console.error(`Conteúdo da etapa ${step} não encontrado`);
+            return;
+        }
 
         // Atualiza a aba ativa
         this.stepTabs.forEach(tab => tab.classList.remove('active'));
-        document.querySelector(`.step-tab[data-step="${step}"]`).classList.add('active');
+        const targetTab = document.querySelector(`.step-tab[data-step="${step}"]`);
+        if (targetTab) {
+            targetTab.classList.add('active');
+        } else {
+            console.error(`Aba da etapa ${step} não encontrada`);
+        }
 
         // Atualiza visibilidade dos botões
         this.prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
@@ -66,53 +108,35 @@ class PerfilEstudanteForm {
         if (step === this.totalSteps) {
             this.nextBtn.textContent = 'Salvar';
             this.nextBtn.className = 'btn btn-success';
-            this.nextBtn.onclick = (e) => this.salvarFormularioCompleto(e);
+            this.nextBtn.onclick = (e) => {
+                e.preventDefault();
+                this.salvarFormularioCompleto(e);
+            };
         } else {
             this.nextBtn.textContent = 'Próximo';
             this.nextBtn.className = 'btn btn-primary';
-            this.nextBtn.onclick = () => this.nextStep();
+            this.nextBtn.onclick = (e) => {
+                e.preventDefault();
+                const nextStep = parseInt(this.currentStep) + 1;
+                console.log(`Botão Próximo: indo para etapa ${nextStep}`);
+                this.showStep(nextStep);
+            };
         }
 
+        // Atualiza o estado atual
         this.currentStep = step;
         this.updateProgressBar();
+        
+        console.log(`Etapa atual definida como: ${this.currentStep}`);
     }
 
-    async nextStep() {
+    // Método auxiliar para avançar para a próxima etapa
+    nextStep() {
         if (this.currentStep < this.totalSteps) {
-            try {
-                // Verifica se a etapa atual é válida ou se podemos avançar mesmo assim
-                const isValid = await this.validarEtapaAtual();
-                
-                // Se a etapa for válida ou se já temos dados salvos para esta etapa, avança
-                if (isValid) {
-                    console.log(`Avançando da etapa ${this.currentStep} para ${this.currentStep + 1}`);
-                    this.showStep(this.currentStep + 1);
-                    return true;
-                } else {
-                    // Pergunta ao usuário se deseja avançar mesmo assim
-                    const confirmResult = await Swal.fire({
-                        title: 'Avançar mesmo assim?',
-                        text: 'Alguns campos estão incompletos. Deseja avançar para a próxima etapa mesmo assim?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sim, avançar',
-                        cancelButtonText: 'Não, continuar editando',
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33'
-                    });
-                    
-                    if (confirmResult.isConfirmed) {
-                        console.log(`Avançando da etapa ${this.currentStep} para ${this.currentStep + 1} (forçado pelo usuário)`);
-                        this.showStep(this.currentStep + 1);
-                        return true;
-                    }
-                    return false;
-                }
-            } catch (error) {
-                console.error('Erro ao avançar para próxima etapa:', error);
-                this.showConfirmation('Erro ao avançar para a próxima etapa. Por favor, tente novamente.', true);
-                return false;
-            }
+            const nextStep = parseInt(this.currentStep) + 1;
+            console.log(`Avançando para etapa ${nextStep}`);
+            this.showStep(nextStep);
+            return true;
         }
         return false;
     }
@@ -178,15 +202,36 @@ class PerfilEstudanteForm {
             const formData = new FormData(this.form);
             formData.append('etapa', 'final');
             
+            // Garante que o método PUT seja enviado corretamente
+            formData.set('_method', 'PUT');
+            
+            // Garante que o ID do aluno esteja presente
+            const alunoId = document.getElementById('aluno_id_hidden').value;
+            if (alunoId) {
+                formData.append('fk_id_aluno', alunoId);
+                formData.append('aluno_id', alunoId); // Adiciona campo alternativo para garantir
+            }
+            
+            // Garante que todos os campos estejam presentes
+            this.garantirCamposFormulario(formData);
+            
             // Log dos dados sendo enviados para depuração
             console.log('Enviando dados do formulário:');
             for (let pair of formData.entries()) {
                 console.log(pair[0] + ': ' + pair[1]);
             }
             
-            // Envia a requisição
+            // Verificação rápida para campos obrigatórios
+            ['loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05'].forEach(campo => {
+                const valor = formData.get(campo);
+                if (valor === null || valor === 'null' || valor === undefined) {
+                    formData.set(campo, '0');
+                }
+            });
+            
+            // Envia a requisição com método PUT
             const response = await fetch(this.form.action, {
-                method: 'POST',
+                method: 'POST', // Mantemos POST aqui porque o FormData será enviado com _method=PUT
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -194,41 +239,40 @@ class PerfilEstudanteForm {
                 body: formData
             });
             
+            console.log('URL da requisição:', this.form.action);
+            
             // Log da resposta para depuração
             console.log('Status da resposta:', response.status);
             console.log('Headers da resposta:', response.headers);
             
-            // Tenta obter o JSON da resposta
+            // Tenta obter o JSON da resposta - apenas uma vez
             let resultado;
+            let textoResposta;
+            
             try {
-                resultado = await response.json();
-                console.log('Resposta JSON:', resultado);
-            } catch (jsonError) {
-                console.error('Erro ao processar JSON da resposta:', jsonError);
-                const textoResposta = await response.text();
-                console.log('Resposta como texto:', textoResposta);
-                throw new Error('Erro ao processar resposta do servidor');
+                // Clona a resposta antes de ler o corpo para evitar erro de stream já lido
+                const responseClone = response.clone();
+                
+                try {
+                    resultado = await response.json();
+                    console.log('Resposta JSON:', resultado);
+                } catch (jsonError) {
+                    console.error('Erro ao processar JSON da resposta:', jsonError);
+                    textoResposta = await responseClone.text();
+                    console.log('Resposta como texto:', textoResposta);
+                    throw new Error('Erro ao processar resposta do servidor');
+                }
+            } catch (error) {
+                console.error('Erro ao processar resposta:', error);
+                this.showConfirmation('Erro ao processar resposta do servidor. Verifique o console para mais detalhes.', true);
+                throw error;
             }
             
             if (resultado.success) {
                 this.showConfirmation('Dados salvos com sucesso!');
                 
-                // Se estamos em uma etapa intermediária, avança para a próxima
-                if (this.currentStep < this.totalSteps) {
-                    console.log(`Avançando automaticamente da etapa ${this.currentStep} para ${this.currentStep + 1} após salvamento bem-sucedido`);
-                    setTimeout(() => this.showStep(this.currentStep + 1), 1000); // Pequeno delay para mostrar a mensagem de sucesso
-                }
-                
-                // Marca a aba atual como concluída
-                const currentTab = document.querySelector(`.step-tab[data-step="${this.currentStep}"]`);
-                if (currentTab) {
-                    currentTab.classList.add('completed');
-                }
-                
-                // Se estamos na última etapa, marca todas as abas como concluídas
-                if (this.currentStep === this.totalSteps) {
-                    this.stepTabs.forEach(tab => tab.classList.add('completed'));
-                }
+                    // Marca todas as abas como concluídas
+                this.stepTabs.forEach(tab => tab.classList.add('completed'));
             } else {
                 throw new Error(resultado.message || 'Erro ao salvar os dados');
             }
@@ -289,21 +333,9 @@ class PerfilEstudanteForm {
         quickNavButton.style.cssText = 'box-shadow: 0 2px 5px rgba(0,0,0,0.2); padding: 8px 15px; border-radius: 4px;';
         
         // Adiciona evento de clique
-        quickNavButton.addEventListener('click', async () => {
-            const confirmResult = await Swal.fire({
-                title: 'Ir para a última etapa?',
-                text: 'Deseja ir diretamente para a última etapa para salvar o formulário?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sim, ir para o final',
-                cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33'
-            });
-            
-            if (confirmResult.isConfirmed) {
-                this.showStep(this.totalSteps);
-            }
+        quickNavButton.addEventListener('click', () => {
+            // Vai diretamente para a última etapa sem confirmação
+            this.showStep(this.totalSteps);
         });
         
         quickNavContainer.appendChild(quickNavButton);
@@ -316,6 +348,109 @@ class PerfilEstudanteForm {
             sweetScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
             document.head.appendChild(sweetScript);
         }
+    }
+    
+    // Garante que todos os campos importantes estejam presentes no formulário
+    garantirCamposFormulario(formData) {
+        // Mapeia os checkboxes de momentos_apoio[] para os campos específicos do backend
+        this.mapearMomentosApoio(formData);
+        
+        // Campos obrigatórios que devem ter valor zero se não preenchidos
+        const camposZero = ['loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05'];
+        camposZero.forEach(campo => {
+            const valorAtual = formData.get(campo);
+            if (!formData.has(campo) || valorAtual === null || valorAtual === 'null' || valorAtual === undefined) {
+                formData.set(campo, '0');
+            }
+        });
+        
+        // Campos especiais que devem ser string vazia se nulos
+        const camposEspeciais = ['out_momentos', 'out_moments'];
+        camposEspeciais.forEach(campo => {
+            const valor = formData.get(campo);
+            if (valor === null || valor === 'null' || valor === undefined) {
+                formData.set(campo, '');
+            }
+        });
+        
+        // Garante que campos de checkbox estejam presentes mesmo que não selecionados
+        ['momentos_apoio', 'sensibilidade', 'como_aprende_melhor'].forEach(field => {
+            if (!formData.has(field)) {
+                formData.append(field, '');
+            }
+        });
+        
+        // Garante que o ID do aluno esteja presente
+        if (!formData.has('fk_id_aluno') || !formData.has('aluno_id')) {
+            const alunoId = document.getElementById('aluno_id_hidden')?.value;
+            if (alunoId) {
+                formData.set('fk_id_aluno', alunoId);
+                formData.set('aluno_id', alunoId);
+            }
+        }
+        
+        // Adiciona campos de data que podem estar faltando
+        if (!formData.has('updated_at')) {
+            const dataAtual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            formData.set('updated_at', dataAtual);
+        }
+    }
+    
+    // Mapeia os checkboxes de momentos_apoio[] para os campos específicos do backend
+    mapearMomentosApoio(formData) {
+        // Obtém os valores selecionados dos checkboxes
+        const momentosApoio = formData.getAll('momentos_apoio[]') || [];
+        
+        // Define os valores padrão como '0' (não selecionado)
+        formData.set('loc_01', '0');
+        formData.set('hig_02', '0');
+        formData.set('ali_03', '0');
+        formData.set('com_04', '0');
+        formData.set('out_05', '0');
+        
+        // Sempre inicializa out_momentos como string vazia para evitar null
+        formData.set('out_momentos', '');
+        
+        // Mapeia os valores selecionados para os campos específicos
+        momentosApoio.forEach(momento => {
+            switch(momento) {
+                case 'locomocao':
+                    formData.set('loc_01', '1');
+                    break;
+                case 'higiene':
+                    formData.set('hig_02', '1');
+                    break;
+                case 'alimentacao':
+                    formData.set('ali_03', '1');
+                    break;
+                case 'comunicacao':
+                    formData.set('com_04', '1');
+                    break;
+                case 'outros':
+                    formData.set('out_05', '1');
+                    // Se 'outros' está selecionado, também mapeia o campo de texto
+                    const outrosMomentos = formData.get('outros_momentos_apoio');
+                    if (outrosMomentos !== null && outrosMomentos !== undefined) {
+                        formData.set('out_momentos', outrosMomentos);
+                    }
+                    break;
+            }
+        });
+        
+        // Verifica novamente se out_momentos está definido e não é null
+        if (formData.get('out_momentos') === null || formData.get('out_momentos') === undefined) {
+            formData.set('out_momentos', '');
+        }
+        
+        // Log para debug
+        console.log('Mapeamento de momentos de apoio:', {
+            loc_01: formData.get('loc_01'),
+            hig_02: formData.get('hig_02'),
+            ali_03: formData.get('ali_03'),
+            com_04: formData.get('com_04'),
+            out_05: formData.get('out_05'),
+            out_momentos: formData.get('out_momentos')
+        });
     }
 }
 

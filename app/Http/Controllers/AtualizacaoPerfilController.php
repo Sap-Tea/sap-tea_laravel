@@ -64,11 +64,30 @@ class AtualizacaoPerfilController extends Controller
 
         DB::commit();
 
-        // Redireciona para a tela anterior (formulário de edição)
+        // Verifica se é uma requisição AJAX
+        if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Perfil atualizado com sucesso!',
+                'redirect' => url()->previous()
+            ]);
+        }
+        
+        // Redireciona para a tela anterior (formulário de edição) para requisições normais
         return redirect()->back()->with('success', 'Perfil atualizado com sucesso!');
 
     } catch (\Exception $e) {
         DB::rollBack();
+        Log::error('Erro ao atualizar perfil: ' . $e->getMessage(), ['exception' => $e]);
+        
+        // Verifica se é uma requisição AJAX
+        if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao atualizar perfil: ' . $e->getMessage()
+            ], 500);
+        }
+        
         return redirect()->back()
             ->with('error', 'Erro ao atualizar perfil: ' . $e->getMessage())
             ->withInput();

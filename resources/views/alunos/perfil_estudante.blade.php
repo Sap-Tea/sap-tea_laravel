@@ -68,13 +68,13 @@
             </p>
         </div>
         
-        <form method="POST" action="{{ route('inserir_perfil') }}" id="perfilForm" >
+        <form method="POST" action="{{ route('atualiza.perfil.estudante', $aluno->alu_id) }}" id="perfilForm" >
             @csrf
+            @method('PUT')
             <input type="hidden" name="is_confirmed" id="is_confirmed" value="0">
-            <input type="hidden" name="aluno_id" value="{{$aluno->alu_id }}">
+            <input type="hidden" name="fk_id_aluno" id="aluno_id_hidden" value="{{$aluno->alu_id }}">
             
             <h2>Perfil do Estudante</h2>
-            <p class="text-muted mb-4">Este documento deve ser atualizado regularmente, considerando os progressos e novas demandas. Os dados devem ser tratados de forma confidencial e utilizados exclusivamente para o planejamento de ações que promovam a inclusão e o desenvolvimento dos estudantes.</p>
             @if(session('success') && (count(old()) > 0 || request()->isMethod('post') || request()->isMethod('put')))
     <div class="alert alert-success">
         {{ session('success') }}
@@ -497,5 +497,5 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Scripts personalizados -->
-    <script src="{{ asset('js/perfil_estudante.js') }}"></script>
+    <script src="{{ asset('js/perfil_estudante.js?v=1.1') }}"></script>
 @endsection
