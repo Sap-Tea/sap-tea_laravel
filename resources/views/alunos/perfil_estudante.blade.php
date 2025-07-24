@@ -471,7 +471,7 @@
                     </table>
                 </div>
                 <div class="form-buttons mt-3 text-center">
-                    <a href="#" class="btn btn-info">Gerar PDF</a>
+                    <!-- Botão PDF removido conforme solicitado -->
                 </div>
             </div>
 

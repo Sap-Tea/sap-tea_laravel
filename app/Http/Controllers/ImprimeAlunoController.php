@@ -22,6 +22,7 @@ class ImprimeAlunoController extends Controller
         ->whereHas('matriculas.turma', function($query) use ($professor_id) {
             $query->where('fk_cod_func', $professor_id);
         })
+        ->orderBy('alu_nome', 'asc')
         ->paginate(10);
 
         return view('Alunos.imprime_aluno', compact('alunos'));

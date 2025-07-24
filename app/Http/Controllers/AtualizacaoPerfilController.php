@@ -31,7 +31,58 @@ class AtualizacaoPerfilController extends Controller
             'loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05', 'out_momentos',
             'at_especializado', 'nome_prof_AEE', 'update_count'
         ]);
-        
+
+        // Tratamento robusto para todos os campos do perfil_estudante
+        $camposInt = [
+            'diag_laudo', 'nivel_suporte', 'uso_medicamento', 'nec_pro_apoio', 'prof_apoio',
+            'loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05'
+        ];
+        foreach ($camposInt as $campo) {
+            if (!isset($dadosPerfil[$campo]) || $dadosPerfil[$campo] === '' || is_null($dadosPerfil[$campo])) {
+                $dadosPerfil[$campo] = 0;
+            }
+        }
+        // Campos texto
+        $camposTexto = ['cid','nome_medico','quais_medicamento','out_momentos','at_especializado'];
+        foreach ($camposTexto as $campo) {
+            if (!isset($dadosPerfil[$campo]) || is_null($dadosPerfil[$campo])) {
+                $dadosPerfil[$campo] = '';
+            }
+        }
+        // Campos de data/datetime
+        if (!isset($dadosPerfil['data_laudo']) || $dadosPerfil['data_laudo'] === '' || is_null($dadosPerfil['data_laudo'])) {
+            $dadosPerfil['data_laudo'] = null;
+        }
+        // Garante que outros campos sensíveis nunca sejam null
+        $camposNuncaNull = ['cid','nome_medico','quais_medicamento','prof_apoio','out_momentos','at_especializado','nome_prof_AEE'];
+        foreach ($camposNuncaNull as $campo) {
+            if (!isset($dadosPerfil[$campo]) || is_null($dadosPerfil[$campo])) {
+                $dadosPerfil[$campo] = '';
+            }
+        }
+        // nec_pro_apoio deve ser inteiro
+        if (!isset($dadosPerfil['nec_pro_apoio']) || $dadosPerfil['nec_pro_apoio'] === '' || is_null($dadosPerfil['nec_pro_apoio'])) {
+            $dadosPerfil['nec_pro_apoio'] = 0;
+        }
+        // uso_medicamento deve ser inteiro
+        if (!isset($dadosPerfil['uso_medicamento']) || $dadosPerfil['uso_medicamento'] === '' || is_null($dadosPerfil['uso_medicamento'])) {
+            $dadosPerfil['uso_medicamento'] = 0;
+        }
+        // Campos de data/datetime devem ser null se vazios
+        if (!isset($dadosPerfil['data_laudo']) || $dadosPerfil['data_laudo'] === '' || is_null($dadosPerfil['data_laudo'])) {
+            $dadosPerfil['data_laudo'] = null;
+        }
+        // update_count deve ser inteiro
+        if (!isset($dadosPerfil['update_count']) || $dadosPerfil['update_count'] === '' || is_null($dadosPerfil['update_count'])) {
+            $dadosPerfil['update_count'] = 0;
+        }
+        // Campos booleanos/inteiros opcionais
+        $camposInt = ['loc_01','hig_02','ali_03','com_04','out_05'];
+        foreach ($camposInt as $campo) {
+            if (!isset($dadosPerfil[$campo]) || $dadosPerfil[$campo] === '' || is_null($dadosPerfil[$campo])) {
+                $dadosPerfil[$campo] = 0;
+            }
+        }
         // Define valor padrão para nivel_suporte se não estiver preenchido
         if (empty($dadosPerfil['nivel_suporte'])) {
             $dadosPerfil['nivel_suporte'] = 1; // Valor padrão: Nível 1 - Exige pouco apoio
