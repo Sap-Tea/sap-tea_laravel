@@ -260,7 +260,13 @@ class PerfilEstudanteForm {
                     console.error('Erro ao processar JSON da resposta:', jsonError);
                     textoResposta = await responseClone.text();
                     console.log('Resposta como texto:', textoResposta);
-                    throw new Error('Erro ao processar resposta do servidor');
+                    
+                    // Verifica se a resposta contém indicação de sucesso mesmo sendo HTML
+                    if (response.ok && (textoResposta.includes('sucesso') || textoResposta.includes('success'))) {
+                        resultado = { success: true };
+                    } else {
+                        throw new Error('Erro ao processar resposta do servidor');
+                    }
                 }
             } catch (error) {
                 console.error('Erro ao processar resposta:', error);
@@ -268,13 +274,20 @@ class PerfilEstudanteForm {
                 throw error;
             }
             
-            if (resultado.success) {
+            if (resultado && resultado.success) {
                 this.showConfirmation('Dados salvos com sucesso!');
                 
-                    // Marca todas as abas como concluídas
+                // Marca todas as abas como concluídas
                 this.stepTabs.forEach(tab => tab.classList.add('completed'));
+                
+                // Redireciona após 2 segundos se houver URL de redirecionamento
+                if (resultado.redirect) {
+                    setTimeout(() => {
+                        window.location.href = resultado.redirect;
+                    }, 2000);
+                }
             } else {
-                throw new Error(resultado.message || 'Erro ao salvar os dados');
+                throw new Error((resultado && resultado.message) || 'Erro ao salvar os dados');
             }
         } catch (error) {
             console.error('Erro ao salvar:', error);
@@ -398,9 +411,13 @@ class PerfilEstudanteForm {
         // Garante que o ID do aluno esteja presente
         if (!formData.has('fk_id_aluno') || !formData.has('aluno_id')) {
             const alunoId = document.getElementById('aluno_id_hidden')?.value;
+            
             if (alunoId) {
                 formData.set('fk_id_aluno', alunoId);
                 formData.set('aluno_id', alunoId);
+                console.log('ID do aluno adicionado:', alunoId);
+            } else {
+                console.error('ID do aluno não encontrado!');
             }
         }
         
@@ -695,6 +712,9 @@ class PerfilEstudanteForm {
         // Array para armazenar os dados dos profissionais
         const profissionais = [];
         
+        // Obtém o ID do aluno para associar aos profissionais
+        const alunoId = document.getElementById('aluno_id_hidden')?.value || formData.get('aluno_id') || formData.get('fk_id_aluno');
+        
         // Processa cada linha de profissional (até 3 linhas no formulário)
         for (let i = 1; i <= 3; i++) {
             const numProfissional = i.toString().padStart(2, '0'); // 01, 02, 03
@@ -709,7 +729,8 @@ class PerfilEstudanteForm {
                 profissionais.push({
                     nome_profissional: nome,
                     especialidade_profissional: especialidade || '',
-                    observacoes_profissional: observacoes || ''
+                    observacoes_profissional: observacoes || '',
+                    fk_id_aluno: alunoId // Adiciona o ID do aluno para cada profissional
                 });
             }
         }
