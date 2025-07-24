@@ -102,7 +102,7 @@ class AtualizacaoPerfilController extends Controller
         // Atualiza o campo flag_perfil para indicar que o perfil foi cadastrado
         DB::table('aluno')
             ->where('alu_id', $id)
-            ->update(['flag_perfil' => 'S']);
+            ->update(['flag_perfil' => '*']);
 
         DB::commit();
 
@@ -110,13 +110,13 @@ class AtualizacaoPerfilController extends Controller
         if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
                 'success' => true,
-                'message' => 'Perfil atualizado com sucesso!',
-                'redirect' => route('perfil.estudante.mostrar', $id)
+                'message' => 'Perfil cadastrado com sucesso!',
+                'redirect' => route('imprime_aluno')
             ]);
         }
         
-        // Redireciona de volta para a página do perfil do estudante
-        return redirect()->route('perfil.estudante.mostrar', $id)->with('success', 'Perfil atualizado com sucesso!');
+        // Redireciona de volta para a listagem de alunos
+        return redirect()->route('imprime_aluno')->with('success', 'Perfil cadastrado com sucesso!');
 
     } catch (\Exception $e) {
         DB::rollBack();

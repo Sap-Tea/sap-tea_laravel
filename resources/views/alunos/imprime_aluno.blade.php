@@ -59,15 +59,15 @@ document.getElementById('pesquisarBtn').addEventListener('click', function(event
                     <!-- Dados do aluno -->
                     <td>{{ $aluno->alu_ra }}</td>
                     <td>{{ $aluno->alu_nome }}</td>
-                    <td>{{ $aluno->matriculas->first()->serie->desc_serie ?? ($aluno->matriculas->first()->turma->serie->desc_serie ?? '-') }}</td>
-                    <td>{{ $aluno->matriculas->first()->modalidade->tipo->desc_modalidade ?? '-' }}</td>
+                    <td>@if($aluno->matriculas->isNotEmpty() && $aluno->matriculas->first()->turma) {{ $aluno->matriculas->first()->turma->enturmacao->desc_serie ?? '-' }} @else - @endif</td>
+                    <td>@if($aluno->matriculas->isNotEmpty() && $aluno->matriculas->first()->modalidade) {{ $aluno->matriculas->first()->modalidade->desc_modalidade ?? '-' }} @else - @endif</td>
                     <td>{{ $aluno->alu_nome_resp ?? '-' }}</td>
                     <td>{{ $aluno->alu_tel_resp ?? '-' }}</td>
 
                     <!-- Botão cadastra perfil -->
                     <td>
                         @if($aluno->flag_perfil === "*")
-                            <button class="btn btn-warning btn-sm text-white" style="background-color: #ff9800; border-color: #ff9800; cursor: not-allowed; width: 150px; height: 38px; display: inline-block;" disabled>Perfil já cadastrado</button>
+                            <button class="btn btn-success btn-sm text-white" style="background-color: #4caf50; border-color: #4caf50; cursor: not-allowed; width: 150px; height: 38px; display: inline-block;" disabled>Perfil Cadastrado</button>
                         @else
                             <a href="{{ route('alunos.index', ['id' => $aluno->alu_id]) }}" 
                                class="btn btn-primary btn-sm" style="width: 150px; height: 38px; display: inline-block;">Cadastra Perfil</a>
