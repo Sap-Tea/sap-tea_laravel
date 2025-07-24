@@ -364,6 +364,12 @@ class PerfilEstudanteForm {
         // Mapeia os campos da aba Preferências
         this.mapearCamposPreferencias(formData);
         
+        // Mapeia os campos da aba Informações da Família
+        this.mapearCamposFamilia(formData);
+        
+        // Mapeia os campos da aba Cadastro de Profissionais
+        this.mapearCamposProfissionais(formData);
+        
         // Campos obrigatórios que devem ter valor zero se não preenchidos
         const camposZero = ['loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05'];
         camposZero.forEach(campo => {
@@ -653,6 +659,67 @@ class PerfilEstudanteForm {
             outro_identificar_04: formData.get('outro_identificar_04'),
             descricao_outro_identificar_04: formData.get('descricao_outro_identificar_04')
         });
+    }
+    
+    // Mapeia os campos da aba Informações da Família para os campos esperados pelo backend
+    mapearCamposFamilia(formData) {
+        // Mapeamento dos campos de texto
+        const mapeamentoTexto = {
+            'expectativas_familia': 'expectativa_05',
+            'estrategia_familiar': 'estrategia_05',
+            'familia_crise_estresse': 'crise_esta_05'
+        };
+        
+        // Mapeia os campos de texto
+        Object.entries(mapeamentoTexto).forEach(([campoFormulario, campoModelo]) => {
+            const valor = formData.get(campoFormulario);
+            
+            // Se o campo existe no formulário, mapeia para o campo do modelo
+            if (valor !== null && valor !== undefined) {
+                formData.set(campoModelo, valor);
+            } else {
+                // Se não existe, inicializa com string vazia para evitar null
+                formData.set(campoModelo, '');
+            }
+            
+            // Log para debug
+            console.log(`Mapeamento de ${campoFormulario} para ${campoModelo}:`, formData.get(campoModelo));
+        });
+        
+        // Log para debug
+        console.log('Mapeamento de campos da Família concluído');
+    }
+    
+    // Mapeia os campos da aba Cadastro de Profissionais para os campos esperados pelo backend
+    mapearCamposProfissionais(formData) {
+        // Array para armazenar os dados dos profissionais
+        const profissionais = [];
+        
+        // Processa cada linha de profissional (até 3 linhas no formulário)
+        for (let i = 1; i <= 3; i++) {
+            const numProfissional = i.toString().padStart(2, '0'); // 01, 02, 03
+            
+            // Obtém os valores dos campos
+            const nome = formData.get(`nome_profissional_${numProfissional}`);
+            const especialidade = formData.get(`especialidade_profissional_${numProfissional}`);
+            const observacoes = formData.get(`observacoes_profissional_${numProfissional}`);
+            
+            // Só adiciona ao array se pelo menos o nome do profissional estiver preenchido
+            if (nome && nome.trim() !== '') {
+                profissionais.push({
+                    nome_profissional: nome,
+                    especialidade_profissional: especialidade || '',
+                    observacoes_profissional: observacoes || ''
+                });
+            }
+        }
+        
+        // Adiciona o array de profissionais ao formData como JSON string
+        formData.set('profissionais', JSON.stringify(profissionais));
+        
+        // Log para debug
+        console.log('Profissionais mapeados:', profissionais);
+        console.log('Mapeamento de campos de Profissionais concluído');
     }
 }
 
