@@ -39,15 +39,18 @@
                     <!-- Dados do aluno -->
                     <td>{{ $aluno->alu_ra }}</td>
                     <td>{{ $aluno->alu_nome }}</td>
-                    <td>{{ optional($aluno->matriculas->first()->turma->escola)->esc_razao_social ?? '---' }}</td>
-                    <td>{{ optional(optional($aluno->matriculas->first()->modalidade)->tipo)->desc_modalidade ?? '---' }}</td>
+                    <td>{{ optional(optional($aluno->matriculas->first())->turma)->escola->esc_razao_social ?? '---' }}</td>
+                    <td>{{ optional(optional(optional($aluno->matriculas->first())->modalidade)->tipo)->desc_modalidade ?? '---' }}</td>
                   
                     <!-- Botões de ação flexíveis -->
                     <td>
                         @if(isset($botoes))
                             @foreach($botoes as $botao)
                                 @if(!empty($aluno->alu_id))
-                                    <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $botao['classe'] }} btn-sm">{{ $botao['label'] }}</a>
+                                    @php
+                                        $classe = is_callable($botao['classe']) ? $botao['classe']($aluno) : $botao['classe'];
+                                    @endphp
+                                    <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $classe }} btn-sm">{{ $botao['label'] }}</a>
                                 @endif
                             @endforeach
                         @endif

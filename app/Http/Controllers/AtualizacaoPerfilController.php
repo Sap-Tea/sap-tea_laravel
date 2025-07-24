@@ -54,6 +54,14 @@ class AtualizacaoPerfilController extends Controller
         $preferencia->fk_id_aluno = $id;
         $preferencia->save();
 
+        // Atualiza comunicacao
+        $comunicacao = \App\Models\Comunicacao::firstOrNew(['fk_id_aluno' => $id]);
+        $comunicacao->fill($request->only([
+            'precisa_comunicacao', 'entende_instrucao', 'recomenda_instrucao'
+        ]));
+        $comunicacao->fk_id_aluno = $id;
+        $comunicacao->save();
+
         // Atualiza perfil_familia
         $familia = \App\Models\PerfilFamilia::firstOrNew(['fk_id_aluno' => $id]);
         $familia->fill($request->only([
@@ -62,6 +70,31 @@ class AtualizacaoPerfilController extends Controller
         $familia->fk_id_aluno = $id;
         $familia->save();
 
+        // Atualiza perfil_profissional
+        // Primeiro, vamos remover os profissionais existentes para este aluno
+        \App\Models\PerfilProfissional::where('fk_id_aluno', $id)->delete();
+        
+        // Agora vamos adicionar os novos profissionais
+        for ($i = 1; $i <= 3; $i++) {
+            $numPad = str_pad($i, 2, '0', STR_PAD_LEFT); // 1 -> 01, 2 -> 02, etc.
+            $nomeProfissional = $request->input('nome_profissional_' . $numPad);
+            
+            // Só salvamos se houver pelo menos o nome do profissional
+            if (!empty($nomeProfissional)) {
+                $profissional = new \App\Models\PerfilProfissional();
+                $profissional->nome_profissional = $nomeProfissional;
+                $profissional->especialidade_profissional = $request->input('especialidade_profissional_' . $numPad) ?? '';
+                $profissional->observacoes_profissional = $request->input('observacoes_profissional_' . $numPad) ?? '';
+                $profissional->fk_id_aluno = $id;
+                $profissional->save();
+            }
+        }
+
+        // Atualiza o campo flag_perfil para indicar que o perfil foi cadastrado
+        DB::table('aluno')
+            ->where('alu_id', $id)
+            ->update(['flag_perfil' => 'S']);
+
         DB::commit();
 
         // Verifica se é uma requisição AJAX
@@ -69,12 +102,12 @@ class AtualizacaoPerfilController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Perfil atualizado com sucesso!',
-                'redirect' => url()->previous()
+                'redirect' => route('alunos')
             ]);
         }
         
-        // Redireciona para a tela anterior (formulário de edição) para requisições normais
-        return redirect()->back()->with('success', 'Perfil atualizado com sucesso!');
+        // Redireciona para a lista de alunos para requisições normais
+        return redirect()->route('alunos')->with('success', 'Perfil atualizado com sucesso!');
 
     } catch (\Exception $e) {
         DB::rollBack();

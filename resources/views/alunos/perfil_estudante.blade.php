@@ -198,7 +198,7 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-4">
                         <label>CID</label>
-                        <input type="text" name="cid" class="form-control" style="min-width:350px;width:100%;">
+                        <input type="text" name="cid" class="form-control" maxlength="50" style="min-width:350px;width:100%;">
                     </div>
                     <div class="form-group col-12">
                         <label>Médico</label>
