@@ -23,12 +23,21 @@ class AtualizacaoPerfilController extends Controller
 
         // Atualiza perfil_estudante
         $perfil = \App\Models\PerfilEstudante::firstOrNew(['fk_id_aluno' => $id]);
-        $perfil->fill($request->only([
+        
+        // Obtém os dados do request
+        $dadosPerfil = $request->only([
             'diag_laudo', 'cid', 'nome_medico', 'data_laudo', 'nivel_suporte',
             'uso_medicamento', 'quais_medicamento', 'nec_pro_apoio', 'prof_apoio',
             'loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05', 'out_momentos',
-            'at_especializado', 'nome_prof_AEE', 'fk_id_aluno', 'update_count'
-        ]));
+            'at_especializado', 'nome_prof_AEE', 'update_count'
+        ]);
+        
+        // Define valor padrão para nivel_suporte se não estiver preenchido
+        if (empty($dadosPerfil['nivel_suporte'])) {
+            $dadosPerfil['nivel_suporte'] = 1; // Valor padrão: Nível 1 - Exige pouco apoio
+        }
+        
+        $perfil->fill($dadosPerfil);
         $perfil->fk_id_aluno = $id;
         $perfil->save();
 
@@ -102,12 +111,12 @@ class AtualizacaoPerfilController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Perfil atualizado com sucesso!',
-                'redirect' => route('alunos')
+                'redirect' => route('perfil.estudante.mostrar', $id)
             ]);
         }
         
-        // Redireciona para a lista de alunos para requisições normais
-        return redirect()->route('alunos')->with('success', 'Perfil atualizado com sucesso!');
+        // Redireciona de volta para a página do perfil do estudante
+        return redirect()->route('perfil.estudante.mostrar', $id)->with('success', 'Perfil atualizado com sucesso!');
 
     } catch (\Exception $e) {
         DB::rollBack();
