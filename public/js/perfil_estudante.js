@@ -355,6 +355,15 @@ class PerfilEstudanteForm {
         // Mapeia os checkboxes de momentos_apoio[] para os campos específicos do backend
         this.mapearMomentosApoio(formData);
         
+        // Mapeia os campos da aba Personalidade
+        this.mapearCamposPersonalidade(formData);
+        
+        // Mapeia os campos da aba Comunicação
+        this.mapearCamposComunicacao(formData);
+        
+        // Mapeia os campos da aba Preferências
+        this.mapearCamposPreferencias(formData);
+        
         // Campos obrigatórios que devem ter valor zero se não preenchidos
         const camposZero = ['loc_01', 'hig_02', 'ali_03', 'com_04', 'out_05'];
         camposZero.forEach(campo => {
@@ -450,6 +459,199 @@ class PerfilEstudanteForm {
             com_04: formData.get('com_04'),
             out_05: formData.get('out_05'),
             out_momentos: formData.get('out_momentos')
+        });
+    }
+    
+    // Mapeia os campos da aba Personalidade para os campos esperados pelo backend
+    mapearCamposPersonalidade(formData) {
+        // Mapeamento entre os campos do formulário e os campos do modelo
+        const mapeamento = {
+            'principais_caracteristicas': 'carac_principal',
+            'areas_interesse': 'inter_princ_carac',
+            'atividades_livre': 'livre_gosta_fazer',
+            'feliz': 'feliz_est',
+            'triste': 'trist_est',
+            'objeto_apego': 'obj_apego'
+        };
+        
+        // Realiza o mapeamento dos campos
+        Object.entries(mapeamento).forEach(([campoFormulario, campoModelo]) => {
+            const valor = formData.get(campoFormulario);
+            
+            // Se o campo existe no formulário, mapeia para o campo do modelo
+            if (valor !== null && valor !== undefined) {
+                formData.set(campoModelo, valor);
+            } else {
+                // Se não existe, inicializa com string vazia para evitar null
+                formData.set(campoModelo, '');
+            }
+            
+            // Log para debug
+            console.log(`Mapeamento de ${campoFormulario} para ${campoModelo}:`, formData.get(campoModelo));
+        });
+    }
+    
+    // Mapeia os campos da aba Comunicação para os campos esperados pelo backend
+    mapearCamposComunicacao(formData) {
+        // Neste caso, os nomes dos campos já correspondem aos nomes esperados pelo modelo
+        // Mas precisamos garantir que os valores sejam tratados corretamente
+        
+        // Campos booleanos que devem ser '0' ou '1'
+        const camposBooleanos = ['precisa_comunicacao', 'entende_instrucao'];
+        camposBooleanos.forEach(campo => {
+            const valor = formData.get(campo);
+            
+            // Se o campo não existe ou é nulo, define como '0'
+            if (!formData.has(campo) || valor === null || valor === undefined || valor === '') {
+                formData.set(campo, '0');
+            }
+        });
+        
+        // Campo de texto que deve ser string vazia se nulo
+        const valorRecomenda = formData.get('recomenda_instrucao');
+        if (valorRecomenda === null || valorRecomenda === undefined) {
+            formData.set('recomenda_instrucao', '');
+        }
+        
+        // Log para debug
+        console.log('Mapeamento de campos de Comunicação:', {
+            precisa_comunicacao: formData.get('precisa_comunicacao'),
+            entende_instrucao: formData.get('entende_instrucao'),
+            recomenda_instrucao: formData.get('recomenda_instrucao')
+        });
+    }
+    
+    // Mapeia os campos da aba Preferências para os campos esperados pelo backend
+    mapearCamposPreferencias(formData) {
+        // Mapeamento dos campos de texto
+        const mapeamentoTexto = {
+            'manejo_sensibilidade': 'maneja_04',
+            'alimentos_preferidos': 'alimentos_pref_04',
+            'alimentos_evita': 'alimento_evita_04',
+            'afinidade_escola': 'contato_pc_04',
+            'reage_contato': 'reage_contato',
+            'ajuda_dificulta_interacao': 'interacao_escola_04',
+            'interesses_especificos': 'interesse_atividade_04',
+            'gosta_grupo_sozinho': 'prefere_ts_04',
+            'estrategias_eficazes': 'mostram_eficazes_04',
+            'interesse_tarefa': 'realiza_tarefa_04'
+        };
+        
+        // Mapeia os campos de texto
+        Object.entries(mapeamentoTexto).forEach(([campoFormulario, campoModelo]) => {
+            const valor = formData.get(campoFormulario);
+            
+            // Se o campo existe no formulário, mapeia para o campo do modelo
+            if (valor !== null && valor !== undefined) {
+                formData.set(campoModelo, valor);
+            } else {
+                // Se não existe, inicializa com string vazia para evitar null
+                formData.set(campoModelo, '');
+            }
+            
+            // Log para debug
+            console.log(`Mapeamento de ${campoFormulario} para ${campoModelo}:`, formData.get(campoModelo));
+        });
+        
+        // Mapeia o campo seletividade_alimentar para asa_04
+        const valorSeletividade = formData.get('seletividade_alimentar');
+        if (valorSeletividade !== null && valorSeletividade !== undefined && valorSeletividade !== '') {
+            formData.set('asa_04', valorSeletividade);
+        } else {
+            formData.set('asa_04', '0');
+        }
+        
+        // Mapeia os checkboxes de sensibilidade[] para os campos específicos
+        this.mapearSensibilidade(formData);
+        
+        // Mapeia os checkboxes de como_aprende_melhor[] para os campos específicos
+        this.mapearComoAprendeMelhor(formData);
+        
+        // Log para debug
+        console.log('Mapeamento de campos de Preferências concluído');
+    }
+    
+    // Mapeia os checkboxes de sensibilidade[] para os campos específicos
+    mapearSensibilidade(formData) {
+        // Inicializa os campos com '0'
+        formData.set('auditivo_04', '0');
+        formData.set('visual_04', '0');
+        formData.set('tatil_04', '0');
+        formData.set('outros_04', '0');
+        
+        // Obtém os valores marcados
+        const sensibilidades = formData.getAll('sensibilidade[]');
+        
+        // Mapeia cada valor para o campo correspondente
+        if (sensibilidades.includes('auditiva')) {
+            formData.set('auditivo_04', '1');
+        }
+        
+        if (sensibilidades.includes('visual')) {
+            formData.set('visual_04', '1');
+        }
+        
+        if (sensibilidades.includes('tatil')) {
+            formData.set('tatil_04', '1');
+        }
+        
+        if (sensibilidades.includes('outros')) {
+            formData.set('outros_04', '1');
+        }
+        
+        // Log para debug
+        console.log('Mapeamento de sensibilidade[]:', {
+            auditivo_04: formData.get('auditivo_04'),
+            visual_04: formData.get('visual_04'),
+            tatil_04: formData.get('tatil_04'),
+            outros_04: formData.get('outros_04')
+        });
+    }
+    
+    // Mapeia os checkboxes de como_aprende_melhor[] para os campos específicos
+    mapearComoAprendeMelhor(formData) {
+        // Inicializa os campos com '0'
+        formData.set('aprende_visual_04', '0');
+        formData.set('recurso_auditivo_04', '0');
+        formData.set('material_concreto_04', '0');
+        formData.set('outro_identificar_04', '0');
+        
+        // Obtém os valores marcados
+        const comoAprende = formData.getAll('como_aprende_melhor[]');
+        
+        // Mapeia cada valor para o campo correspondente
+        if (comoAprende.includes('visual')) {
+            formData.set('aprende_visual_04', '1');
+        }
+        
+        if (comoAprende.includes('auditivo')) {
+            formData.set('recurso_auditivo_04', '1');
+        }
+        
+        if (comoAprende.includes('concreto')) {
+            formData.set('material_concreto_04', '1');
+        }
+        
+        if (comoAprende.includes('outro')) {
+            formData.set('outro_identificar_04', '1');
+        }
+        
+        // Campo de texto associado ao checkbox 'outro'
+        // Se houver um campo para descrever o 'outro', mapear aqui
+        const descricaoOutro = formData.get('descricao_outro_aprendizado');
+        if (descricaoOutro !== null && descricaoOutro !== undefined) {
+            formData.set('descricao_outro_identificar_04', descricaoOutro);
+        } else {
+            formData.set('descricao_outro_identificar_04', '');
+        }
+        
+        // Log para debug
+        console.log('Mapeamento de como_aprende_melhor[]:', {
+            aprende_visual_04: formData.get('aprende_visual_04'),
+            recurso_auditivo_04: formData.get('recurso_auditivo_04'),
+            material_concreto_04: formData.get('material_concreto_04'),
+            outro_identificar_04: formData.get('outro_identificar_04'),
+            descricao_outro_identificar_04: formData.get('descricao_outro_identificar_04')
         });
     }
 }
