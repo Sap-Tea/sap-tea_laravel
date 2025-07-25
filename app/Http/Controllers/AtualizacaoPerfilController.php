@@ -19,6 +19,12 @@ class AtualizacaoPerfilController extends Controller
     public function AtualizaPerfil(Request $request, $id)
 {
     try {
+        // Log para depuração
+        Log::info('Dados recebidos para atualização do perfil:', [
+            'id' => $id,
+            'request_all' => $request->all()
+        ]);
+        
         DB::beginTransaction();
 
         // Atualiza perfil_estudante

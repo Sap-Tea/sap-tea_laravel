@@ -10,6 +10,7 @@ use App\Http\Controllers\PerfilEstudanteController;
 use App\Http\Controllers\EnsinoController;
 use App\Http\Controllers\AlunoController;
 use App\Http\Controllers\AtualizaPerfinEstudante;
+use App\Http\Controllers\VisualizaPerfilController;
 use App\Http\Controllers\ImprimeAlunoController;
 use App\Http\Controllers\InserirPerfilEstudante;
 use App\Http\Controllers\AtualizacaoController;
@@ -195,7 +196,8 @@ Route::middleware(['auth:funcionario', 'funcao.especial'])->prefix('sondagem')->
     // Rotas de perfil
     Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.index');
     Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])->name('perfil.estudante.mostrar');
-    Route::get('/visualizar-perfil/{id}', [AtualizaPerfinEstudante::class, 'atualizaPerfil'])->name('visualizar.perfil');
+    Route::get('/visualizar-perfil/{id}', [VisualizaPerfilController::class, 'visualizaPerfil'])->name('visualizar.perfil');
+    Route::get('/editar-perfil/{id}', [VisualizaPerfilController::class, 'editaPerfil'])->name('editar.perfil');
     Route::put('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
     Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
     Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
