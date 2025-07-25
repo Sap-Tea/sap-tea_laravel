@@ -198,11 +198,11 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-4">
                         <label>CID</label>
-                        <input type="text" name="cid" class="form-control" maxlength="50" style="min-width:350px;width:100%;">
+                        <input type="text" name="cid" class="form-control" maxlength="20" style="min-width:350px;width:100%;">
                     </div>
                     <div class="form-group col-12">
                         <label>Médico</label>
-                        <input type="text" name="nome_medico" class="form-control" style="width:100%;min-width:350px;">
+                        <input type="text" name="nome_medico" class="form-control" maxlength="255" style="width:100%;min-width:350px;">
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
@@ -227,7 +227,7 @@
                     </div>
                     <div class="form-group col-12">
                         <label>Quais?</label>
-                        <input type="text" name="quais_medicamento" class="form-control" style="width:100%;min-width:350px;">
+                        <input type="text" name="quais_medicamento" class="form-control" maxlength="255" style="width:100%;min-width:350px;">
                     </div>
                 </div>
 
@@ -260,7 +260,7 @@
                         <input type="checkbox" id="momento_comunicacao" name="momentos_apoio[]" value="comunicacao"><label for="momento_comunicacao">Comunicação</label>
                         <input type="checkbox" id="momento_outros" name="momentos_apoio[]" value="outros"><label for="momento_outros">Outros momentos</label>
                     </div>
-                    <input type="text" name="outros_momentos_apoio" placeholder="Quais outros momentos?" class="form-control" style="width:100%;min-width:500px;margin-top: 5px;">
+                    <input type="text" name="outros_momentos_apoio" placeholder="Quais outros momentos?" class="form-control" maxlength="65535" style="width:100%;min-width:500px;margin-top: 5px;">
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-6">
@@ -273,7 +273,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label>Nome do profissional do AEE:</label>
-                        <input type="text" name="nome_prof_AEE" class="form-control" style="width:100%;min-width:500px;">
+                        <input type="text" name="nome_prof_AEE" class="form-control" maxlength="255" style="width:100%;min-width:500px;">
                     </div>
                 </div>
 
@@ -286,37 +286,37 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Principais características:</label>
-                        <textarea rows="3" name="principais_caracteristicas" class="form-control"></textarea>
+                        <textarea rows="3" name="principais_caracteristicas" class="form-control" maxlength="65535"></textarea>
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Principais áreas de interesse (brinquedos, jogos, temas, etc.):</label>
-                        <textarea rows="3" name="areas_interesse" class="form-control"></textarea>
+                        <textarea rows="3" name="areas_interesse" class="form-control" maxlength="65535"></textarea>
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>O que gosta de fazer no tempo livre?</label>
-                        <textarea rows="3" name="atividades_livre" class="form-control"></textarea>
+                        <textarea rows="3" name="atividades_livre" class="form-control" maxlength="65535"></textarea>
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>O que deixa o estudante muito feliz?</label>
-                        <textarea rows="3" name="feliz" class="form-control"></textarea>
+                        <textarea rows="3" name="feliz" class="form-control" maxlength="65535"></textarea>
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>O que deixa o estudante muito triste ou desconfortável?</label>
-                        <textarea rows="3" name="triste" class="form-control"></textarea>
+                        <textarea rows="3" name="triste" class="form-control" maxlength="65535"></textarea>
                     </div>
                 </div>
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Objeto de apego? Qual?</label>
-                        <textarea rows="3" name="objeto_apego" class="form-control"></textarea>
+                        <textarea rows="3" name="objeto_apego" class="form-control" maxlength="65535"></textarea>
                     </div>
                 </div>
             </div>
@@ -345,7 +345,7 @@
                 <div class="row custom-row-gap align-items-end">
                     <div class="form-group col-md-12">
                         <label>Caso não, como você recomenda dar instruções?</label>
-                        <textarea rows="3" name="recomenda_instrucao" class="form-control"></textarea>
+                        <textarea rows="3" name="recomenda_instrucao" class="form-control" maxlength="65535"></textarea>
                     </div>
                 </div>
             </div>

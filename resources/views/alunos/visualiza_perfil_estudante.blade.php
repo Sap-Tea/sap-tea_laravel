@@ -490,31 +490,67 @@
     <div class="step-content form-section" data-step="4">
         <div class="section-title">III - Comunicação</div>
         <div class="form-group">
-            <label>Forma de comunicação:</label>
+            <label>Precisa de comunicação alternativa para se expressar?</label>
             @if($modo == 'editar')
-                <textarea name="forma_comunicacao" class="form-control" rows="3" maxlength="65535">{{ $comunicacao->forma_comunicacao ?? '' }}</textarea>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="precisa_comunicacao" id="precisa_comunicacao_sim" value="1" {{ $comunicacao->precisa_comunicacao == 1 ? 'checked' : '' }}>
+                        <label class="form-check-label" for="precisa_comunicacao_sim">Sim</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="precisa_comunicacao" id="precisa_comunicacao_nao" value="0" {{ $comunicacao->precisa_comunicacao == 0 ? 'checked' : '' }}>
+                        <label class="form-check-label" for="precisa_comunicacao_nao">Não</label>
+                    </div>
+                </div>
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $comunicacao->forma_comunicacao ?? 'Não informado' }}</div>
+                <div class="readonly-value">
+                    @if($comunicacao->precisa_comunicacao === 1)
+                        Sim
+                    @elseif($comunicacao->precisa_comunicacao === 0)
+                        Não
+                    @else
+                        Não informado
+                    @endif
+                </div>
             @endif
         </div>
         
         <div class="form-group">
-            <label>Compreensão da comunicação:</label>
+            <label>Entende instruções dadas de forma verbal?</label>
             @if($modo == 'editar')
-                <textarea name="compreensao_comunicacao" class="form-control" rows="3">{{ $comunicacao->compreensao_comunicacao ?? '' }}</textarea>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="entende_instrucao" id="entende_instrucao_sim" value="1" {{ $comunicacao->entende_instrucao == 1 ? 'checked' : '' }}>
+                        <label class="form-check-label" for="entende_instrucao_sim">Sim</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="entende_instrucao" id="entende_instrucao_nao" value="0" {{ $comunicacao->entende_instrucao == 0 ? 'checked' : '' }}>
+                        <label class="form-check-label" for="entende_instrucao_nao">Não</label>
+                    </div>
+                </div>
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $comunicacao->compreensao_comunicacao ?? 'Não informado' }}</div>
+                <div class="readonly-value">
+                    @if($comunicacao->entende_instrucao === 1)
+                        Sim
+                    @elseif($comunicacao->entende_instrucao === 0)
+                        Não
+                    @else
+                        Não informado
+                    @endif
+                </div>
             @endif
         </div>
         
         <div class="form-group">
-            <label>Expressão da comunicação:</label>
+            <label>Recomendação para instruções (caso não entenda):</label>
             @if($modo == 'editar')
-                <textarea name="expressao_comunicacao" class="form-control" rows="3">{{ $comunicacao->expressao_comunicacao ?? '' }}</textarea>
+                <textarea name="recomenda_instrucao" class="form-control" rows="3" maxlength="255">{{ $comunicacao->recomenda_instrucao ?? '' }}</textarea>
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $comunicacao->expressao_comunicacao ?? 'Não informado' }}</div>
+                <div class="readonly-value" style="min-height: 80px;">{{ $comunicacao->recomenda_instrucao ?? 'Não informado' }}</div>
             @endif
         </div>
+        
+        <!-- Campo expressao_comunicacao removido pois não existe na tabela comunicacao -->
     </div>
     
     <!-- Etapa 5: Preferências -->
@@ -525,56 +561,163 @@
             @if($modo == 'editar')
                 <div class="checkbox-group">
                     <div class="form-check">
-                        <input type="checkbox" id="sensibilidade_auditiva" name="sensibilidade_auditiva" value="1" {{ $preferencia->sensibilidade_auditiva == 1 ? 'checked' : '' }}>
-                        <label for="sensibilidade_auditiva">Auditiva</label>
+                        <input type="checkbox" id="auditivo_04" name="auditivo_04" value="1" {{ $preferencia->auditivo_04 == 1 ? 'checked' : '' }}>
+                        <label for="auditivo_04">Auditiva</label>
                     </div>
                     <div class="form-check">
-                        <input type="checkbox" id="sensibilidade_tatil" name="sensibilidade_tatil" value="1" {{ $preferencia->sensibilidade_tatil == 1 ? 'checked' : '' }}>
-                        <label for="sensibilidade_tatil">Tátil</label>
+                        <input type="checkbox" id="visual_04" name="visual_04" value="1" {{ $preferencia->visual_04 == 1 ? 'checked' : '' }}>
+                        <label for="visual_04">Visual</label>
                     </div>
                     <div class="form-check">
-                        <input type="checkbox" id="sensibilidade_visual" name="sensibilidade_visual" value="1" {{ $preferencia->sensibilidade_visual == 1 ? 'checked' : '' }}>
-                        <label for="sensibilidade_visual">Visual</label>
+                        <input type="checkbox" id="tatil_04" name="tatil_04" value="1" {{ $preferencia->tatil_04 == 1 ? 'checked' : '' }}>
+                        <label for="tatil_04">Tátil</label>
                     </div>
                     <div class="form-check">
-                        <input type="checkbox" id="sensibilidade_olfativa" name="sensibilidade_olfativa" value="1" {{ $preferencia->sensibilidade_olfativa == 1 ? 'checked' : '' }}>
-                        <label for="sensibilidade_olfativa">Olfativa</label>
+                        <input type="checkbox" id="outros_04" name="outros_04" value="1" {{ $preferencia->outros_04 == 1 ? 'checked' : '' }}>
+                        <label for="outros_04">Outros</label>
                     </div>
-                    <div class="form-check">
-                        <input type="checkbox" id="sensibilidade_gustativa" name="sensibilidade_gustativa" value="1" {{ $preferencia->sensibilidade_gustativa == 1 ? 'checked' : '' }}>
-                        <label for="sensibilidade_gustativa">Gustativa</label>
-                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label>Quais?</label>
+                    <input type="text" name="maneja_04" class="form-control" value="{{ $preferencia->maneja_04 ?? '' }}" maxlength="255">
                 </div>
             @else
                 <div class="readonly-value">
                     @php
                         $sensibilidades = [];
-                        if($preferencia->sensibilidade_auditiva == 1) $sensibilidades[] = 'Auditiva';
-                        if($preferencia->sensibilidade_tatil == 1) $sensibilidades[] = 'Tátil';
-                        if($preferencia->sensibilidade_visual == 1) $sensibilidades[] = 'Visual';
-                        if($preferencia->sensibilidade_olfativa == 1) $sensibilidades[] = 'Olfativa';
-                        if($preferencia->sensibilidade_gustativa == 1) $sensibilidades[] = 'Gustativa';
+                        if($preferencia->auditivo_04 == 1) $sensibilidades[] = 'Auditiva';
+                        if($preferencia->visual_04 == 1) $sensibilidades[] = 'Visual';
+                        if($preferencia->tatil_04 == 1) $sensibilidades[] = 'Tátil';
+                        if($preferencia->outros_04 == 1) {
+                            $outros = $preferencia->maneja_04 ? 'Outros: ' . $preferencia->maneja_04 : 'Outros';
+                            $sensibilidades[] = $outros;
+                        }
                     @endphp
-                    {{ count($sensibilidades) > 0 ? implode(', ', $sensibilidades) : 'Nenhuma sensibilidade selecionada' }}
+                    {{ count($sensibilidades) > 0 ? implode(', ', $sensibilidades) : 'Nenhuma sensibilidade informada' }}
                 </div>
             @endif
         </div>
         
         <div class="form-group">
-            <label>Preferências:</label>
+            <label>Alimentos preferidos:</label>
             @if($modo == 'editar')
-                <textarea name="preferencias" class="form-control" rows="3">{{ $preferencia->preferencias ?? '' }}</textarea>
+                <textarea name="alimentos_pref_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->alimentos_pref_04 ?? '' }}</textarea>
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->preferencias ?? 'Não informado' }}</div>
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->alimentos_pref_04 ?? 'Não informado' }}</div>
             @endif
         </div>
         
         <div class="form-group">
-            <label>Dificuldades:</label>
+            <label>Alimentos que evita:</label>
             @if($modo == 'editar')
-                <textarea name="dificuldades" class="form-control" rows="3">{{ $preferencia->dificuldades ?? '' }}</textarea>
+                <textarea name="alimento_evita_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->alimento_evita_04 ?? '' }}</textarea>
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->dificuldades ?? 'Não informado' }}</div>
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->alimento_evita_04 ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Contato com o PC (como lida):</label>
+            @if($modo == 'editar')
+                <textarea name="contato_pc_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->contato_pc_04 ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->contato_pc_04 ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Como reage ao contato físico:</label>
+            @if($modo == 'editar')
+                <textarea name="reage_contato" class="form-control" rows="3" maxlength="65535">{{ $preferencia->reage_contato ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->reage_contato ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Interação na escola:</label>
+            @if($modo == 'editar')
+                <textarea name="interacao_escola_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->interacao_escola_04 ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->interacao_escola_04 ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Interesse nas atividades:</label>
+            @if($modo == 'editar')
+                <textarea name="interesse_atividade_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->interesse_atividade_04 ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->interesse_atividade_04 ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Estratégias que se mostram eficazes:</label>
+            @if($modo == 'editar')
+                <textarea name="mostram_eficazes_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->mostram_eficazes_04 ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->mostram_eficazes_04 ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Como realiza as tarefas:</label>
+            @if($modo == 'editar')
+                <textarea name="realiza_tarefa_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->realiza_tarefa_04 ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->realiza_tarefa_04 ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Preferências de aprendizado:</label>
+            @if($modo == 'editar')
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input type="checkbox" id="aprende_visual_04" name="aprende_visual_04" value="1" {{ $preferencia->aprende_visual_04 == 1 ? 'checked' : '' }}>
+                        <label for="aprende_visual_04">Visual</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="recurso_auditivo_04" name="recurso_auditivo_04" value="1" {{ $preferencia->recurso_auditivo_04 == 1 ? 'checked' : '' }}>
+                        <label for="recurso_auditivo_04">Auditivo</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="material_concreto_04" name="material_concreto_04" value="1" {{ $preferencia->material_concreto_04 == 1 ? 'checked' : '' }}>
+                        <label for="material_concreto_04">Material Concreto</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="outro_identificar_04" name="outro_identificar_04" value="1" {{ $preferencia->outro_identificar_04 == 1 ? 'checked' : '' }}>
+                        <label for="outro_identificar_04">Outro</label>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label>Descreva o outro método de aprendizado:</label>
+                    <input type="text" name="descricao_outro_identificar_04" class="form-control" value="{{ $preferencia->descricao_outro_identificar_04 ?? '' }}" maxlength="65535">
+                </div>
+            @else
+                <div class="readonly-value">
+                    @php
+                        $metodos = [];
+                        if($preferencia->aprende_visual_04 == 1) $metodos[] = 'Visual';
+                        if($preferencia->recurso_auditivo_04 == 1) $metodos[] = 'Auditivo';
+                        if($preferencia->material_concreto_04 == 1) $metodos[] = 'Material Concreto';
+                        if($preferencia->outro_identificar_04 == 1) {
+                            $outro = $preferencia->descricao_outro_identificar_04 ? 'Outro: ' . $preferencia->descricao_outro_identificar_04 : 'Outro';
+                            $metodos[] = $outro;
+                        }
+                    @endphp
+                    {{ count($metodos) > 0 ? implode(', ', $metodos) : 'Nenhum método de aprendizado informado' }}
+                </div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Prefere trabalhar em dupla/grupo ou individualmente?</label>
+            @if($modo == 'editar')
+                <textarea name="prefere_ts_04" class="form-control" rows="3" maxlength="65535">{{ $preferencia->prefere_ts_04 ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $preferencia->prefere_ts_04 ?? 'Não informado' }}</div>
             @endif
         </div>
     </div>
@@ -585,18 +728,27 @@
         <div class="form-group">
             <label>Há expectativas expressas da família em relação ao desempenho e a inclusão do estudante na sala de aula?</label>
             @if($modo == 'editar')
-                <textarea name="expectativas_familia" class="form-control" rows="3">{{ $perfilFamilia->expectativas_familia ?? '' }}</textarea>
+                <textarea name="expectativa_05" class="form-control" rows="3" maxlength="65535">{{ $perfilFamilia->expectativa_05 ?? '' }}</textarea>
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $perfilFamilia->expectativas_familia ?? 'Não informado' }}</div>
+                <div class="readonly-value" style="min-height: 80px;">{{ $perfilFamilia->expectativa_05 ?? 'Não informado' }}</div>
             @endif
         </div>
         
         <div class="form-group">
-            <label>Como a família participa da vida escolar do estudante?</label>
+            <label>Quais estratégias a família utiliza para lidar com o estudante em situações de crise?</label>
             @if($modo == 'editar')
-                <textarea name="participacao_familia" class="form-control" rows="3">{{ $perfilFamilia->participacao_familia ?? '' }}</textarea>
+                <textarea name="estrategia_05" class="form-control" rows="3" maxlength="65535">{{ $perfilFamilia->estrategia_05 ?? '' }}</textarea>
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $perfilFamilia->participacao_familia ?? 'Não informado' }}</div>
+                <div class="readonly-value" style="min-height: 80px;">{{ $perfilFamilia->estrategia_05 ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Como a família descreve o estudante em situações de crise?</label>
+            @if($modo == 'editar')
+                <textarea name="crise_esta_05" class="form-control" rows="3" maxlength="65535">{{ $perfilFamilia->crise_esta_05 ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $perfilFamilia->crise_esta_05 ?? 'Não informado' }}</div>
             @endif
         </div>
     </div>
@@ -605,20 +757,38 @@
     <div class="step-content form-section" data-step="7">
         <div class="section-title">Cadastro de Profissionais</div>
         <div class="form-group">
-            <label>Nome do profissional AEE:</label>
+            <label>Nome do profissional:</label>
             @if($modo == 'editar')
-                <input type="text" name="nome_prof_AEE" class="form-control" value="{{ $perfilProfissional->nome_prof_AEE ?? '' }}">
+                <input type="text" name="nome_profissional" class="form-control" value="{{ $perfilProfissional->nome_profissional ?? '' }}" maxlength="250">
             @else
-                <div class="readonly-value">{{ $perfilProfissional->nome_prof_AEE ?? 'Não informado' }}</div>
+                <div class="readonly-value">{{ $perfilProfissional->nome_profissional ?? 'Não informado' }}</div>
             @endif
         </div>
         
         <div class="form-group">
-            <label>Observações adicionais:</label>
+            <label>Especialidade do profissional:</label>
             @if($modo == 'editar')
-                <textarea name="observacoes" class="form-control" rows="3">{{ $perfilProfissional->observacoes ?? '' }}</textarea>
+                <input type="text" name="especialidade_profissional" class="form-control" value="{{ $perfilProfissional->especialidade_profissional ?? '' }}" maxlength="250">
             @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $perfilProfissional->observacoes ?? 'Não informado' }}</div>
+                <div class="readonly-value">{{ $perfilProfissional->especialidade_profissional ?? 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Data do cadastro:</label>
+            @if($modo == 'editar')
+                <input type="date" name="data_cadastro_profissional" class="form-control" value="{{ $perfilProfissional->data_cadastro_profissional ?? '' }}">
+            @else
+                <div class="readonly-value">{{ $perfilProfissional->data_cadastro_profissional ? \Carbon\Carbon::parse($perfilProfissional->data_cadastro_profissional)->format('d/m/Y') : 'Não informado' }}</div>
+            @endif
+        </div>
+        
+        <div class="form-group">
+            <label>Observações do profissional:</label>
+            @if($modo == 'editar')
+                <textarea name="observacoes_profissional" class="form-control" rows="3" maxlength="65535">{{ $perfilProfissional->observacoes_profissional ?? '' }}</textarea>
+            @else
+                <div class="readonly-value" style="min-height: 80px;">{{ $perfilProfissional->observacoes_profissional ?? 'Não informado' }}</div>
             @endif
         </div>
     </div>
