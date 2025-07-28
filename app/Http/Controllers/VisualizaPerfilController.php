@@ -30,7 +30,9 @@ class VisualizaPerfilController extends Controller
             $comunicacao = Comunicacao::where('fk_id_aluno', $id)->first();
             $preferencia = Preferencia::where('fk_id_aluno', $id)->first();
             $perfilFamilia = PerfilFamilia::where('fk_id_aluno', $id)->first();
-            $perfilProfissional = PerfilProfissional::where('fk_id_aluno', $id)->first();
+            // Busca todos os profissionais do aluno
+            $profissionais = PerfilProfissional::where('fk_id_aluno', $id)->get();
+            $perfilProfissional = $profissionais->first();
             
             // Se não existir perfil, cria objetos vazios para evitar erros na view
             if (!$perfil) $perfil = new PerfilEstudante();
@@ -49,6 +51,7 @@ class VisualizaPerfilController extends Controller
                 'preferencia' => $preferencia,
                 'perfilFamilia' => $perfilFamilia,
                 'perfilProfissional' => $perfilProfissional,
+                'profissionais' => $profissionais,
                 'modo' => 'visualizar'
             ]);
         } catch (\Exception $e) {

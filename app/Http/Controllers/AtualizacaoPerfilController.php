@@ -220,7 +220,7 @@ class AtualizacaoPerfilController extends Controller
     private function atualizarComunicacao($request, $id)
     {
         $model = Comunicacao::where('fk_id_aluno', $id)->firstOrFail();
-
+        
         $model->update([
             'precisa_comunicacao' => $request->precisa_comunicacao,
             'entende_instrucao' => $request->entende_instrucao,
@@ -233,9 +233,9 @@ class AtualizacaoPerfilController extends Controller
      */
     private function atualizarPreferencia($request, $id)
     {
-        $model = Preferencia::where('fk_id_aluno', $id)->firstOrFail();
+        $model = Preferencia::firstOrNew(['fk_id_aluno' => $id]);
 
-        $model->update([
+        $model->fill([
             'auditivo_04' => $request->has('auditivo_04') ? 1 : 0,
             'visual_04' => $request->has('visual_04') ? 1 : 0,
             'tatil_04' => $request->has('tatil_04') ? 1 : 0,
@@ -257,21 +257,7 @@ class AtualizacaoPerfilController extends Controller
             'mostram_eficazes_04' => $request->mostram_eficazes_04,
             'prefere_ts_04' => $request->prefere_ts_04
         ]);
-    }
-
-    /**
-     * Atualiza ou cria os dados na tabela PerfilFamilia.
-     */
-    private function atualizarPerfilFamilia($request, $id)
-    {
-        PerfilFamilia::updateOrCreate(
-            ['fk_id_aluno' => $id],
-            [
-                'expectativa_05' => $request->expectativa_05,
-                'estrategia_05' => $request->estrategia_05,
-                'crise_esta_05' => $request->crise_esta_05
-            ]
-        );
+        $model->fk_id_aluno = $id;
+        $model->save();
     }
 }
-

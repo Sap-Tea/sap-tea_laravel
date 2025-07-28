@@ -834,41 +834,62 @@
     <!-- Etapa 7: Cadastro de Profissionais -->
     <div class="step-content form-section" data-step="7">
         <div class="section-title">Cadastro de Profissionais</div>
-        <div class="form-group">
-            <label>Nome do profissional:</label>
-            @if($modo == 'editar')
-                <input type="text" name="nome_profissional" class="form-control" value="{{ $perfilProfissional->nome_profissional ?? '' }}" maxlength="250">
-            @else
-                <div class="readonly-value">{{ $perfilProfissional->nome_profissional ?? 'Não informado' }}</div>
-            @endif
-        </div>
-        
-        <div class="form-group">
-            <label>Especialidade do profissional:</label>
-            @if($modo == 'editar')
-                <input type="text" name="especialidade_profissional" class="form-control" value="{{ $perfilProfissional->especialidade_profissional ?? '' }}" maxlength="250">
-            @else
-                <div class="readonly-value">{{ $perfilProfissional->especialidade_profissional ?? 'Não informado' }}</div>
-            @endif
-        </div>
-        
-        <div class="form-group">
-            <label>Data do cadastro:</label>
-            @if($modo == 'editar')
-                <input type="date" name="data_cadastro_profissional" class="form-control" value="{{ $perfilProfissional->data_cadastro_profissional ?? '' }}">
-            @else
-                <div class="readonly-value">{{ $perfilProfissional->data_cadastro_profissional ? \Carbon\Carbon::parse($perfilProfissional->data_cadastro_profissional)->format('d/m/Y') : 'Não informado' }}</div>
-            @endif
-        </div>
-        
-        <div class="form-group">
-            <label>Observações do profissional:</label>
-            @if($modo == 'editar')
-                <textarea name="observacoes_profissional" class="form-control" rows="3" maxlength="65535">{{ $perfilProfissional->observacoes_profissional ?? '' }}</textarea>
-            @else
-                <div class="readonly-value" style="min-height: 80px;">{{ $perfilProfissional->observacoes_profissional ?? 'Não informado' }}</div>
-            @endif
-        </div>
+        @if($modo == 'editar')
+            {{-- Modo edição permanece igual --}}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr style="background-color: #e9ecef;">
+                            <th style="text-align: center;">Nome do Profissional</th>
+                            <th style="text-align: center;">Especialidade/Área</th>
+                            <th style="text-align: center;">Observações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" name="nome_profissional_01" class="form-control" value="{{ old('nome_profissional_01', $profissionais[0]->nome_profissional ?? '') }}"></td>
+                            <td><input type="text" name="especialidade_profissional_01" class="form-control" value="{{ old('especialidade_profissional_01', $profissionais[0]->especialidade_profissional ?? '') }}"></td>
+                            <td><input type="text" name="observacoes_profissional_01" class="form-control" value="{{ old('observacoes_profissional_01', $profissionais[0]->observacoes_profissional ?? '') }}"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" name="nome_profissional_02" class="form-control" value="{{ old('nome_profissional_02', $profissionais[1]->nome_profissional ?? '') }}"></td>
+                            <td><input type="text" name="especialidade_profissional_02" class="form-control" value="{{ old('especialidade_profissional_02', $profissionais[1]->especialidade_profissional ?? '') }}"></td>
+                            <td><input type="text" name="observacoes_profissional_02" class="form-control" value="{{ old('observacoes_profissional_02', $profissionais[1]->observacoes_profissional ?? '') }}"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" name="nome_profissional_03" class="form-control" value="{{ old('nome_profissional_03', $profissionais[2]->nome_profissional ?? '') }}"></td>
+                            <td><input type="text" name="especialidade_profissional_03" class="form-control" value="{{ old('especialidade_profissional_03', $profissionais[2]->especialidade_profissional ?? '') }}"></td>
+                            <td><input type="text" name="observacoes_profissional_03" class="form-control" value="{{ old('observacoes_profissional_03', $profissionais[2]->observacoes_profissional ?? '') }}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr style="background-color: #e9ecef;">
+                            <th style="text-align: center;">Nome do Profissional</th>
+                            <th style="text-align: center;">Especialidade/Área</th>
+                            <th style="text-align: center;">Observações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($profissionais as $prof)
+                            <tr>
+                                <td>{{ $prof->nome_profissional ?? 'Não informado' }}</td>
+                                <td>{{ $prof->especialidade_profissional ?? 'Não informado' }}</td>
+                                <td>{{ $prof->observacoes_profissional ?? 'Não informado' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center">Nenhum profissional cadastrado</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
     
     @if($modo == 'editar')
