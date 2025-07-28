@@ -671,17 +671,12 @@
                 </div>
             @else
                 <div class="readonly-value">
-                    @php
-                        $sensibilidades = [];
-                        if($preferencia->auditivo_04 == 1) $sensibilidades[] = 'Auditiva';
-                        if($preferencia->visual_04 == 1) $sensibilidades[] = 'Visual';
-                        if($preferencia->tatil_04 == 1) $sensibilidades[] = 'Tátil';
-                        if($preferencia->outros_04 == 1) {
-                            $outros = $preferencia->maneja_04 ? 'Outros: ' . $preferencia->maneja_04 : 'Outros';
-                            $sensibilidades[] = $outros;
-                        }
-                    @endphp
-                    {{ count($sensibilidades) > 0 ? implode(', ', $sensibilidades) : 'Nenhuma sensibilidade informada' }}
+                    <ul class="list-unstyled mb-0">
+                        <li>Auditiva: <strong>{{ $preferencia->auditivo_04 == 1 ? 'Sim' : 'Não' }}</strong></li>
+                        <li>Visual: <strong>{{ $preferencia->visual_04 == 1 ? 'Sim' : 'Não' }}</strong></li>
+                        <li>Tátil: <strong>{{ $preferencia->tatil_04 == 1 ? 'Sim' : 'Não' }}</strong></li>
+                        <li>Outros: <strong>{{ $preferencia->outros_04 == 1 ? ($preferencia->maneja_04 ? $preferencia->maneja_04 : 'Sim') : 'Não' }}</strong></li>
+                    </ul>
                 </div>
             @endif
         </div>
@@ -785,17 +780,12 @@
                 </div>
             @else
                 <div class="readonly-value">
-                    @php
-                        $metodos = [];
-                        if($preferencia->aprende_visual_04 == 1) $metodos[] = 'Visual';
-                        if($preferencia->recurso_auditivo_04 == 1) $metodos[] = 'Auditivo';
-                        if($preferencia->material_concreto_04 == 1) $metodos[] = 'Material Concreto';
-                        if($preferencia->outro_identificar_04 == 1) {
-                            $outro = $preferencia->descricao_outro_identificar_04 ? 'Outro: ' . $preferencia->descricao_outro_identificar_04 : 'Outro';
-                            $metodos[] = $outro;
-                        }
-                    @endphp
-                    {{ count($metodos) > 0 ? implode(', ', $metodos) : 'Nenhum método de aprendizado informado' }}
+                    <ul class="list-unstyled mb-0">
+                        <li>Visual: <strong>{{ $preferencia->aprende_visual_04 == 1 ? 'Sim' : 'Não' }}</strong></li>
+                        <li>Auditivo: <strong>{{ $preferencia->recurso_auditivo_04 == 1 ? 'Sim' : 'Não' }}</strong></li>
+                        <li>Material Concreto: <strong>{{ $preferencia->material_concreto_04 == 1 ? 'Sim' : 'Não' }}</strong></li>
+                        <li>Outro: <strong>{{ $preferencia->outro_identificar_04 == 1 ? ($preferencia->descricao_outro_identificar_04 ? $preferencia->descricao_outro_identificar_04 : 'Sim') : 'Não' }}</strong></li>
+                    </ul>
                 </div>
             @endif
         </div>
