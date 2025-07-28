@@ -302,15 +302,11 @@
     <label>Como o(a) estudante aprende melhor?</label>
     <div class="checkbox-group">
         <input type="hidden" name="aprende_visual_04" value="0">
-        <input type="hidden" name="aprende_visual_04" value="0">
 <input type="checkbox" name="aprende_visual_04" value="1" @if(isset($perfil->aprende_visual_04) && $perfil->aprende_visual_04) checked @endif><label for="aprende_visual_04">Recurso visual</label>
-        <input type="hidden" name="recurso_auditivo_04" value="0">
         <input type="hidden" name="recurso_auditivo_04" value="0">
 <input type="checkbox" name="recurso_auditivo_04" value="1" @if(isset($perfil->recurso_auditivo_04) && $perfil->recurso_auditivo_04) checked @endif><label for="recurso_auditivo_04">Recurso auditivo</label>
         <input type="hidden" name="material_concreto_04" value="0">
-        <input type="hidden" name="material_concreto_04" value="0">
 <input type="checkbox" name="material_concreto_04" value="1" @if(isset($perfil->material_concreto_04) && $perfil->material_concreto_04) checked @endif><label for="material_concreto_04">Material concreto</label>
-        <input type="hidden" name="outro_identificar_04" value="0">
         <input type="hidden" name="outro_identificar_04" value="0">
 <input type="checkbox" name="outro_identificar_04" value="1" @if(isset($perfil->outro_identificar_04) && $perfil->outro_identificar_04) checked @endif><label for="outro_identificar_04">Outro</label>
     </div>

@@ -154,49 +154,120 @@
     
     <!-- Etapa 1: Dados Pessoais -->
     <div class="step-content form-section active" data-step="1">
-        <div class="section-title">Dados Pessoais</div>
+        <div class="section-title">Dados Pessoais do estudante</div>
         <div class="row custom-row-gap align-items-end">
             <div class="form-group col-md-6">
-                <label>Nome do Estudante:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->alu_nome ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->alu_nome ?? '' }}</div>
-                @endif
+                <label>Nome do estudante:</label>
+                <div class="readonly-value">{{ $aluno->alu_nome ?? 'Não informado' }}</div>
             </div>
             <div class="form-group col-md-3">
                 <label>Data de Nascimento:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->alu_dt_nasc ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->alu_dt_nasc ?? '' }}</div>
-                @endif
+                <div class="readonly-value">
+                    @if(!empty($aluno->alu_dtnasc))
+                        {{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->format('d/m/Y') }}
+                    @else
+                        Não informado
+                    @endif
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <label>Idade:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->idade ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->idade ?? '' }}</div>
-                @endif
+                <div class="readonly-value">
+                    @if(!empty($aluno->alu_dtnasc))
+                        {{ \Carbon\Carbon::parse($aluno->alu_dtnasc)->age }} anos
+                    @else
+                        Não informado
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="row custom-row-gap align-items-end">
+            <div class="form-group col-md-3">
+                <label>RA:</label>
+                <div class="readonly-value">{{ $aluno->alu_ra ?? 'Não informado' }}</div>
+            </div>
+            <div class="form-group col-md-3">
+                <label>Matrícula:</label>
+                <div class="readonly-value">
+                    @if(isset($aluno->matriculas) && $aluno->matriculas->isNotEmpty())
+                        {{ $aluno->matriculas->first()->numero_matricula ?? 'Não informado' }}
+                    @else
+                        Não informado
+                    @endif
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label>Turma:</label>
+                <div class="readonly-value">
+                    @if(isset($aluno->matriculas) && $aluno->matriculas->isNotEmpty() && isset($aluno->matriculas->first()->turma))
+                        {{ $aluno->matriculas->first()->turma->tur_nome ?? 'Não informado' }}
+                    @else
+                        Não informado
+                    @endif
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label>Período:</label>
+                <div class="readonly-value">
+                    @if(isset($aluno->matriculas) && $aluno->matriculas->isNotEmpty())
+                        {{ $aluno->matriculas->first()->periodo ?? 'Não informado' }}
+                    @else
+                        Não informado
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="row custom-row-gap align-items-end">
+            <div class="form-group col-md-4">
+                <label>Escola:</label>
+                <div class="readonly-value">
+                    @if(isset($aluno->matriculas) && $aluno->matriculas->isNotEmpty() && isset($aluno->matriculas->first()->turma) && isset($aluno->matriculas->first()->turma->escola))
+                        {{ $aluno->matriculas->first()->turma->escola->esc_razao_social ?? 'Não informado' }}
+                    @else
+                        Não informado
+                    @endif
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <label>Série/Ano:</label>
+                <div class="readonly-value">
+                    @if(isset($aluno->matriculas) && $aluno->matriculas->isNotEmpty() && isset($aluno->matriculas->first()->serie))
+                        {{ $aluno->matriculas->first()->serie->serie_desc ?? 'Não informado' }}
+                    @else
+                        Não informado
+                    @endif
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <label>Modalidade:</label>
+                <div class="readonly-value">
+                    @if(isset($aluno->matriculas) && $aluno->matriculas->isNotEmpty() && isset($aluno->matriculas->first()->modalidade))
+                        {{ $aluno->matriculas->first()->modalidade->desc_modalidade ?? 'Não informado' }}
+                    @else
+                        Não informado
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="section-title" style="background-color: #ff8c00; margin-top: 15px;">DADOS DO RESPONSÁVEL</div>
+        <div class="row custom-row-gap align-items-end">
+            <div class="form-group col-md-8">
+                <label>Nome do Responsável:</label>
+                <div class="readonly-value">{{ $aluno->alu_nome_resp ?? 'Não informado' }}</div>
+            </div>
+            <div class="form-group col-md-4">
+                <label>Tipo de Parentesco:</label>
+                <div class="readonly-value">{{ $aluno->alu_tipo_parentesco ?? 'Não informado' }}</div>
             </div>
         </div>
         <div class="row custom-row-gap align-items-end">
             <div class="form-group col-md-6">
-                <label>Responsável:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->alu_resp ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->alu_resp ?? '' }}</div>
-                @endif
+                <label>Telefone:</label>
+                <div class="readonly-value">{{ $aluno->alu_tel_resp ?? 'Não informado' }}</div>
             </div>
             <div class="form-group col-md-6">
-                <label>Telefone:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->alu_tel_resp ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->alu_tel_resp ?? '' }}</div>
-                @endif
+                <label>E-mail:</label>
+                <div class="readonly-value">{{ $aluno->alu_email_resp ?? 'Não informado' }}</div>
             </div>
         </div>
         <div class="row custom-row-gap align-items-end">
@@ -421,9 +492,26 @@
         <div class="form-group">
             <label>Atendimento Educacional Especializado:</label>
             @if($modo == 'editar')
-                <input type="text" name="at_especializado" class="form-control" value="{{ $perfil->at_especializado ?? '' }}" maxlength="255">
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="at_especializado" id="at_especializado_sim" value="1" {{ $perfil->at_especializado == 1 ? 'checked' : '' }}>
+                        <label class="form-check-label" for="at_especializado_sim">Sim</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="at_especializado" id="at_especializado_nao" value="0" {{ $perfil->at_especializado == 0 ? 'checked' : '' }}>
+                        <label class="form-check-label" for="at_especializado_nao">Não</label>
+                    </div>
+                </div>
             @else
-                <div class="readonly-value">{{ $perfil->at_especializado ?? 'Não informado' }}</div>
+                <div class="readonly-value">
+                    @if(isset($perfil->at_especializado) && $perfil->at_especializado == 1)
+                        Sim
+                    @elseif(isset($perfil->at_especializado) && $perfil->at_especializado == 0)
+                        Não
+                    @else
+                        Não informado
+                    @endif
+                </div>
             @endif
         </div>
     </div>
