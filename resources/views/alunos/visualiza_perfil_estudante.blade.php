@@ -270,32 +270,7 @@
                 <div class="readonly-value">{{ $aluno->alu_email_resp ?? 'Não informado' }}</div>
             </div>
         </div>
-        <div class="row custom-row-gap align-items-end">
-            <div class="form-group col-md-6">
-                <label>Endereço:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->alu_end ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->alu_end ?? '' }}</div>
-                @endif
-            </div>
-            <div class="form-group col-md-3">
-                <label>Turma:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->turma->tur_nome ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->turma->tur_nome ?? '' }}</div>
-                @endif
-            </div>
-            <div class="form-group col-md-3">
-                <label>Matrícula:</label>
-                @if($modo == 'editar')
-                    <input type="text" value="{{ $aluno->alu_matricula ?? '' }}" readonly class="form-control">
-                @else
-                    <div class="readonly-value">{{ $aluno->alu_matricula ?? '' }}</div>
-                @endif
-            </div>
-        </div>
+
     </div>
     
     <!-- Etapa 2: Perfil do Estudante -->
@@ -893,6 +868,10 @@
     </div>
     
     @if($modo == 'editar')
+        <div class="form-buttons-nav" style="text-align: center; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">Anterior</button>
+            <button type="button" class="btn btn-primary" id="nextBtn">Próximo</button>
+        </div>
         </form>
     @endif
 </div>
@@ -980,6 +959,41 @@
                         perfilForm.appendChild(input);
                     }
                 });
+            }
+            // Navegação entre abas com botões Próximo e Anterior
+            if ('{{ $modo }}' === 'editar') {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                let currentStep = 1;
+
+                function updateNavButtons() {
+                    prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
+                    nextBtn.style.display = currentStep < totalSteps ? 'inline-block' : 'none';
+                }
+
+                function goToStep(step) {
+                    if (step < 1 || step > totalSteps) return;
+                    currentStep = step;
+                    changeTab(currentStep);
+                    updateNavButtons();
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', function() {
+                        if (currentStep < totalSteps) {
+                            goToStep(currentStep + 1);
+                        }
+                    });
+                }
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', function() {
+                        if (currentStep > 1) {
+                            goToStep(currentStep - 1);
+                        }
+                    });
+                }
+                // Inicializa os botões na primeira aba
+                updateNavButtons();
             }
         });
     </script>
