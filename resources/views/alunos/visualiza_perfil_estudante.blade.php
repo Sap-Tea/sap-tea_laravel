@@ -108,6 +108,9 @@
     <!-- Botões de modo -->
     <div class="mode-toggle">
         @if($modo == 'visualizar')
+            <a href="{{ route('gerar.pdf', ['aluno_id' => $aluno->alu_id]) }}" class="btn btn-mode btn-danger" style="margin-right:10px;" target="_blank">
+                <i class="fas fa-file-pdf"></i> Gerar PDF
+            </a>
             <a href="{{ route('editar.perfil', ['id' => $aluno->alu_id]) }}" class="btn btn-mode btn-edit">
                 <i class="fas fa-edit"></i> Editar Perfil
             </a>
@@ -814,29 +817,23 @@
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
-                        <tr style="background-color: #e9ecef;">
-                            <th style="text-align: center;">Nome do Profissional</th>
-                            <th style="text-align: center;">Especialidade/Área</th>
-                            <th style="text-align: center;">Observações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="text" name="nome_profissional_01" class="form-control" value="{{ old('nome_profissional_01', $profissionais[0]->nome_profissional ?? '') }}"></td>
-                            <td><input type="text" name="especialidade_profissional_01" class="form-control" value="{{ old('especialidade_profissional_01', $profissionais[0]->especialidade_profissional ?? '') }}"></td>
-                            <td><input type="text" name="observacoes_profissional_01" class="form-control" value="{{ old('observacoes_profissional_01', $profissionais[0]->observacoes_profissional ?? '') }}"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" name="nome_profissional_02" class="form-control" value="{{ old('nome_profissional_02', $profissionais[1]->nome_profissional ?? '') }}"></td>
-                            <td><input type="text" name="especialidade_profissional_02" class="form-control" value="{{ old('especialidade_profissional_02', $profissionais[1]->especialidade_profissional ?? '') }}"></td>
-                            <td><input type="text" name="observacoes_profissional_02" class="form-control" value="{{ old('observacoes_profissional_02', $profissionais[1]->observacoes_profissional ?? '') }}"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" name="nome_profissional_03" class="form-control" value="{{ old('nome_profissional_03', $profissionais[2]->nome_profissional ?? '') }}"></td>
-                            <td><input type="text" name="especialidade_profissional_03" class="form-control" value="{{ old('especialidade_profissional_03', $profissionais[2]->especialidade_profissional ?? '') }}"></td>
-                            <td><input type="text" name="observacoes_profissional_03" class="form-control" value="{{ old('observacoes_profissional_03', $profissionais[2]->observacoes_profissional ?? '') }}"></td>
-                        </tr>
-                    </tbody>
+    <tr style="background-color: #e9ecef;">
+        <th style="text-align: center;">Nome do Profissional</th>
+        <th style="text-align: center;">Especialidade/Área</th>
+        <th style="text-align: center;">Observações</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach([0,1,2] as $i)
+    <tr>
+        <td>
+            <input type="text" name="nome_profissional_0{{ $i+1 }}" class="form-control" value="{{ old('nome_profissional_0'.($i+1), $profissionais[$i]->nome_profissional ?? '') }}">
+        </td>
+        <td><input type="text" name="especialidade_profissional_0{{ $i+1 }}" class="form-control" value="{{ old('especialidade_profissional_0'.($i+1), $profissionais[$i]->especialidade_profissional ?? '') }}"></td>
+        <td><input type="text" name="observacoes_profissional_0{{ $i+1 }}" class="form-control" value="{{ old('observacoes_profissional_0'.($i+1), $profissionais[$i]->observacoes_profissional ?? '') }}"></td>
+    </tr>
+    @endforeach
+</tbody>
                 </table>
             </div>
         @else
