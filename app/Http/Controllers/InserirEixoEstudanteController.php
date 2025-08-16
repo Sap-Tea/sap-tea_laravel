@@ -258,6 +258,26 @@ class InserirEixoEstudanteController extends Controller
 
             DB::statement('UPDATE aluno SET flag_inventario = ? WHERE alu_id = ?', ['*', $alunoId]);
 
+            // === Controle de Fases: criar registro inicial apenas se fase for 'In' e não existir (id_aluno, ano) ===
+            if (strtoupper((string)$fase_inventario) === 'IN' || (string)$fase_inventario === 'In') {
+                try {
+                    \Log::info('[Inventário] Chamando ControleFasesSondagemController para registrar inicial se não existe', [
+                        'aluno_id' => $alunoId,
+                        'fase_inventario' => $fase_inventario,
+                    ]);
+                    /** @var \App\Http\Controllers\ControleFasesSondagemController $ctrl */
+                    $ctrl = app(\App\Http\Controllers\ControleFasesSondagemController::class);
+                    $resultado = $ctrl->registrarInicialSeNaoExiste($alunoId, (int)date('Y'));
+                    \Log::info('[Inventário] Resultado registro inicial controle_fases_sondagem', $resultado);
+                } catch (\Throwable $e) {
+                    \Log::error('[Inventário] Erro ao registrar controle de fases inicial', [
+                        'aluno_id' => $alunoId,
+                        'erro' => $e->getMessage(),
+                    ]);
+                    // Não interrompe o fluxo do usuário
+                }
+            }
+
             // Gera o JSON de debug dos três eixos juntos e retorna ao usuário
             try {
                 $processaResultadosController = app(\App\Http\Controllers\ProcessaResultadosController::class);
