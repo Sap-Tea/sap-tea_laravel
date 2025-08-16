@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AtividadeComunicacao;
 use App\Models\AtividadeComportamento;
 use App\Models\AtividadeSocioemocional;
+use App\Services\ControleFaseSondagemService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -99,6 +100,87 @@ class MonitoramentoAtividadeController extends Controller
                                             'data_monitoramento' => $dadosLinha['data_inicial']
                                         ]
                                     );
+                                    
+                                    // Atualiza os contadores de fase após salvar a atividade
+                                    // Removendo a verificação de sim_inicial para garantir que o contador seja atualizado sempre
+                                    if (true) {
+                                        try {
+                                            Log::info('=== CHAMANDO ControleFaseSondagemService ===', [
+                                                'aluno_id' => $aluno_id,
+                                                'eixo' => $eixo,
+                                                'fase_cadastro' => $dadosLinha['fase_cadastro'] ?? 'In',
+                                                'sim_inicial' => $dadosLinha['sim_inicial'] ?? 0,
+                                                'dados_completos' => $dadosLinha,
+                                                'tipo_operacao' => 'create'
+                                            ]);
+                                            
+                                            // Log para verificar se o aluno_id é válido
+                                            if (empty($aluno_id)) {
+                                                Log::error('ID do aluno está vazio!', [
+                                                    'dados_linha' => $dadosLinha,
+                                                    'eixo' => $eixo,
+                                                    'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)
+                                                ]);
+                                            }
+                                            
+                                            $controleService = new ControleFaseSondagemService();
+                                            $faseCadastro = $dadosLinha['fase_cadastro'] ?? 'In';
+                                            $eixoParaControle = $eixo === 'int_socio' ? 'socioemocional' : $eixo;
+                                            
+                                            Log::info('Parâmetros para ControleFaseSondagemService', [
+                                                'aluno_id' => $aluno_id,
+                                                'fase_cadastro' => $faseCadastro,
+                                                'eixo_mapeado' => $eixoParaControle,
+                                                'ano_atual' => date('Y')
+                                            ]);
+                                            
+                                            // Mapeia a fase para o formato esperado pelo serviço
+                                            $faseMapeada = 'Inicial'; // Valor padrão
+                                            if ($faseCadastro === 'C1') {
+                                                $faseMapeada = 'Cont1';
+                                            } elseif ($faseCadastro === 'C2') {
+                                                $faseMapeada = 'Cont2';
+                                            } elseif ($faseCadastro === 'Fim') {
+                                                $faseMapeada = 'Final';
+                                            }
+                                            
+                                            Log::info('Chamando atualizarContadores', [
+                                                'aluno_id' => $aluno_id,
+                                                'fase_mapa' => $faseMapeada,
+                                                'eixo' => $eixoParaControle
+                                            ]);
+                                            
+                                            $resultado = $controleService->atualizarContadores(
+                                                $aluno_id, 
+                                                $faseMapeada,
+                                                $eixoParaControle
+                                            );
+                                            
+                                            Log::info('Resultado de atualizarContadores', [
+                                                'sucesso' => $resultado['success'] ?? 'não informado',
+                                                'mensagem' => $resultado['message'] ?? 'sem mensagem',
+                                                'dados_retorno' => $resultado
+                                            ]);
+                                            
+                                            if (!$resultado['success']) {
+                                                Log::error('Erro ao atualizar contadores de fase', [
+                                                    'aluno_id' => $aluno_id,
+                                                    'fase' => $faseCadastro,
+                                                    'fase_mapeada' => $faseMapeada,
+                                                    'eixo' => $eixoParaControle,
+                                                    'erro' => $resultado['message'] ?? 'Erro desconhecido',
+                                                    'resultado_completo' => $resultado
+                                                ]);
+                                            }
+                                        } catch (\Exception $e) {
+                                            Log::error('Exceção ao atualizar contadores de fase', [
+                                                'aluno_id' => $aluno_id,
+                                                'erro' => $e->getMessage(),
+                                                'trace' => $e->getTraceAsString()
+                                            ]);
+                                        }
+                                    }
+                                    
                                     Log::info('Dados salvos com sucesso para o eixo: ' . $eixo);
                                 } catch (\Exception $e) {
                                     Log::error('Erro ao salvar dados do eixo ' . $eixo . ': ' . $e->getMessage(), [
