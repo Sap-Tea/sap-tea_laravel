@@ -151,4 +151,9 @@ public function responsavel()
               ->whereHas('enturmacao');
         });
     }
+
+    public function controleFases()
+    {
+        return $this->hasOne(ControleFasesSondagem::class, 'id_aluno', 'alu_id');
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ControllerPerfil;
 use App\Http\Controllers\SondagemController;
 use App\Http\Controllers\SondagemInicialController;
+use App\Http\Controllers\SondagemContinuadaController;
 use App\Http\Controllers\PerfilEstudanteController;
 use App\Http\Controllers\EnsinoController;
 use App\Http\Controllers\AlunoController;
@@ -93,27 +94,26 @@ Route::post('/monitoramento/salvar', [\App\Http\Controllers\MonitoramentoAtivida
 Route::get('/monitoramento/atividades-cadastradas/{aluno_id}', [\App\Http\Controllers\MonitoramentoAtividadeController::class, 'buscarAtividadesCadastradas'])->name('monitoramento.atividades-cadastradas');
 // SONDAGEM
 // =========================
-Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
-    // Exemplo de rota inicial da Sondagem
-    Route::get('/sondagem/inicial', [SondagemController::class, 'inicial'])->name('sondagem.inicial');
+// ROTAS DE SONDAGEM - GRUPO PRINCIPAL
+Route::middleware(['auth:funcionario', 'funcao.especial'])->prefix('sondagem')->name('sondagem.')->group(function () {
     // Rota para exibir resultado do aluno em JSON
-    Route::get('/sondagem/resultado-aluno/{alu_id}', [SondagemController::class, 'resultadoAluno']);
-    // Rota para gerar o template PDF
-    Route::get('/generate-template-pdf', [GenerateTemplatePDFController::class, 'generateTemplate'])->name('generate.template.pdf');
+    Route::get('/resultado-aluno/{alu_id}', [SondagemController::class, 'resultadoAluno'])->name('resultado-aluno');
+    
     // Rota para processar resultados dos três eixos
-    Route::post('/sondagem/processa-resultados/{alunoId}', [\App\Http\Controllers\ProcessaResultadosController::class, 'processaTodosEixos'])->name('processa_resultados');
-    Route::get('/sondagem/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
-    Route::post('/sondagem/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
-    Route::get('/sondagem/alunoturma/{id}', [InserirEixoEstudanteController::class, 'aluno_turma'])->name('aluno.turma');
-    Route::get('/sondagem/inventario/{id}', [InserirEixoEstudanteController::class, 'inventario_parametro'])->name('perfil.inventario');
-    // Rotas para os gráficos de monitoramento
-    Route::get('/grafico/comunicacao/{alunoId}', [GraficoMonitoramentoController::class, 'graficoEixoComunicacao'])->name('grafico.comunicacao');
-    Route::get('/sondagem/visualizar-inventario/{id}', [AlunoController::class, 'visualiza_aluno_inventario'])->name('visualizar.inventario');
-    Route::get('/sondagem/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
-    Route::get('/sondagem/continuada1', [SondagemInicialController::class, 'continuada1'])->name('sondagem.continuada1');
-    Route::get('/sondagem/continuada2', [SondagemInicialController::class, 'continuada2'])->name('sondagem.continuada2');
-    Route::get('/sondagem/final', [SondagemInicialController::class, 'final'])->name('sondagem.final');
-    // Adicione aqui as demais rotas do menu Sondagem
+    Route::post('/processa-resultados/{alunoId}', [\App\Http\Controllers\ProcessaResultadosController::class, 'processaTodosEixos'])->name('processa_resultados');
+    
+    // Rotas de inventário
+    Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('inventario.cadastrar');
+    Route::post('/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inventario.inserir');
+    Route::get('/alunoturma/{id}', [InserirEixoEstudanteController::class, 'aluno_turma'])->name('aluno.turma');
+    Route::get('/inventario/{id}', [InserirEixoEstudanteController::class, 'inventario_parametro'])->name('perfil.inventario');
+    Route::get('/visualizar-inventario/{id}', [AlunoController::class, 'visualiza_aluno_inventario'])->name('inventario.visualizar');
+    
+    // Rotas das fases da sondagem
+    Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('inicial');
+    Route::get('/continuada1', [SondagemContinuadaController::class, 'continuada1'])->name('continuada1');
+    Route::get('/continuada2', [SondagemContinuadaController::class, 'continuada2'])->name('continuada2');
+    Route::get('/final', [SondagemContinuadaController::class, 'sondagemFinal'])->name('final');
 });
 
 // =========================
@@ -147,8 +147,11 @@ Route::get('/rotina/visualizar/{id}', function($id) {
 })->name('rotina.monitoramento.visualizar');
 // =========================
 Route::middleware(['auth:funcionario', 'funcao.especial'])->group(function () {
-    // Exemplo de rota inicial de Rotina e Monitoramento
+    // Rotas de Rotina e Monitoramento
     Route::get('/rotina_monitoramento/inicial', [PerfilEstudanteController::class, 'rotina_monitoramento_inicial'])->name('rotina.monitoramento.inicial');
+    Route::get('/rotina_monitoramento/continuada2', [PerfilEstudanteController::class, 'rotina_monitoramento_continuada2'])->name('rotina.monitoramento.continuada2');
+    Route::get('/rotina_monitoramento/continuada3', [PerfilEstudanteController::class, 'rotina_monitoramento_continuada3'])->name('rotina.monitoramento.continuada3');
+    Route::get('/rotina_monitoramento/final', [PerfilEstudanteController::class, 'rotina_monitoramento_final'])->name('rotina.monitoramento.final');
     // Rota para cadastrar rotina de monitoramento do aluno
     Route::get('/rotina_monitoramento/cadastrar/{id}', [PerfilEstudanteController::class, 'cadastrar_rotina_aluno'])->name('rotina.monitoramento.cadastrar');
     // Adicione aqui as demais rotas do menu Rotina e Monitoramento
@@ -176,8 +179,10 @@ Route::post('/password/first-change', [AuthController::class, 'processFirstChang
 Route::get('/primeiro-acesso', [AuthController::class, 'showPrimeiroAcessoForm'])->name('primeiro.acesso');
 Route::post('/primeiro-acesso', [AuthController::class, 'primeiroAcesso']);
 
-// Sondagem inicial
-Route::get('/sondagem-inicial', [SondagemController::class, 'index'])->name('sondagem.inicial');
+// Rota de redirecionamento para a página inicial da sondagem (aponta para a rota correta)
+Route::get('/sondagem-inicial', function() {
+    return redirect()->route('sondagem.inicial');
+});
 
 // Formulário (exemplo)
 Route::get('/formulario', function () {
@@ -189,49 +194,19 @@ Route::post('/formulario-submit', function (Request $request) {
     return back()->with('success', 'Formulário enviado com sucesso!');
 })->name('formulario.submit');
 
-// Grupo de rotas para sondagens
-Route::middleware(['auth:funcionario', 'funcao.especial'])->prefix('sondagem')->group(function () {
-    // Rota para listar alunos do professor logado
-    Route::get('/perfil-estudante', [\App\Http\Controllers\PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
-    // Rotas de perfil
-    Route::get('/alunos/{id}', [AlunoController::class, 'index'])->name('alunos.index');
-    Route::get('/perfil-estudante/{id}', [PerfilEstudanteController::class, 'mostrar'])->name('perfil.estudante.mostrar');
-    Route::get('/visualizar-perfil/{id}', [VisualizaPerfilController::class, 'visualizaPerfil'])->name('visualizar.perfil');
-    Route::get('/editar-perfil/{id}', [VisualizaPerfilController::class, 'editaPerfil'])->name('editar.perfil');
-    Route::put('/atualizaperfil/{id}', [AtualizacaoPerfilController::class, 'AtualizaPerfil'])->name('atualiza.perfil.estudante');
-    Route::post('/inserir_perfil', [InserirPerfilEstudante::class, 'inserir_perfil_estudante'])->name('inserir_perfil');
-    Route::get('/perfil-estudante', [PerfilEstudanteController::class, 'index'])->name('perfil.estudante');
-
-    // Rota para processar resultados dos três eixos
-    Route::post('/processa-resultados/{alunoId}', [\App\Http\Controllers\ProcessaResultadosController::class, 'processaTodosEixos'])->name('processa_resultados');
-    Route::get('/eixos-estudante', [PerfilEstudanteController::class, 'index_inventario'])->name('eixos.alunos');
-
-    Route::get('/cadastra-inventario/{id}', [AlunoController::class, 'mostra_aluno_inventario'])->name('alunos.inventario');
-    // Route removida para evitar conflito de nome
-// Route::post('/inserir_inventario/{id}', [InserirEixoEstudanteController::class, 'inserir_eixo_estudante'])->name('inserir_inventario');
-
-    Route::get('/visualizar-inventario/{id}', [AlunoController::class, 'visualiza_aluno_inventario'])->name('visualizar.inventario');
-    // Route::get('/inicial', [AlunoController::class, 'index'])->name('alunos.index');
-    Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
-    Route::get('/continuada1', [SondagemInicialController::class, 'continuada1'])->name('sondagem.continuada1');
-    Route::get('/continuada2', [SondagemInicialController::class, 'continuada2'])->name('sondagem.continuada2');
-    Route::get('/final', [SondagemInicialController::class, 'final'])->name('sondagem.final');
-});
 
 //criando grupo de rota para rotina e monitoramento
 // Rotas para rotina e monitoramento
 Route::get('/rotina_monitoramento/aluno/{id}', [\App\Http\Controllers\PerfilEstudanteController::class, 'rotina_monitoramento_aluno'])->name('rotina.monitoramento.aluno');
 Route::get('/rotina/cadastrar/{id}', [\App\Http\Controllers\PerfilEstudanteController::class, 'rotina_monitoramento_aluno'])->name('rotina.cadastrar.aluno');
-Route::prefix('rotina_monitoramento')->group(function () {
-    // Rota para página inicial de rotina e monitoramento
-    Route::get('/rot_monit_inicial', [PerfilEstudanteController::class, 'rotina_monitoramento_inicial'])->name('rotina.monitoramento.inicial');
+
+
+
+
+// Redirecionamento para a rota correta da sondagem inicial
+Route::get('/inicial', function() {
+    return redirect()->route('sondagem.inicial');
 });
-
-
-
-
-//minha alteracao
-Route::get('/inicial', [SondagemInicialController::class, 'inicial'])->name('sondagem.inicial');
 Route::get('/modalidade-ensino/inicial', [EnsinoController::class, 'inicial'])->name('modalidade.inicial');
 // Rota de perfil movida para o grupo de Sondagem.
 // Rota para exportar Excel
@@ -262,7 +237,7 @@ Route::get('/alunos', [AlunosController::class, 'index'])->name('alunos');
 Route::get('/imprime-aluno', [ImprimeAlunoController::class, 'imprimeAluno'])->name('imprime_aluno');
 
 // Rota para o download
-Route::get('/download', [downloadController::class, 'index'])->name('download');
+Route::get('/download', [DownloadController::class, 'index'])->name('download');
 
 
 use App\Http\Controllers\SomeController;  // Certifique-se de incluir o controlador
@@ -293,7 +268,7 @@ Route::post('/gerar-pdf', [GeneratePDFController::class, 'generatePDF'])->name('
 
 
 Route::get('/teste-email', function () {
-    \Mail::raw('Teste de email do Laravel', function($message) {
+        Mail::raw('Teste de email do Laravel', function($message) {
         $message->to('marcosbarroso.info@gmail.com')->subject('Teste');
     });
     return 'Email enviado!';

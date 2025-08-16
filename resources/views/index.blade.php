@@ -198,18 +198,19 @@
                 --}}
                 <li>
                     <a href="#" class="menu-toggle sondagem" data-page="Sondagem Pedagógica">
-                        <i class="fa-solid fa-school"></i> Sondagem Pedagógica ⬇
+                        <i class="fa-solid fa-school"></i> Sondagem Pedagógica 
                     </a>
                     <ul class="submenu">
-                       <li><a href="{{ route('eixos.alunos', ['fase' => 'inicial']) }}" class="menu-link" data-page="Sondagem Inicial">.1 Inicial</a></li>
-                        <li><a href="{{ route('eixos.alunos', ['fase' => 'continuada2']) }}" class="menu-link disabled" title="Em breve">.2 Continuada</a></li>
-                        <li><a href="{{ route('eixos.alunos', ['fase' => 'continuada3']) }}" class="menu-link disabled" title="Em breve">.3 Continuada</a></li>
-                        <li><a href="{{ route('eixos.alunos', ['fase' => 'final']) }}" class="menu-link disabled" title="Em breve">.4 Final</a></li>
+                        <li><a href="{{ route('sondagem.inicial') }}" class="menu-link" data-page="Sondagem Inicial">.1 Inicial</a></li>
+                        
+                        <li><a href="{{ route('sondagem.continuada1') }}" class="menu-link" data-page="Sondagem Continuada 1">.2 Continuada 1</a></li>
+                        <li><a href="{{ route('sondagem.continuada2') }}" class="menu-link" data-page="Sondagem Continuada 2">.3 Continuada 2</a></li>
+                        <li><a href="{{ route('sondagem.final') }}" class="menu-link" data-page="Sondagem Final">.4 Final</a></li>
                     </ul>
                 </li>
                 <li>
                     <a href="#" class="menu-toggle" data-page="Rotina e Monitoramento">
-                        <i class="fa-solid fa-school"></i> Rotina e Monitoramento de Aplicação das Atividades ⬇
+                        <i class="fa-solid fa-school"></i> Rotina e Monitoramento de Aplicação das Atividades 
                     </a>
                     <ul class="submenu_escola">
                         <li><a href="{{ route('rotina.monitoramento.inicial') }}" class="menu-link" data-page="Rotina Inicial">.1 Inicial</a></li>
@@ -240,18 +241,7 @@
                         <li><a href="#" class="disabled" title="Em breve">.4 Final</a></li>
                     </ul>
                 </li>
-                <li>
-                    <a href="{{ route('perfil.estudante') }}" class="menu-link" data-page="Perfil do Estudante">
-                        <i class="fa-solid fa-graduation-cap"></i> Perfil do Estudante
-                    </a>
-                </li>
-                <!--
-                <li>
-                    <a href="{{ route('visualizar.perfil', ['id' => 1]) }}" class="menu-link" data-page="Atualizar Perfil">
-                        <i class="fa-solid fa-user-edit"></i>  Perfil
-                    </a>
-                </li>
-                -->
+                <!-- O link para 'Perfil do Estudante' foi removido temporariamente pois a rota 'perfil.estudante' não existe mais. -->
             </ul>
 
             <h3 style="margin:20px 15px 10px;">Foccus - Cadastros</h3>

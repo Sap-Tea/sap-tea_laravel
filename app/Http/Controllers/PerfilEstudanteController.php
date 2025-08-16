@@ -443,7 +443,7 @@ public function index_inventario(Request $request)
     return view('alunos.imprime_aluno_eixo', [
         'alunos' => $alunos,
         'titulo' => 'Estudantes matriculados:',
-        'rota_acao' => 'alunos.inventario',
+        'rotaCadastro' => 'sondagem.inventario.cadastrar',
         'rota_pdf' => 'visualizar.inventario',
         'exibeBotaoInventario' => true,
         'exibeBotaoPdf' => true,
@@ -483,9 +483,31 @@ public function mostra_aluno_eixo($id)
         
     public function rotina_monitoramento_inicial()
     {
+        return $this->rotina_monitoramento_por_fase('Inicial', 'rotina.monitoramento.cadastrar');
+    }
+
+    public function rotina_monitoramento_continuada2()
+    {
+        return $this->rotina_monitoramento_por_fase('Continuada 2', 'rotina.monitoramento.continuada2.cadastrar');
+    }
+
+    public function rotina_monitoramento_continuada3()
+    {
+        return $this->rotina_monitoramento_por_fase('Continuada 3', 'rotina.monitoramento.continuada3.cadastrar');
+    }
+
+    public function rotina_monitoramento_final()
+    {
+        return $this->rotina_monitoramento_por_fase('Final', 'rotina.monitoramento.final.cadastrar');
+    }
+
+    /**
+     * Método auxiliar para carregar a lista de alunos para uma fase específica de monitoramento
+     */
+    private function rotina_monitoramento_por_fase($fase, $rotaCadastro)
+    {
         $professor = auth('funcionario')->user();
         if (!$professor) {
-            // Redireciona para login ou mostra erro amigável
             return redirect()->route('login')->withErrors(['msg' => 'Sessão expirada ou acesso não autorizado. Faça login novamente.']);
         }
         $funcId = $professor->func_id;
@@ -499,17 +521,19 @@ public function mostra_aluno_eixo($id)
 
         return view('alunos.imprime_aluno_eixo', [
             'alunos' => $alunos,
-            'titulo' => 'Rotina de Monitoramento',
+            'titulo' => 'Rotina de Monitoramento - ' . $fase,
+            'fase_atual' => $fase,
             'botoes' => [
                 [
-                    'label' => 'Cadastrar Rotina',
-                    'rota'  => 'rotina.monitoramento.cadastrar',
+                    'label' => 'Cadastrar ' . $fase,
+                    'rota'  => $rotaCadastro,
                     'classe' => 'btn-success'
                 ],
                 [
-                    'label' => 'Visualizar Rotina',
+                    'label' => 'Visualizar ' . $fase,
                     'rota'  => 'rotina.monitoramento.visualizar',
-                    'classe' => 'btn-info'
+                    'classe' => 'btn-info',
+                    'fase' => strtolower(str_replace(' ', '_', $fase))
                 ]
             ],
             'professor_nome' => $professor->func_nome,

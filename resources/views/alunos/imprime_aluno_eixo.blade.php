@@ -42,35 +42,14 @@
                     <td>{{ optional($aluno->matriculas->first()->turma->escola)->esc_razao_social ?? '---' }}</td>
                     <td>{{ optional(optional($aluno->matriculas->first()->modalidade)->tipo)->desc_modalidade ?? '---' }}</td>
                   
-                    <!-- Botões de ação flexíveis -->
                     <td>
-                        @if(isset($botoes))
-                            @foreach($botoes as $botao)
-                                @if(!empty($aluno->alu_id))
-                                    <a href="{{ route($botao['rota'], ['id' => $aluno->alu_id]) }}" class="btn {{ $botao['classe'] }} btn-sm">{{ $botao['label'] }}</a>
-                                @endif
-                            @endforeach
-                        @endif
-
-                        @if(($exibeBotaoInventario ?? false) && $aluno->flag_inventario !== "*")
-                            <a href="{{ route($rota_acao ?? 'alunos.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm d-inline-block align-middle">Sondagem Inicial</a>
-                        @elseif(($exibeBotaoInventario ?? false) && $aluno->flag_inventario === "*")
-                            <button class="btn btn-danger btn-sm d-inline-block align-middle" style="background-color:#e74c3c; border-color:#c0392b; color:#fff; opacity:0.8;" disabled>Sondagem Inicial</button>
-                        @endif
-
-                        @if($exibeBotaoPdf ?? false)
-                            @if($aluno->flag_inventario === null)
-                                <button class="btn btn-warning btn-sm text-white" style="background-color: #e67e22; border-color: #d35400;" disabled>Visualiza - gera Pdf </button>
-                            @else
-                                <a href="{{ route($rota_pdf ?? 'visualizar.inventario', ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm">Visualiza - gera Pdf </a>
-                            @endif
-                        @endif
+                                                <a href="{{ route($rotaCadastro, ['id' => $aluno->alu_id]) }}" class="btn btn-primary btn-sm">{{ $textoBotao ?? 'Cadastrar' }}</a>
                     </td>
                 </tr>
             @empty
                 <!-- Caso não existam estudantes -->
                 <tr>
-                    <td colspan="8" class="text-center">Nenhum estudante encontrado.</td>
+                    <td colspan="8" class="text-center">Não existe aluno para a fase acessada porque a anterior ainda não foi concluída.</td>
                 </tr>
             @endforelse
         </tbody>
